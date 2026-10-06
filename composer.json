@@ -1,0 +1,125 @@
+{
+    "$schema": "https://getcomposer.org/schema.json",
+    "name": "jayi/keen",
+    "description": "Tamper-evident audit log for every jayi package, with API, MCP and Atrium screens.",
+    "keywords": [
+        "laravel",
+        "jayi",
+        "keen",
+        "audit",
+        "audit-log"
+    ],
+    "homepage": "https://github.com/jayjfletcher/Keen",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jay Fletcher",
+            "email": "jayjfletcher@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.4",
+        "jayi/foundation": "dev-main",
+        "laravel/framework": "^13.0"
+    },
+    "require-dev": {
+        "jayi/atrium": "dev-main",
+        "larastan/larastan": "^3.12",
+        "laravel/mcp": "^1.0",
+        "laravel/pao": "^1.0",
+        "laravel/pint": "^1.29",
+        "orchestra/testbench": "^11.0",
+        "pestphp/pest": "^5.0",
+        "pestphp/pest-plugin-laravel": "^5.0",
+        "pestphp/pest-plugin-type-coverage": "^5.0",
+        "phpstan/extension-installer": "^1.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "JayI\\Keen\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "JayI\\Keen\\Tests\\": "tests/",
+            "Workbench\\App\\": "workbench/app/",
+            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
+            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@clear",
+            "@prepare"
+        ],
+        "prepare": [
+            "@php vendor/bin/testbench package:discover --ansi"
+        ],
+        "build": [
+            "@php vendor/bin/testbench workbench:build --ansi"
+        ],
+        "serve": [
+            "Composer\\Config::disableProcessTimeout",
+            "@build",
+            "@php vendor/bin/testbench serve --ansi"
+        ],
+        "lint": [
+            "vendor/bin/pint --parallel"
+        ],
+        "lint:check": [
+            "vendor/bin/pint --parallel --test"
+        ],
+        "analyse": [
+            "vendor/bin/phpstan analyse"
+        ],
+        "test:types": [
+            "vendor/bin/pest --type-coverage --min=100"
+        ],
+        "test:unit": [
+            "vendor/bin/pest --parallel"
+        ],
+        "test": [
+            "@analyse",
+            "@lint:check",
+            "@test:types",
+            "@test:unit"
+        ],
+        "clear": [
+            "@php vendor/bin/testbench package:purge-skeleton --ansi"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "JayI\\Keen\\KeenServiceProvider"
+            ],
+            "aliases": {
+                "Keen": "JayI\\Keen\\Facades\\Keen"
+            }
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "suggest": {
+        "jayi/atrium": "Browse the audit log, and each package's own history, from the Atrium dashboard (dev-main).",
+        "laravel/mcp": "Read and record audit entries from MCP clients and Cortex agents (^1.0)."
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/jayjfletcher/Foundation.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/jayjfletcher/Atrium.git"
+        }
+    ]
+}
