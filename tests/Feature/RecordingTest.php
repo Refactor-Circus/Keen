@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use JayI\Foundation\Audit\AuditHooks;
 use JayI\Foundation\Support\Surface;
 use JayI\Keen\Domains\Audit\Models\AuditEntryModel;
+use JayI\Keen\Domains\Audit\Services\Labels;
 use JayI\Keen\Tests\Fixtures\Shop\Domains\Product\Actions\UpdateProductAction;
 use JayI\Keen\Tests\Fixtures\Shop\Domains\Product\Events\ProductCreatedActionEvent;
 use JayI\Keen\Tests\Fixtures\Shop\Domains\Product\Events\ProductsListedActionEvent;
@@ -87,4 +89,18 @@ it('records the surface the change came through', function (): void {
     app(Surface::class)->using('mcp', fn () => app(UpdateProductAction::class)->execute($product, ['name' => 'Gear']));
 
     expect(AuditEntryModel::query()->sole()->surface)->toBe('mcp');
+});
+
+it('never resolves a label method as a relation', function (): void {
+    $model = new class extends Model
+    {
+        public function label(): string
+        {
+            return 'not a relation';
+        }
+    };
+
+    $model->forceFill(['id' => 9]);
+
+    expect(app(Labels::class)->for($model))->toBe('9');
 });

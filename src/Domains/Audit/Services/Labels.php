@@ -27,7 +27,15 @@ final readonly class Labels
             return $label;
         }
 
+        $attributes = $model->getAttributes();
+
         foreach (self::ATTRIBUTES as $attribute) {
+            // Only stored columns: a model with a `label()` method would
+            // otherwise have it resolved as a relation.
+            if (! array_key_exists($attribute, $attributes)) {
+                continue;
+            }
+
             $value = $model->getAttribute($attribute);
 
             if (is_scalar($value) && (string) $value !== '') {

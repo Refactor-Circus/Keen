@@ -14,8 +14,9 @@ use JayI\Keen\Domains\Audit\Services\AuditRecorder;
 /**
  * Record one of the application's own events, such as `invoice.paid`.
  *
- * Always recorded with source `app`, so it can never pass for an entry a
- * package made. Pass `$subject` / `$scope` models from code, or `subject_*`
+ * Recorded with source `app`, so it can never pass for an entry a package
+ * made - unless code records a package's own event with `source()`, which the
+ * JSON API and MCP never allow. Pass `$subject` / `$scope` models from code, or `subject_*`
  * in `$data` from the API and MCP.
  */
 final class RecordAuditEventAction extends Action
@@ -41,11 +42,11 @@ final class RecordAuditEventAction extends Action
     /**
      * @param  array<string, mixed>  $data
      */
-    protected function handle(array $data, ?Model $actor = null, ?Model $subject = null, ?Model $scope = null): AuditEntryModel
+    protected function handle(array $data, ?Model $actor = null, ?Model $subject = null, ?Model $scope = null, string $source = AuditEntryModel::SOURCE_APP): AuditEntryModel
     {
         AuditEventRecordingActionEvent::dispatch($data);
 
-        $entry = $this->perform($data, $actor, $subject, $scope);
+        $entry = $this->perform($data, $actor, $subject, $scope, $source);
 
         AuditEventRecordedActionEvent::dispatch($entry);
 
@@ -55,7 +56,7 @@ final class RecordAuditEventAction extends Action
     /**
      * @param  array<string, mixed>  $data
      */
-    private function perform(array $data, ?Model $actor, ?Model $subject, ?Model $scope): AuditEntryModel
+    private function perform(array $data, ?Model $actor, ?Model $subject, ?Model $scope, string $source): AuditEntryModel
     {
         /** @var array<string, array{0: mixed, 1: mixed}> $changes */
         $changes = (array) ($data['changes'] ?? []);
@@ -64,7 +65,7 @@ final class RecordAuditEventAction extends Action
         $context = (array) ($data['context'] ?? []);
 
         return $this->recorder->write(
-            source: AuditEntryModel::SOURCE_APP,
+            source: $source,
             action: (string) $data['action'],
             subject: $subject,
             changes: $changes,

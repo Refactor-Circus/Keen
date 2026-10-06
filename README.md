@@ -30,7 +30,7 @@ Schedule::command('keen:prune')->daily();
 
 ## Recording your own events
 
-Package actions are recorded on their own. Record your application's events with the facade; they are always stored with source `app`, so they can never pass for an entry a package made:
+Package actions are recorded on their own. Record your application's events with the facade; they are stored with source `app`, so they can never pass for an entry a package made:
 
 ```php
 use JayI\Keen\Facades\Keen;
@@ -43,6 +43,8 @@ Keen::record('invoice.paid')
     ->changes(['status' => ['open', 'paid']])
     ->save();
 ```
+
+A package of the suite recording one of its own events adds `->source('polycart')` (a registered package key), so the entry shows in that package's history. The JSON API and MCP always record as `app`.
 
 ## Reading the log
 

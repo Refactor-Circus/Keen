@@ -85,3 +85,8 @@ it('imports the audit log roster kept before keen', function (): void {
 
     $this->artisan('keen:import-roster')->assertFailed();
 });
+
+it('records a package\'s own event under its source', function (): void {
+    expect(Keen::record('cart.noted')->source('shop')->save()->source)->toBe('shop')
+        ->and(fn () => Keen::record('cart.noted')->source('nope'))->toThrow(InvalidArgumentException::class);
+});

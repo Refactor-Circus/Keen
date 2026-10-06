@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace JayI\Keen\Domains\Audit\Data;
 
 use Illuminate\Database\Eloquent\Model;
+use InvalidArgumentException;
+use JayI\Foundation\Packages\PackageRegistry;
 use JayI\Keen\Domains\Audit\Actions\RecordAuditEventAction;
 use JayI\Keen\Domains\Audit\Models\AuditEntryModel;
 
@@ -20,6 +22,8 @@ final class PendingAuditEntry
     private ?Model $scope = null;
 
     private ?Model $actor = null;
+
+    private string $source = AuditEntryModel::SOURCE_APP;
 
     /** @var array<string, mixed> */
     private array $context = [];
@@ -46,6 +50,23 @@ final class PendingAuditEntry
     public function in(?Model $scope): self
     {
         $this->scope = $scope;
+
+        return $this;
+    }
+
+    /**
+     * Record the entry as a package of the suite rather than the application,
+     * for a package's own events, so they show in its history.
+     *
+     * @throws InvalidArgumentException when no package is registered under the key
+     */
+    public function source(string $package): self
+    {
+        if (! app(PackageRegistry::class)->has($package)) {
+            throw new InvalidArgumentException("No package is registered under the key [{$package}].");
+        }
+
+        $this->source = $package;
 
         return $this;
     }
@@ -90,6 +111,6 @@ final class PendingAuditEntry
 
         validator($data, RecordAuditEventAction::rules())->validate();
 
-        return app(RecordAuditEventAction::class)->execute($data, $this->actor, $this->subject, $this->scope);
+        return app(RecordAuditEventAction::class)->execute($data, $this->actor, $this->subject, $this->scope, $this->source);
     }
 }
