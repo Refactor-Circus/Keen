@@ -29,6 +29,8 @@ final readonly class KeenAuditTrail implements AuditTrail
             'source' => $filter->source,
             'subject_type' => $filter->subjectType,
             'subject_id' => $filter->subjectId,
+            'scope_type' => $filter->scopeType,
+            'scope_id' => $filter->scopeId,
             'action' => $filter->action,
             'actor_id' => $filter->actorId,
             'cursor' => $filter->cursor,

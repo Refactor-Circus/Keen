@@ -7,6 +7,7 @@ use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
 use JayI\Foundation\Audit\Contracts\AuditTrail;
+use JayI\Foundation\Audit\Data\AuditFilter;
 use JayI\Keen\Domains\Audit\Mcp\Tools\ListAuditEntriesTool;
 use JayI\Keen\Domains\Audit\Mcp\Tools\RecordAuditEventTool;
 use JayI\Keen\Domains\Audit\Mcp\Tools\ShowAuditEntryTool;
@@ -108,4 +109,14 @@ it('shows each package\'s history in its own atrium screens', function (): void 
     $html = Blade::render('<x-atrium::audit-trail source="shop" :subject="$product" />', ['product' => $product]);
 
     expect($html)->toContain('product.created')->toContain('/atrium/keen/entries/');
+});
+
+it('reads the trail by scope', function (): void {
+    $org = ProductModel::query()->create(['name' => 'Acme']);
+    Keen::record('note.in')->in($org)->save();
+    Keen::record('note.out')->save();
+
+    $page = app(AuditTrail::class)->entries(AuditFilter::make()->scope($org));
+
+    expect(array_map(fn ($entry) => $entry->action, $page->entries))->toBe(['note.in']);
 });
