@@ -6,8 +6,8 @@ namespace RefactorCircus\Keen\Tests\Fixtures\Shop\Domains\Product\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use RefactorCircus\Foundation\Contracts\ActionFinishedEvent;
 use RefactorCircus\Keen\Tests\Fixtures\Shop\Domains\Product\Models\ProductModel;
+use RefactorCircus\Keystone\Contracts\ActionFinishedEvent;
 
 /**
  * A product was updated.

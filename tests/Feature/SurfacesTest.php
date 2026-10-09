@@ -6,8 +6,6 @@ use Illuminate\Foundation\Auth\User;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
-use RefactorCircus\Foundation\Audit\Contracts\AuditTrail;
-use RefactorCircus\Foundation\Audit\Data\AuditFilter;
 use RefactorCircus\Keen\Domains\Audit\Mcp\Tools\ListAuditEntriesTool;
 use RefactorCircus\Keen\Domains\Audit\Mcp\Tools\RecordAuditEventTool;
 use RefactorCircus\Keen\Domains\Audit\Mcp\Tools\ShowAuditEntryTool;
@@ -16,6 +14,8 @@ use RefactorCircus\Keen\Facades\Keen;
 use RefactorCircus\Keen\Mcp\KeenServer;
 use RefactorCircus\Keen\Tests\Fixtures\Shop\Domains\Product\Events\ProductCreatedActionEvent;
 use RefactorCircus\Keen\Tests\Fixtures\Shop\Domains\Product\Models\ProductModel;
+use RefactorCircus\Keystone\Audit\Contracts\AuditTrail;
+use RefactorCircus\Keystone\Audit\Data\AuditFilter;
 
 it('lists, shows and records entries over the json api', function (): void {
     $entry = Keen::record('invoice.paid')->with(['amount' => 1])->save();

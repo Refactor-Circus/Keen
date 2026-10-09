@@ -2,7 +2,7 @@
 
 A tamper-evident audit log for every package of the Refactor Circus suite, and for your application's own events.
 
-Install Keen and every action of every suite package (Atrium, Cortex, Impex, PennantPlus, Polycart, Roster, Showroom) is recorded: who did it, to which record, through which surface (`atrium`, `http`, `mcp`, `cortex`, `cli`, `code`), and which fields changed. No package depends on Keen; each announces its actions through the shared events of [refactor-circus/foundation](https://github.com/Refactor-Circus/Foundation), and Keen listens.
+Install Keen and every action of every suite package (Atrium, Cortex, Impex, PennantPlus, Polycart, Roster, Showroom) is recorded: who did it, to which record, through which surface (`atrium`, `http`, `mcp`, `cortex`, `cli`, `code`), and which fields changed. No package depends on Keen; each announces its actions through the shared events of [refactor-circus/keystone](https://github.com/Refactor-Circus/Keystone), and Keen listens.
 
 - **Append-only and hash-chained.** Each entry's hash covers the one before it, so editing or removing any entry breaks the chain. `php artisan keen:verify` finds the first altered entry.
 - **Secrets never reach the log.** Passwords, tokens, client secrets and private keys are redacted, as is anything a package or your config names; a redacted field still shows that it changed.
@@ -75,10 +75,10 @@ Without them anyone signed in may read and record. People may always read the en
 
 ## How packages shape their entries
 
-Packages teach Keen about their models through refactor-circus/foundation's `AuditHooks`, from their service provider, whether or not Keen is installed:
+Packages teach Keen about their models through refactor-circus/keystone's `AuditHooks`, from their service provider, whether or not Keen is installed:
 
 ```php
-use RefactorCircus\Foundation\Audit\AuditHooks;
+use RefactorCircus\Keystone\Audit\AuditHooks;
 
 app(AuditHooks::class)
     ->label(RoleModel::class, fn (RoleModel $role) => $role->name)
@@ -88,7 +88,7 @@ app(AuditHooks::class)
     ->redact('client_secret');
 ```
 
-An action event can also name its subject and context itself by implementing `RefactorCircus\Foundation\Audit\Contracts\Auditable`.
+An action event can also name its subject and context itself by implementing `RefactorCircus\Keystone\Audit\Contracts\Auditable`.
 
 ## Moving from Roster's audit log
 

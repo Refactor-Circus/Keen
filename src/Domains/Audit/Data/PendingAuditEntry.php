@@ -6,9 +6,9 @@ namespace RefactorCircus\Keen\Domains\Audit\Data;
 
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
-use RefactorCircus\Foundation\Packages\PackageRegistry;
 use RefactorCircus\Keen\Domains\Audit\Actions\RecordAuditEventAction;
 use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
+use RefactorCircus\Keystone\Packages\PackageRegistry;
 
 /**
  * Builds one of the application's own audit entries:

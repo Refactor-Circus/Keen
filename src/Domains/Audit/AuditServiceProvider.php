@@ -6,16 +6,16 @@ namespace RefactorCircus\Keen\Domains\Audit;
 
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Events\Dispatcher;
-use RefactorCircus\Foundation\Audit\Contracts\AuditTrail;
-use RefactorCircus\Foundation\Contracts\ActionFinishedEvent;
-use RefactorCircus\Foundation\Contracts\ActionStartingEvent;
-use RefactorCircus\Foundation\Support\ServiceProvider;
 use RefactorCircus\Keen\Domains\Audit\Console\Commands\ImportRosterAuditCommand;
 use RefactorCircus\Keen\Domains\Audit\Console\Commands\PruneAuditCommand;
 use RefactorCircus\Keen\Domains\Audit\Console\Commands\VerifyAuditCommand;
 use RefactorCircus\Keen\Domains\Audit\Services\AuditLog;
 use RefactorCircus\Keen\Domains\Audit\Services\AuditRecorder;
 use RefactorCircus\Keen\Domains\Audit\Services\KeenAuditTrail;
+use RefactorCircus\Keystone\Audit\Contracts\AuditTrail;
+use RefactorCircus\Keystone\Contracts\ActionFinishedEvent;
+use RefactorCircus\Keystone\Contracts\ActionStartingEvent;
+use RefactorCircus\Keystone\Support\ServiceProvider;
 
 /**
  * The hash-chained audit log, recorded from every package's action events

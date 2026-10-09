@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Keen;
 
-use RefactorCircus\Foundation\Packages\Package;
-use RefactorCircus\Foundation\Support\PackageServiceProvider;
 use RefactorCircus\Keen\Atrium\KeenPlugin;
 use RefactorCircus\Keen\Domains\DomainServiceProvider;
 use RefactorCircus\Keen\Mcp\KeenServer;
+use RefactorCircus\Keystone\Packages\Package;
+use RefactorCircus\Keystone\Support\PackageServiceProvider;
 
 class KeenServiceProvider extends PackageServiceProvider
 {

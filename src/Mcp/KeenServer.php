@@ -8,10 +8,10 @@ use Laravel\Mcp\Server\Attributes\Instructions;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Version;
 use Laravel\Mcp\Server\Tool;
-use RefactorCircus\Foundation\Mcp\Server;
 use RefactorCircus\Keen\Domains\Audit\Mcp\Tools\ListAuditEntriesTool;
 use RefactorCircus\Keen\Domains\Audit\Mcp\Tools\RecordAuditEventTool;
 use RefactorCircus\Keen\Domains\Audit\Mcp\Tools\ShowAuditEntryTool;
+use RefactorCircus\Keystone\Mcp\Server;
 
 #[Name('Keen')]
 #[Version('1.0.0')]

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Keen\Domains\Audit\Services;
 
-use RefactorCircus\Foundation\Audit\Contracts\AuditTrail;
-use RefactorCircus\Foundation\Audit\Data\AuditFilter;
-use RefactorCircus\Foundation\Audit\Data\AuditPage;
 use RefactorCircus\Keen\Domains\Audit\Actions\ListAuditEntriesAction;
 use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
+use RefactorCircus\Keystone\Audit\Contracts\AuditTrail;
+use RefactorCircus\Keystone\Audit\Data\AuditFilter;
+use RefactorCircus\Keystone\Audit\Data\AuditPage;
 
 /**
  * The audit trail every package and the Atrium dashboard read through, once

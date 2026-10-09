@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
-use RefactorCircus\Foundation\Audit\AuditHooks;
-use RefactorCircus\Foundation\Support\Surface;
 use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
 use RefactorCircus\Keen\Domains\Audit\Services\Labels;
 use RefactorCircus\Keen\Tests\Fixtures\Shop\Domains\Product\Actions\UpdateProductAction;
 use RefactorCircus\Keen\Tests\Fixtures\Shop\Domains\Product\Events\ProductCreatedActionEvent;
 use RefactorCircus\Keen\Tests\Fixtures\Shop\Domains\Product\Events\ProductsListedActionEvent;
 use RefactorCircus\Keen\Tests\Fixtures\Shop\Domains\Product\Models\ProductModel;
+use RefactorCircus\Keystone\Audit\AuditHooks;
+use RefactorCircus\Keystone\Support\Surface;
 
 it('records another package\'s action with its changes', function (): void {
     $product = ProductModel::query()->create(['name' => 'Cog', 'price' => 100]);

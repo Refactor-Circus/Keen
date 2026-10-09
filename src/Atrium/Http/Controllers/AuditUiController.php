@@ -8,12 +8,12 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use RefactorCircus\Foundation\Packages\PackageRegistry;
 use RefactorCircus\Keen\Atrium\KeenPlugin;
 use RefactorCircus\Keen\Domains\Audit\Actions\ListAuditEntriesAction;
 use RefactorCircus\Keen\Domains\Audit\Actions\RecordAuditEventAction;
 use RefactorCircus\Keen\Domains\Audit\Actions\ShowAuditEntryAction;
 use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
+use RefactorCircus\Keystone\Packages\PackageRegistry;
 
 /**
  * The dashboard's audit log: browse every package's entries, inspect one,

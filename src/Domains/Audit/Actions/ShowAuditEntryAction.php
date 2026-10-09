@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Keen\Domains\Audit\Actions;
 
-use RefactorCircus\Foundation\Actions\Action;
 use RefactorCircus\Keen\Domains\Audit\Events\AuditEntryShowingActionEvent;
 use RefactorCircus\Keen\Domains\Audit\Events\AuditEntryShownActionEvent;
 use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
+use RefactorCircus\Keystone\Actions\Action;
 
 final class ShowAuditEntryAction extends Action
 {

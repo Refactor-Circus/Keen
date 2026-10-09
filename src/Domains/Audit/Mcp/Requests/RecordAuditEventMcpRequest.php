@@ -7,10 +7,10 @@ namespace RefactorCircus\Keen\Domains\Audit\Mcp\Requests;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
-use RefactorCircus\Foundation\Mcp\Requests\Request;
 use RefactorCircus\Keen\Domains\Audit\Actions\RecordAuditEventAction;
 use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
 use RefactorCircus\Keen\Domains\Audit\Resources\AuditEntryResource;
+use RefactorCircus\Keystone\Mcp\Requests\Request;
 
 final class RecordAuditEventMcpRequest extends Request
 {

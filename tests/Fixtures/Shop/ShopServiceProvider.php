@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Keen\Tests\Fixtures\Shop;
 
-use RefactorCircus\Foundation\Packages\Package;
-use RefactorCircus\Foundation\Support\PackageServiceProvider;
+use RefactorCircus\Keystone\Packages\Package;
+use RefactorCircus\Keystone\Support\PackageServiceProvider;
 
 /**
  * Another package of the suite, whose actions Keen records.

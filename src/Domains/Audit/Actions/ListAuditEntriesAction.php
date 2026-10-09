@@ -8,10 +8,10 @@ use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
-use RefactorCircus\Foundation\Actions\Action;
 use RefactorCircus\Keen\Domains\Audit\Events\AuditEntriesListedActionEvent;
 use RefactorCircus\Keen\Domains\Audit\Events\AuditEntriesListingActionEvent;
 use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
+use RefactorCircus\Keystone\Actions\Action;
 
 /**
  * The audit log, newest first, cursor paginated.

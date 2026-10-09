@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace RefactorCircus\Keen\Tests\Fixtures\Shop\Domains\Product\Actions;
 
 use Illuminate\Support\Facades\DB;
-use RefactorCircus\Foundation\Actions\Action;
 use RefactorCircus\Keen\Tests\Fixtures\Shop\Domains\Product\Events\ProductUpdatedActionEvent;
 use RefactorCircus\Keen\Tests\Fixtures\Shop\Domains\Product\Events\ProductUpdatingActionEvent;
 use RefactorCircus\Keen\Tests\Fixtures\Shop\Domains\Product\Models\ProductModel;
+use RefactorCircus\Keystone\Actions\Action;
 
 final class UpdateProductAction extends Action
 {

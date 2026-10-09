@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace RefactorCircus\Keen\Domains\Audit\Mcp\Requests;
 
 use Laravel\Mcp\ResponseFactory;
-use RefactorCircus\Foundation\Mcp\Requests\Request;
 use RefactorCircus\Keen\Domains\Audit\Actions\ListAuditEntriesAction;
 use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
 use RefactorCircus\Keen\Domains\Audit\Resources\AuditEntryResource;
+use RefactorCircus\Keystone\Mcp\Requests\Request;
 
 /**
  * People who may not read the whole log still get the entries they made or

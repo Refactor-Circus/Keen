@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace RefactorCircus\Keen\Domains\Audit\Actions;
 
 use Illuminate\Database\Eloquent\Model;
-use RefactorCircus\Foundation\Actions\Action;
 use RefactorCircus\Keen\Domains\Audit\Events\AuditEventRecordedActionEvent;
 use RefactorCircus\Keen\Domains\Audit\Events\AuditEventRecordingActionEvent;
 use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
 use RefactorCircus\Keen\Domains\Audit\Services\AuditRecorder;
+use RefactorCircus\Keystone\Actions\Action;
 
 /**
  * Record one of the application's own events, such as `invoice.paid`.

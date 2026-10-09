@@ -6,9 +6,9 @@ namespace RefactorCircus\Keen\Domains\Audit\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use RefactorCircus\Foundation\Auth\Authorizer;
-use RefactorCircus\Foundation\Packages\PackageRegistry;
 use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
+use RefactorCircus\Keystone\Auth\Authorizer;
+use RefactorCircus\Keystone\Packages\PackageRegistry;
 
 /**
  * IP addresses and user agents are personal data: they are shown only to

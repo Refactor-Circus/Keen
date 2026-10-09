@@ -8,8 +8,8 @@ use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
-use RefactorCircus\Foundation\Mcp\Tool;
 use RefactorCircus\Keen\Domains\Audit\Mcp\Requests\ShowAuditEntryMcpRequest;
+use RefactorCircus\Keystone\Mcp\Tool;
 
 #[Description('Show one audit entry by id, with its field changes, context and hash.')]
 final class ShowAuditEntryTool extends Tool

@@ -8,7 +8,7 @@ use BackedEnum;
 use DateTimeInterface;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Database\Eloquent\Model;
-use RefactorCircus\Foundation\Audit\AuditHooks;
+use RefactorCircus\Keystone\Audit\AuditHooks;
 
 /**
  * Point-in-time copies of models for the audit log, and the diff between two.

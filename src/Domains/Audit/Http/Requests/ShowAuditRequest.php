@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace RefactorCircus\Keen\Domains\Audit\Http\Requests;
 
 use Illuminate\Http\JsonResponse;
-use RefactorCircus\Foundation\Http\Requests\Request;
 use RefactorCircus\Keen\Domains\Audit\Actions\ShowAuditEntryAction;
 use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
 use RefactorCircus\Keen\Domains\Audit\Resources\AuditEntryResource;
+use RefactorCircus\Keystone\Http\Requests\Request;
 
 final class ShowAuditRequest extends Request
 {

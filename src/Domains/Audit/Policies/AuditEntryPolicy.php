@@ -6,9 +6,9 @@ namespace RefactorCircus\Keen\Domains\Audit\Policies;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
-use RefactorCircus\Foundation\Audit\History;
-use RefactorCircus\Foundation\Policies\Policy;
 use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
+use RefactorCircus\Keystone\Audit\History;
+use RefactorCircus\Keystone\Policies\Policy;
 
 /**
  * The bundled audit log policy.

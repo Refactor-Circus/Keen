@@ -9,10 +9,10 @@ use Illuminate\Support\Facades\Route;
 use RefactorCircus\Atrium\Domains\Navigation\Data\NavItem;
 use RefactorCircus\Atrium\Domains\Plugins\Support\Plugin;
 use RefactorCircus\Atrium\Support\Icons;
-use RefactorCircus\Foundation\Auth\Authorizer;
-use RefactorCircus\Foundation\Packages\PackageRegistry;
 use RefactorCircus\Keen\Atrium\Http\Controllers\AuditUiController;
 use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
+use RefactorCircus\Keystone\Auth\Authorizer;
+use RefactorCircus\Keystone\Packages\PackageRegistry;
 
 /**
  * The audit log's own section in the Atrium dashboard: every package's

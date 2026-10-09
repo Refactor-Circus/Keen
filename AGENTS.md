@@ -12,9 +12,9 @@ This repository is a Laravel package. Keep the package focused, idiomatic, and e
 
 ## Role in the suite
 
-- Keen is the audit log of the Refactor Circus suite. No other package depends on it: it listens to `RefactorCircus\Foundation\Contracts\ActionStartingEvent` / `ActionFinishedEvent` and binds refactor-circus/foundation's `AuditTrail`, which every package and Atrium read history through.
-- Package-specific knowledge (labels, snapshot extras, subject and scope pickers, context, redaction) comes from `RefactorCircus\Foundation\Audit\AuditHooks` or the `Auditable` event contract, never from Keen referencing another package.
-- Code lives in `src/Domains/Audit` (actions, events, model, services, HTTP, MCP, commands, policy). Actions extend `RefactorCircus\Foundation\Actions\Action` with a starting and finished event each; requests extend Foundation's request bases.
+- Keen is the audit log of the Refactor Circus suite. No other package depends on it: it listens to `RefactorCircus\Keystone\Contracts\ActionStartingEvent` / `ActionFinishedEvent` and binds refactor-circus/keystone's `AuditTrail`, which every package and Atrium read history through.
+- Package-specific knowledge (labels, snapshot extras, subject and scope pickers, context, redaction) comes from `RefactorCircus\Keystone\Audit\AuditHooks` or the `Auditable` event contract, never from Keen referencing another package.
+- Code lives in `src/Domains/Audit` (actions, events, model, services, HTTP, MCP, commands, policy). Actions extend `RefactorCircus\Keystone\Actions\Action` with a starting and finished event each; requests extend Keystone's request bases.
 - Atrium screens use only `x-atrium::*` components and Atrium's safelisted utilities; `tests/Feature/StylesTest.php` enforces it. Keen ships no stylesheet.
 
 ## Quick Commands

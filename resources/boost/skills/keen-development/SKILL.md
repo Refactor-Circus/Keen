@@ -14,7 +14,7 @@ Use this skill when a Laravel application uses `refactor-circus/keen`, the audit
 
 ## What Keen records on its own
 
-- Every action of every installed suite package, from refactor-circus/foundation's shared action events. Reads are skipped.
+- Every action of every installed suite package, from refactor-circus/keystone's shared action events. Reads are skipped.
 - Each entry: `source` (package key or `app`), `action` (`product.updated`), actor, subject, optional scope, `surface` (`atrium`, `http`, `mcp`, `cortex`, `cli`, `code`), `changes` as `field => [old, new]`, `context`, and a hash chained to the previous entry.
 
 ## Record the application's own events
@@ -40,7 +40,7 @@ With `keen.authorization` on, define `viewAuditLog` (receives the source) and `r
 
 ## Teach Keen about your own models
 
-Use `RefactorCircus\Foundation\Audit\AuditHooks` (`label`, `snapshot`, `subject`, `context`, `scope`, `redact`), or implement `RefactorCircus\Foundation\Audit\Contracts\Auditable` on an action event.
+Use `RefactorCircus\Keystone\Audit\AuditHooks` (`label`, `snapshot`, `subject`, `context`, `scope`, `redact`), or implement `RefactorCircus\Keystone\Audit\Contracts\Auditable` on an action event.
 
 ## Operate
 
