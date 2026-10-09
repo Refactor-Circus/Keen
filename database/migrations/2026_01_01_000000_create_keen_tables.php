@@ -15,7 +15,7 @@ return new class extends Migration
             // Auto-increment rather than ULID: the hash chain needs a strict,
             // gap-free order.
             $table->id();
-            // The package the change came from (`keystone`), or `app`.
+            // The package the change came from (`showroom`), or `app`.
             $table->string('source', 32);
             $table->string('action');
             // Morph columns rather than a foreign key: history outlives the

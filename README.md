@@ -2,7 +2,7 @@
 
 A tamper-evident audit log for every package of the Refactor Circus suite, and for your application's own events.
 
-Install Keen and every action of every suite package (Atrium, Cortex, Impex, Keystone, PennantPlus, Polycart, Roster) is recorded: who did it, to which record, through which surface (`atrium`, `http`, `mcp`, `cortex`, `cli`, `code`), and which fields changed. No package depends on Keen; each announces its actions through the shared events of [refactor-circus/foundation](https://github.com/Refactor-Circus/Foundation), and Keen listens.
+Install Keen and every action of every suite package (Atrium, Cortex, Impex, PennantPlus, Polycart, Roster, Showroom) is recorded: who did it, to which record, through which surface (`atrium`, `http`, `mcp`, `cortex`, `cli`, `code`), and which fields changed. No package depends on Keen; each announces its actions through the shared events of [refactor-circus/foundation](https://github.com/Refactor-Circus/Foundation), and Keen listens.
 
 - **Append-only and hash-chained.** Each entry's hash covers the one before it, so editing or removing any entry breaks the chain. `php artisan keen:verify` finds the first altered entry.
 - **Secrets never reach the log.** Passwords, tokens, client secrets and private keys are redacted, as is anything a package or your config names; a redacted field still shows that it changed.
@@ -59,7 +59,7 @@ Filters: `source` (a package key or `app`), `action` (exact, or a prefix ending 
 Any package screen can show its own history with Atrium's component, which renders nothing until Keen is installed:
 
 ```blade
-<x-atrium::audit-trail source="keystone" :subject="$product" />
+<x-atrium::audit-trail source="showroom" :subject="$product" />
 ```
 
 ## Authorization

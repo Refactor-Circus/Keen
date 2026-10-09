@@ -22,7 +22,7 @@ final class ListAuditEntriesTool extends Tool
     public function schema(JsonSchema $schema): array
     {
         return [
-            'source' => $schema->string()->description('Only entries from this package (keystone, roster, ...) or app for the application\'s own.'),
+            'source' => $schema->string()->description('Only entries from this package (showroom, roster, ...) or app for the application\'s own.'),
             'action' => $schema->string()->description('Only this action (product.updated), or a prefix ending in a dot (product.).'),
             'subject_type' => $schema->string()->description('Morph type of the record, with subject_id.'),
             'subject_id' => $schema->string()->description('Key of the record, with subject_type.'),

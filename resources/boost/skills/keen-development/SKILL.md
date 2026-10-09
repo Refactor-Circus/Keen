@@ -32,7 +32,7 @@ Action names are dotted and lower case. Application entries always have source `
 - JSON: `GET api/keen/entries` (filters `source`, `action`, `subject_type`, `subject_id`, `actor_type`, `actor_id`, `scope_type`, `scope_id`, `since`, `until`, `cursor`, `per_page`), `GET api/keen/entries/{id}`.
 - MCP: `list-audit-entries-tool`, `show-audit-entry-tool`, `record-audit-event-tool`.
 - Per package: `GET {package prefix}/history` and `list-{package}-history-tool`.
-- Blade: `<x-atrium::audit-trail source="keystone" :subject="$product" />`.
+- Blade: `<x-atrium::audit-trail source="showroom" :subject="$product" />`.
 
 ## Authorization
 
