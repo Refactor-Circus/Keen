@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen\Domains\Audit\Actions;
+namespace RefactorCircus\Keen\Domains\Audit\Actions;
 
 use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
-use JayI\Foundation\Actions\Action;
-use JayI\Keen\Domains\Audit\Events\AuditEntriesListedActionEvent;
-use JayI\Keen\Domains\Audit\Events\AuditEntriesListingActionEvent;
-use JayI\Keen\Domains\Audit\Models\AuditEntryModel;
+use RefactorCircus\Foundation\Actions\Action;
+use RefactorCircus\Keen\Domains\Audit\Events\AuditEntriesListedActionEvent;
+use RefactorCircus\Keen\Domains\Audit\Events\AuditEntriesListingActionEvent;
+use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
 
 /**
  * The audit log, newest first, cursor paginated.

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Auth\User;
-use JayI\Keen\Tests\TestCase;
+use RefactorCircus\Keen\Tests\TestCase;
 
 uses(TestCase::class)->in('Feature');
 

@@ -1,12 +1,12 @@
 # Domain Modules
 
-Atrium mirrors the `mono` application's domain-module layout: code lives in self-contained modules under `src/Domains/{Domain}/`, namespace `JayI\Atrium\Domains\{Domain}`.
+Atrium mirrors the `mono` application's domain-module layout: code lives in self-contained modules under `src/Domains/{Domain}/`, namespace `RefactorCircus\Atrium\Domains\{Domain}`.
 
 ## Layout
 
 ```
 src/Domains/{Domain}/
-├── {Domain}ServiceProvider.php   # extends JayI\Atrium\Support\ServiceProvider
+├── {Domain}ServiceProvider.php   # extends RefactorCircus\Atrium\Support\ServiceProvider
 ├── routes.php                    # route definitions, loaded inside the dashboard group
 ├── Models/                       # {Entity}Model.php
 ├── Policies/                     # beside Models/
@@ -23,7 +23,7 @@ src/Domains/{Domain}/
 
 ## Registration
 
-- `AtriumServiceProvider` (the class in `extra.laravel.providers`) merges the config, registers `JayI\Atrium\Domains\DomainServiceProvider`, and keeps cross-cutting wiring: policies, views, migrations, translations, Blade components, publish tags and `atrium:install`.
+- `AtriumServiceProvider` (the class in `extra.laravel.providers`) merges the config, registers `RefactorCircus\Atrium\Domains\DomainServiceProvider`, and keeps cross-cutting wiring: policies, views, migrations, translations, Blade components, publish tags and `atrium:install`.
 - `DomainServiceProvider` lists every domain provider in a private `$providers` array and registers them in a loop. Adding a domain means adding its provider there.
 - A domain provider binds its own singletons and loads its `routes.php` with `loadDashboardRoutesFrom()`, which wraps the file in the shared group (`atrium.path`, `atrium.domain`, `atrium.middleware`, the `atrium.` name prefix).
 
@@ -40,4 +40,4 @@ src/Domains/{Domain}/
 
 ## Stored identifiers
 
-A model that moves or is renamed keeps its previous class name as its morph alias (`Relation::morphMap` in the domain provider), so polymorphic columns and audit records written under the old name still resolve. `DashboardServiceProvider` maps `JayI\Atrium\Models\Dashboard` and `JayI\Atrium\Models\DashboardWidget`; a test proves an old stored value resolves.
+A model that moves or is renamed keeps its previous class name as its morph alias (`Relation::morphMap` in the domain provider), so polymorphic columns and audit records written under the old name still resolve. `DashboardServiceProvider` maps `RefactorCircus\Atrium\Models\Dashboard` and `RefactorCircus\Atrium\Models\DashboardWidget`; a test proves an old stored value resolves.

@@ -3,11 +3,11 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\DB;
-use JayI\Keen\Domains\Audit\Exceptions\AuditLogIsAppendOnlyException;
-use JayI\Keen\Domains\Audit\Models\AuditEntryModel;
-use JayI\Keen\Domains\Audit\Services\AuditLog;
-use JayI\Keen\Facades\Keen;
-use JayI\Keen\Tests\Fixtures\Shop\Domains\Product\Models\ProductModel;
+use RefactorCircus\Keen\Domains\Audit\Exceptions\AuditLogIsAppendOnlyException;
+use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
+use RefactorCircus\Keen\Domains\Audit\Services\AuditLog;
+use RefactorCircus\Keen\Facades\Keen;
+use RefactorCircus\Keen\Tests\Fixtures\Shop\Domains\Product\Models\ProductModel;
 
 it('chains every entry to the one before it', function (): void {
     $first = Keen::record('invoice.paid')->save();

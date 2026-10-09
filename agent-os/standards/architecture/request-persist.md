@@ -4,7 +4,7 @@ Controllers are thin. Each request action is a FormRequest that owns validation 
 
 ## Base
 
-- Requests extend `JayI\Atrium\Http\Requests\Request` and live in their domain's `Http/Requests/` (controllers in `Http/Controllers/`). The base declares `abstract public function persist(): Response`.
+- Requests extend `RefactorCircus\Atrium\Http\Requests\Request` and live in their domain's `Http/Requests/` (controllers in `Http/Controllers/`). The base declares `abstract public function persist(): Response`.
 - `authorize()` defaults to `true`; every concrete request overrides it with a policy check. `rules()` defaults to `[]`.
 
 > Why abstract `persist()`: the compiler forces every request to own its work, so controllers cannot drift into holding logic, and every controller collapses to the same shape.

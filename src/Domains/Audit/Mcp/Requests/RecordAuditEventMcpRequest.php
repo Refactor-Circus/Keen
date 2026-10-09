@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen\Domains\Audit\Mcp\Requests;
+namespace RefactorCircus\Keen\Domains\Audit\Mcp\Requests;
 
 use Illuminate\Database\Eloquent\Model;
-use JayI\Foundation\Mcp\Requests\Request;
-use JayI\Keen\Domains\Audit\Actions\RecordAuditEventAction;
-use JayI\Keen\Domains\Audit\Models\AuditEntryModel;
-use JayI\Keen\Domains\Audit\Resources\AuditEntryResource;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
+use RefactorCircus\Foundation\Mcp\Requests\Request;
+use RefactorCircus\Keen\Domains\Audit\Actions\RecordAuditEventAction;
+use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
+use RefactorCircus\Keen\Domains\Audit\Resources\AuditEntryResource;
 
 final class RecordAuditEventMcpRequest extends Request
 {

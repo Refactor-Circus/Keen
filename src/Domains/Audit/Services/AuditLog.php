@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen\Domains\Audit\Services;
+namespace RefactorCircus\Keen\Domains\Audit\Services;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use JayI\Keen\Domains\Audit\Models\AuditEntryModel;
+use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
 
 /**
  * Writes and checks the hash-chained audit log.

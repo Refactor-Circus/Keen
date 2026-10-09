@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen;
+namespace RefactorCircus\Keen;
 
-use JayI\Keen\Domains\Audit\Data\PendingAuditEntry;
+use RefactorCircus\Keen\Domains\Audit\Data\PendingAuditEntry;
 
 /**
  * Keen's entry point for application code.

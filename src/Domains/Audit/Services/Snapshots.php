@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen\Domains\Audit\Services;
+namespace RefactorCircus\Keen\Domains\Audit\Services;
 
 use BackedEnum;
 use DateTimeInterface;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Database\Eloquent\Model;
-use JayI\Foundation\Audit\AuditHooks;
+use RefactorCircus\Foundation\Audit\AuditHooks;
 
 /**
  * Point-in-time copies of models for the audit log, and the diff between two.

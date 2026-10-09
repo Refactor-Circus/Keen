@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen\Tests\Fixtures\Shop\Domains\Product\Events;
+namespace RefactorCircus\Keen\Tests\Fixtures\Shop\Domains\Product\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use JayI\Foundation\Contracts\ActionStartingEvent;
-use JayI\Keen\Tests\Fixtures\Shop\Domains\Product\Models\ProductModel;
+use RefactorCircus\Foundation\Contracts\ActionStartingEvent;
+use RefactorCircus\Keen\Tests\Fixtures\Shop\Domains\Product\Models\ProductModel;
 
 /**
  * A product about to be updated.

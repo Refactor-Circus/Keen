@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen\Tests\Fixtures\Shop\Domains\Product\Actions;
+namespace RefactorCircus\Keen\Tests\Fixtures\Shop\Domains\Product\Actions;
 
 use Illuminate\Support\Facades\DB;
-use JayI\Foundation\Actions\Action;
-use JayI\Keen\Tests\Fixtures\Shop\Domains\Product\Events\ProductUpdatedActionEvent;
-use JayI\Keen\Tests\Fixtures\Shop\Domains\Product\Events\ProductUpdatingActionEvent;
-use JayI\Keen\Tests\Fixtures\Shop\Domains\Product\Models\ProductModel;
+use RefactorCircus\Foundation\Actions\Action;
+use RefactorCircus\Keen\Tests\Fixtures\Shop\Domains\Product\Events\ProductUpdatedActionEvent;
+use RefactorCircus\Keen\Tests\Fixtures\Shop\Domains\Product\Events\ProductUpdatingActionEvent;
+use RefactorCircus\Keen\Tests\Fixtures\Shop\Domains\Product\Models\ProductModel;
 
 final class UpdateProductAction extends Action
 {

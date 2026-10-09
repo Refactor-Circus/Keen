@@ -4,7 +4,7 @@ Every Atrium model maps its Eloquent hooks to typed event classes via `$dispatch
 
 ## Convention
 
-- Every model `use DispatchesModelEvents;` (`JayI\Atrium\Support\Models\Concerns`). Models live in `Domains\{Domain}\Models` and are named `{Entity}Model`; the trait maps each Eloquent hook to `Domains\{Domain}\Events\{Entity}{Hook}Event` (`DashboardWidgetModel` → `DashboardWidgetCreatingEvent`) by convention and skips hooks with no class, so no `$dispatchesEvents` array is written by hand. A subclass of a package model fires the package model's events.
+- Every model `use DispatchesModelEvents;` (`RefactorCircus\Atrium\Support\Models\Concerns`). Models live in `Domains\{Domain}\Models` and are named `{Entity}Model`; the trait maps each Eloquent hook to `Domains\{Domain}\Events\{Entity}{Hook}Event` (`DashboardWidgetModel` → `DashboardWidgetCreatingEvent`) by convention and skips hooks with no class, so no `$dispatchesEvents` array is written by hand. A subclass of a package model fires the package model's events.
 - Each event is a `final` class using `Dispatchable` and `SerializesModels`, implementing `Contracts\ModelLifecycleEvent` (`model()`, `hook()`), with the model as a typed public property (`$dashboard`, `$widget`). They fire synchronously, not after commit, so a `creating`/`saving`/... listener can cancel the write.
 - Cover the full lifecycle the model actually has. Atrium's models do not use soft deletes, so they have no `restoring`, `restored`, `trashed`, `forceDeleting`, or `forceDeleted` classes; a model that adds soft deletes must add those five.
 - A test listens on `ModelLifecycleEvent` and asserts every hook fires for each model, so a missing class fails the suite rather than silently going unheard.

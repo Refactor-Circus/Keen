@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen\Domains\Audit\Data;
+namespace RefactorCircus\Keen\Domains\Audit\Data;
 
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
-use JayI\Foundation\Packages\PackageRegistry;
-use JayI\Keen\Domains\Audit\Actions\RecordAuditEventAction;
-use JayI\Keen\Domains\Audit\Models\AuditEntryModel;
+use RefactorCircus\Foundation\Packages\PackageRegistry;
+use RefactorCircus\Keen\Domains\Audit\Actions\RecordAuditEventAction;
+use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
 
 /**
  * Builds one of the application's own audit entries:

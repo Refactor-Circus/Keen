@@ -1,8 +1,8 @@
 # Keen
 
-A tamper-evident audit log for every package of the jayi suite, and for your application's own events.
+A tamper-evident audit log for every package of the Refactor Circus suite, and for your application's own events.
 
-Install Keen and every action of every suite package (Atrium, Cortex, Impex, Keystone, PennantPlus, Polycart, Roster) is recorded: who did it, to which record, through which surface (`atrium`, `http`, `mcp`, `cortex`, `cli`, `code`), and which fields changed. No package depends on Keen; each announces its actions through the shared events of [jayi/foundation](https://github.com/jayjfletcher/Foundation), and Keen listens.
+Install Keen and every action of every suite package (Atrium, Cortex, Impex, Keystone, PennantPlus, Polycart, Roster) is recorded: who did it, to which record, through which surface (`atrium`, `http`, `mcp`, `cortex`, `cli`, `code`), and which fields changed. No package depends on Keen; each announces its actions through the shared events of [refactor-circus/foundation](https://github.com/Refactor-Circus/Foundation), and Keen listens.
 
 - **Append-only and hash-chained.** Each entry's hash covers the one before it, so editing or removing any entry breaks the chain. `php artisan keen:verify` finds the first altered entry.
 - **Secrets never reach the log.** Passwords, tokens, client secrets and private keys are redacted, as is anything a package or your config names; a redacted field still shows that it changed.
@@ -12,7 +12,7 @@ Install Keen and every action of every suite package (Atrium, Cortex, Impex, Key
 ## Installation
 
 ```bash
-composer require jayi/keen
+composer require refactor-circus/keen
 php artisan migrate
 ```
 
@@ -33,7 +33,7 @@ Schedule::command('keen:prune')->daily();
 Package actions are recorded on their own. Record your application's events with the facade; they are stored with source `app`, so they can never pass for an entry a package made:
 
 ```php
-use JayI\Keen\Facades\Keen;
+use RefactorCircus\Keen\Facades\Keen;
 
 Keen::record('invoice.paid')
     ->on($invoice)            // the record it happened to
@@ -75,10 +75,10 @@ Without them anyone signed in may read and record. People may always read the en
 
 ## How packages shape their entries
 
-Packages teach Keen about their models through jayi/foundation's `AuditHooks`, from their service provider, whether or not Keen is installed:
+Packages teach Keen about their models through refactor-circus/foundation's `AuditHooks`, from their service provider, whether or not Keen is installed:
 
 ```php
-use JayI\Foundation\Audit\AuditHooks;
+use RefactorCircus\Foundation\Audit\AuditHooks;
 
 app(AuditHooks::class)
     ->label(RoleModel::class, fn (RoleModel $role) => $role->name)
@@ -88,7 +88,7 @@ app(AuditHooks::class)
     ->redact('client_secret');
 ```
 
-An action event can also name its subject and context itself by implementing `JayI\Foundation\Audit\Contracts\Auditable`.
+An action event can also name its subject and context itself by implementing `RefactorCircus\Foundation\Audit\Contracts\Auditable`.
 
 ## Moving from Roster's audit log
 

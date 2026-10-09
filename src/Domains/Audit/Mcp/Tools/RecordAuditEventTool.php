@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen\Domains\Audit\Mcp\Tools;
+namespace RefactorCircus\Keen\Domains\Audit\Mcp\Tools;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
-use JayI\Foundation\Mcp\Tool;
-use JayI\Keen\Domains\Audit\Mcp\Requests\RecordAuditEventMcpRequest;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
+use RefactorCircus\Foundation\Mcp\Tool;
+use RefactorCircus\Keen\Domains\Audit\Mcp\Requests\RecordAuditEventMcpRequest;
 
 #[Description('Record one of the application\'s own events in the audit log, such as invoice.paid. Always recorded with source app.')]
 final class RecordAuditEventTool extends Tool

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
-use JayI\Foundation\Audit\AuditHooks;
-use JayI\Foundation\Support\Surface;
-use JayI\Keen\Domains\Audit\Models\AuditEntryModel;
-use JayI\Keen\Domains\Audit\Services\Labels;
-use JayI\Keen\Tests\Fixtures\Shop\Domains\Product\Actions\UpdateProductAction;
-use JayI\Keen\Tests\Fixtures\Shop\Domains\Product\Events\ProductCreatedActionEvent;
-use JayI\Keen\Tests\Fixtures\Shop\Domains\Product\Events\ProductsListedActionEvent;
-use JayI\Keen\Tests\Fixtures\Shop\Domains\Product\Models\ProductModel;
+use RefactorCircus\Foundation\Audit\AuditHooks;
+use RefactorCircus\Foundation\Support\Surface;
+use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
+use RefactorCircus\Keen\Domains\Audit\Services\Labels;
+use RefactorCircus\Keen\Tests\Fixtures\Shop\Domains\Product\Actions\UpdateProductAction;
+use RefactorCircus\Keen\Tests\Fixtures\Shop\Domains\Product\Events\ProductCreatedActionEvent;
+use RefactorCircus\Keen\Tests\Fixtures\Shop\Domains\Product\Events\ProductsListedActionEvent;
+use RefactorCircus\Keen\Tests\Fixtures\Shop\Domains\Product\Models\ProductModel;
 
 it('records another package\'s action with its changes', function (): void {
     $product = ProductModel::query()->create(['name' => 'Cog', 'price' => 100]);

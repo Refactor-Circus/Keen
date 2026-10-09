@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen\Tests\Fixtures\Shop;
+namespace RefactorCircus\Keen\Tests\Fixtures\Shop;
 
-use JayI\Foundation\Packages\Package;
-use JayI\Foundation\Support\PackageServiceProvider;
+use RefactorCircus\Foundation\Packages\Package;
+use RefactorCircus\Foundation\Support\PackageServiceProvider;
 
 /**
  * Another package of the suite, whose actions Keen records.

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen\Domains\Audit\Actions;
+namespace RefactorCircus\Keen\Domains\Audit\Actions;
 
 use Illuminate\Database\Eloquent\Model;
-use JayI\Foundation\Actions\Action;
-use JayI\Keen\Domains\Audit\Events\AuditEventRecordedActionEvent;
-use JayI\Keen\Domains\Audit\Events\AuditEventRecordingActionEvent;
-use JayI\Keen\Domains\Audit\Models\AuditEntryModel;
-use JayI\Keen\Domains\Audit\Services\AuditRecorder;
+use RefactorCircus\Foundation\Actions\Action;
+use RefactorCircus\Keen\Domains\Audit\Events\AuditEventRecordedActionEvent;
+use RefactorCircus\Keen\Domains\Audit\Events\AuditEventRecordingActionEvent;
+use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
+use RefactorCircus\Keen\Domains\Audit\Services\AuditRecorder;
 
 /**
  * Record one of the application's own events, such as `invoice.paid`.

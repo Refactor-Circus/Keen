@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen\Tests\Fixtures\Shop\Domains\Product\Models;
+namespace RefactorCircus\Keen\Tests\Fixtures\Shop\Domains\Product\Models;
 
 use Illuminate\Database\Eloquent\Model;
 

@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen\Domains\Audit\Models;
+namespace RefactorCircus\Keen\Domains\Audit\Models;
 
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
-use JayI\Foundation\Audit\Data\AuditEntry;
-use JayI\Foundation\Models\Concerns\DispatchesModelEvents;
-use JayI\Keen\Domains\Audit\Exceptions\AuditLogIsAppendOnlyException;
+use RefactorCircus\Foundation\Audit\Data\AuditEntry;
+use RefactorCircus\Foundation\Models\Concerns\DispatchesModelEvents;
+use RefactorCircus\Keen\Domains\Audit\Exceptions\AuditLogIsAppendOnlyException;
 
 /**
  * One entry in the append-only, hash-chained audit log.

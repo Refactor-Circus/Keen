@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen\Domains\Audit\Mcp\Requests;
+namespace RefactorCircus\Keen\Domains\Audit\Mcp\Requests;
 
-use JayI\Foundation\Mcp\Requests\Request;
-use JayI\Keen\Domains\Audit\Actions\ListAuditEntriesAction;
-use JayI\Keen\Domains\Audit\Models\AuditEntryModel;
-use JayI\Keen\Domains\Audit\Resources\AuditEntryResource;
 use Laravel\Mcp\ResponseFactory;
+use RefactorCircus\Foundation\Mcp\Requests\Request;
+use RefactorCircus\Keen\Domains\Audit\Actions\ListAuditEntriesAction;
+use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
+use RefactorCircus\Keen\Domains\Audit\Resources\AuditEntryResource;
 
 /**
  * People who may not read the whole log still get the entries they made or

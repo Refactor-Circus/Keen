@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen\Domains\Audit\Console\Commands;
+namespace RefactorCircus\Keen\Domains\Audit\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
@@ -10,7 +10,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use JayI\Keen\Domains\Audit\Services\AuditLog;
+use RefactorCircus\Keen\Domains\Audit\Services\AuditLog;
 use stdClass;
 
 /**
@@ -44,7 +44,7 @@ final class ImportRosterAuditCommand extends Command
         $users = config('auth.providers.users.model');
         $actorType = is_string($users) && is_a($users, Model::class, true) ? (new $users)->getMorphClass() : null;
         $organizationType = $this->option('organization-type');
-        $organizationType = is_string($organizationType) && $organizationType !== '' ? $organizationType : 'JayI\Roster\Models\Organization';
+        $organizationType = is_string($organizationType) && $organizationType !== '' ? $organizationType : 'RefactorCircus\Roster\Domains\Organization\Models\OrganizationModel';
         $imported = 0;
 
         DB::table('roster_audit_entries')->orderBy('id')->chunkById(500, function (Collection $entries) use ($log, $actorType, $organizationType, &$imported): void {

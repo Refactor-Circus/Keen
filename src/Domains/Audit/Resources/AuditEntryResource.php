@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen\Domains\Audit\Resources;
+namespace RefactorCircus\Keen\Domains\Audit\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use JayI\Foundation\Auth\Authorizer;
-use JayI\Foundation\Packages\PackageRegistry;
-use JayI\Keen\Domains\Audit\Models\AuditEntryModel;
+use RefactorCircus\Foundation\Auth\Authorizer;
+use RefactorCircus\Foundation\Packages\PackageRegistry;
+use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
 
 /**
  * IP addresses and user agents are personal data: they are shown only to

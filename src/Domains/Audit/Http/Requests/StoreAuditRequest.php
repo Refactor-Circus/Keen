@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen\Domains\Audit\Http\Requests;
+namespace RefactorCircus\Keen\Domains\Audit\Http\Requests;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
-use JayI\Foundation\Http\Requests\Request;
-use JayI\Keen\Domains\Audit\Actions\RecordAuditEventAction;
-use JayI\Keen\Domains\Audit\Models\AuditEntryModel;
-use JayI\Keen\Domains\Audit\Resources\AuditEntryResource;
+use RefactorCircus\Foundation\Http\Requests\Request;
+use RefactorCircus\Keen\Domains\Audit\Actions\RecordAuditEventAction;
+use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
+use RefactorCircus\Keen\Domains\Audit\Resources\AuditEntryResource;
 
 final class StoreAuditRequest extends Request
 {

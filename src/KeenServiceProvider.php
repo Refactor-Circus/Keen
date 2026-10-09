@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen;
+namespace RefactorCircus\Keen;
 
-use JayI\Foundation\Packages\Package;
-use JayI\Foundation\Support\PackageServiceProvider;
-use JayI\Keen\Atrium\KeenPlugin;
-use JayI\Keen\Domains\DomainServiceProvider;
-use JayI\Keen\Mcp\KeenServer;
+use RefactorCircus\Foundation\Packages\Package;
+use RefactorCircus\Foundation\Support\PackageServiceProvider;
+use RefactorCircus\Keen\Atrium\KeenPlugin;
+use RefactorCircus\Keen\Domains\DomainServiceProvider;
+use RefactorCircus\Keen\Mcp\KeenServer;
 
 class KeenServiceProvider extends PackageServiceProvider
 {

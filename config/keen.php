@@ -1,8 +1,8 @@
 <?php
 
 declare(strict_types=1);
-use JayI\Keen\Domains\Audit\Models\AuditEntryModel;
-use JayI\Keen\Domains\Audit\Policies\AuditEntryPolicy;
+use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
+use RefactorCircus\Keen\Domains\Audit\Policies\AuditEntryPolicy;
 
 return [
 
@@ -92,7 +92,7 @@ return [
     | Cortex
     |--------------------------------------------------------------------------
     |
-    | With jayi/cortex installed, Cortex agents can read and record audit
+    | With refactor-circus/cortex installed, Cortex agents can read and record audit
     | entries. `tools` limits which tools are offered (null offers all).
     |
     */
@@ -108,7 +108,7 @@ return [
     | Atrium
     |--------------------------------------------------------------------------
     |
-    | With jayi/atrium installed, the audit log gets its own section in the
+    | With refactor-circus/atrium installed, the audit log gets its own section in the
     | dashboard, and every package's screens show their own history.
     |
     */

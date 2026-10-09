@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen\Domains\Audit\Console\Commands;
+namespace RefactorCircus\Keen\Domains\Audit\Console\Commands;
 
 use Illuminate\Console\Command;
-use JayI\Keen\Domains\Audit\Services\AuditLog;
+use RefactorCircus\Keen\Domains\Audit\Services\AuditLog;
 
 final class PruneAuditCommand extends Command
 {

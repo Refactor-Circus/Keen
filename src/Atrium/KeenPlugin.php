@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen\Atrium;
+namespace RefactorCircus\Keen\Atrium;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use JayI\Atrium\Domains\Navigation\Data\NavItem;
-use JayI\Atrium\Domains\Plugins\Support\Plugin;
-use JayI\Atrium\Support\Icons;
-use JayI\Foundation\Auth\Authorizer;
-use JayI\Foundation\Packages\PackageRegistry;
-use JayI\Keen\Atrium\Http\Controllers\AuditUiController;
-use JayI\Keen\Domains\Audit\Models\AuditEntryModel;
+use RefactorCircus\Atrium\Domains\Navigation\Data\NavItem;
+use RefactorCircus\Atrium\Domains\Plugins\Support\Plugin;
+use RefactorCircus\Atrium\Support\Icons;
+use RefactorCircus\Foundation\Auth\Authorizer;
+use RefactorCircus\Foundation\Packages\PackageRegistry;
+use RefactorCircus\Keen\Atrium\Http\Controllers\AuditUiController;
+use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
 
 /**
  * The audit log's own section in the Atrium dashboard: every package's

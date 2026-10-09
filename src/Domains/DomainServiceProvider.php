@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen\Domains;
+namespace RefactorCircus\Keen\Domains;
 
 use Illuminate\Support\ServiceProvider;
-use JayI\Keen\Domains\Audit\AuditServiceProvider;
+use RefactorCircus\Keen\Domains\Audit\AuditServiceProvider;
 
 /**
  * Registers every domain module's service provider.

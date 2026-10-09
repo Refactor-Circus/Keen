@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen\Domains\Audit\Services;
+namespace RefactorCircus\Keen\Domains\Audit\Services;
 
 use Illuminate\Database\Eloquent\Model;
-use JayI\Foundation\Audit\AuditHooks;
+use RefactorCircus\Foundation\Audit\AuditHooks;
 
 /**
  * How a model is named in an entry: the label its package registered through

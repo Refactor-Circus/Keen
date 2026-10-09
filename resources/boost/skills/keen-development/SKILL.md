@@ -1,7 +1,7 @@
 ---
 name: keen-development
 description: >
-  Record and read the jayi suite's audit log with jayi/keen: application events through Keen::record(),
+  Record and read the Refactor Circus suite's audit log with refactor-circus/keen: application events through Keen::record(),
   per-package history, AuditHooks, authorization abilities, and the keen:verify / keen:prune commands.
 license: MIT
 metadata:
@@ -10,17 +10,17 @@ metadata:
 
 # Keen
 
-Use this skill when a Laravel application uses `jayi/keen`, the audit log of the jayi package suite.
+Use this skill when a Laravel application uses `refactor-circus/keen`, the audit log of the Refactor Circus package suite.
 
 ## What Keen records on its own
 
-- Every action of every installed suite package, from jayi/foundation's shared action events. Reads are skipped.
+- Every action of every installed suite package, from refactor-circus/foundation's shared action events. Reads are skipped.
 - Each entry: `source` (package key or `app`), `action` (`product.updated`), actor, subject, optional scope, `surface` (`atrium`, `http`, `mcp`, `cortex`, `cli`, `code`), `changes` as `field => [old, new]`, `context`, and a hash chained to the previous entry.
 
 ## Record the application's own events
 
 ```php
-use JayI\Keen\Facades\Keen;
+use RefactorCircus\Keen\Facades\Keen;
 
 Keen::record('invoice.paid')->on($invoice)->in($organization)->with(['amount' => 100])->save();
 ```
@@ -40,7 +40,7 @@ With `keen.authorization` on, define `viewAuditLog` (receives the source) and `r
 
 ## Teach Keen about your own models
 
-Use `JayI\Foundation\Audit\AuditHooks` (`label`, `snapshot`, `subject`, `context`, `scope`, `redact`), or implement `JayI\Foundation\Audit\Contracts\Auditable` on an action event.
+Use `RefactorCircus\Foundation\Audit\AuditHooks` (`label`, `snapshot`, `subject`, `context`, `scope`, `redact`), or implement `RefactorCircus\Foundation\Audit\Contracts\Auditable` on an action event.
 
 ## Operate
 

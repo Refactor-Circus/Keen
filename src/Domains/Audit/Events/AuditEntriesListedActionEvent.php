@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen\Domains\Audit\Events;
+namespace RefactorCircus\Keen\Domains\Audit\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use JayI\Foundation\Contracts\ActionFinishedEvent;
+use RefactorCircus\Foundation\Contracts\ActionFinishedEvent;
 
 /**
  * Audit entries were listed.

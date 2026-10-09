@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen\Domains\Audit\Exceptions;
+namespace RefactorCircus\Keen\Domains\Audit\Exceptions;
 
 use RuntimeException;
 

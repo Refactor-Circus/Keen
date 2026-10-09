@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen\Domains\Audit\Actions;
+namespace RefactorCircus\Keen\Domains\Audit\Actions;
 
-use JayI\Foundation\Actions\Action;
-use JayI\Keen\Domains\Audit\Events\AuditEntryShowingActionEvent;
-use JayI\Keen\Domains\Audit\Events\AuditEntryShownActionEvent;
-use JayI\Keen\Domains\Audit\Models\AuditEntryModel;
+use RefactorCircus\Foundation\Actions\Action;
+use RefactorCircus\Keen\Domains\Audit\Events\AuditEntryShowingActionEvent;
+use RefactorCircus\Keen\Domains\Audit\Events\AuditEntryShownActionEvent;
+use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
 
 final class ShowAuditEntryAction extends Action
 {

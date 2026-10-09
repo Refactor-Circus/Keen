@@ -6,16 +6,16 @@ use Illuminate\Foundation\Auth\User;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
-use JayI\Foundation\Audit\Contracts\AuditTrail;
-use JayI\Foundation\Audit\Data\AuditFilter;
-use JayI\Keen\Domains\Audit\Mcp\Tools\ListAuditEntriesTool;
-use JayI\Keen\Domains\Audit\Mcp\Tools\RecordAuditEventTool;
-use JayI\Keen\Domains\Audit\Mcp\Tools\ShowAuditEntryTool;
-use JayI\Keen\Domains\Audit\Services\KeenAuditTrail;
-use JayI\Keen\Facades\Keen;
-use JayI\Keen\Mcp\KeenServer;
-use JayI\Keen\Tests\Fixtures\Shop\Domains\Product\Events\ProductCreatedActionEvent;
-use JayI\Keen\Tests\Fixtures\Shop\Domains\Product\Models\ProductModel;
+use RefactorCircus\Foundation\Audit\Contracts\AuditTrail;
+use RefactorCircus\Foundation\Audit\Data\AuditFilter;
+use RefactorCircus\Keen\Domains\Audit\Mcp\Tools\ListAuditEntriesTool;
+use RefactorCircus\Keen\Domains\Audit\Mcp\Tools\RecordAuditEventTool;
+use RefactorCircus\Keen\Domains\Audit\Mcp\Tools\ShowAuditEntryTool;
+use RefactorCircus\Keen\Domains\Audit\Services\KeenAuditTrail;
+use RefactorCircus\Keen\Facades\Keen;
+use RefactorCircus\Keen\Mcp\KeenServer;
+use RefactorCircus\Keen\Tests\Fixtures\Shop\Domains\Product\Events\ProductCreatedActionEvent;
+use RefactorCircus\Keen\Tests\Fixtures\Shop\Domains\Product\Models\ProductModel;
 
 it('lists, shows and records entries over the json api', function (): void {
     $entry = Keen::record('invoice.paid')->with(['amount' => 1])->save();

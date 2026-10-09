@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen\Domains\Audit\Http\Controllers;
+namespace RefactorCircus\Keen\Domains\Audit\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
-use JayI\Keen\Domains\Audit\Http\Requests\IndexAuditRequest;
-use JayI\Keen\Domains\Audit\Http\Requests\ShowAuditRequest;
-use JayI\Keen\Domains\Audit\Http\Requests\StoreAuditRequest;
+use RefactorCircus\Keen\Domains\Audit\Http\Requests\IndexAuditRequest;
+use RefactorCircus\Keen\Domains\Audit\Http\Requests\ShowAuditRequest;
+use RefactorCircus\Keen\Domains\Audit\Http\Requests\StoreAuditRequest;
 
 final class AuditController
 {

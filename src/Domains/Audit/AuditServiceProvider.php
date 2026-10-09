@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen\Domains\Audit;
+namespace RefactorCircus\Keen\Domains\Audit;
 
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Events\Dispatcher;
-use JayI\Foundation\Audit\Contracts\AuditTrail;
-use JayI\Foundation\Contracts\ActionFinishedEvent;
-use JayI\Foundation\Contracts\ActionStartingEvent;
-use JayI\Foundation\Support\ServiceProvider;
-use JayI\Keen\Domains\Audit\Console\Commands\ImportRosterAuditCommand;
-use JayI\Keen\Domains\Audit\Console\Commands\PruneAuditCommand;
-use JayI\Keen\Domains\Audit\Console\Commands\VerifyAuditCommand;
-use JayI\Keen\Domains\Audit\Services\AuditLog;
-use JayI\Keen\Domains\Audit\Services\AuditRecorder;
-use JayI\Keen\Domains\Audit\Services\KeenAuditTrail;
+use RefactorCircus\Foundation\Audit\Contracts\AuditTrail;
+use RefactorCircus\Foundation\Contracts\ActionFinishedEvent;
+use RefactorCircus\Foundation\Contracts\ActionStartingEvent;
+use RefactorCircus\Foundation\Support\ServiceProvider;
+use RefactorCircus\Keen\Domains\Audit\Console\Commands\ImportRosterAuditCommand;
+use RefactorCircus\Keen\Domains\Audit\Console\Commands\PruneAuditCommand;
+use RefactorCircus\Keen\Domains\Audit\Console\Commands\VerifyAuditCommand;
+use RefactorCircus\Keen\Domains\Audit\Services\AuditLog;
+use RefactorCircus\Keen\Domains\Audit\Services\AuditRecorder;
+use RefactorCircus\Keen\Domains\Audit\Services\KeenAuditTrail;
 
 /**
  * The hash-chained audit log, recorded from every package's action events

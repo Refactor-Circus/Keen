@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen\Domains\Audit\Services;
+namespace RefactorCircus\Keen\Domains\Audit\Services;
 
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
-use JayI\Foundation\Audit\AuditHooks;
-use JayI\Foundation\Audit\Contracts\Auditable;
-use JayI\Foundation\Contracts\ActionFinishedEvent;
-use JayI\Foundation\Contracts\ActionStartingEvent;
-use JayI\Foundation\Packages\PackageRegistry;
-use JayI\Foundation\Support\Surface;
-use JayI\Keen\Domains\Audit\Models\AuditEntryModel;
+use RefactorCircus\Foundation\Audit\AuditHooks;
+use RefactorCircus\Foundation\Audit\Contracts\Auditable;
+use RefactorCircus\Foundation\Contracts\ActionFinishedEvent;
+use RefactorCircus\Foundation\Contracts\ActionStartingEvent;
+use RefactorCircus\Foundation\Packages\PackageRegistry;
+use RefactorCircus\Foundation\Support\Surface;
+use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
 use ReflectionObject;
 use ReflectionProperty;
 use stdClass;

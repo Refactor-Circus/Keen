@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen\Atrium\Http\Controllers;
+namespace RefactorCircus\Keen\Atrium\Http\Controllers;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use JayI\Foundation\Packages\PackageRegistry;
-use JayI\Keen\Atrium\KeenPlugin;
-use JayI\Keen\Domains\Audit\Actions\ListAuditEntriesAction;
-use JayI\Keen\Domains\Audit\Actions\RecordAuditEventAction;
-use JayI\Keen\Domains\Audit\Actions\ShowAuditEntryAction;
-use JayI\Keen\Domains\Audit\Models\AuditEntryModel;
+use RefactorCircus\Foundation\Packages\PackageRegistry;
+use RefactorCircus\Keen\Atrium\KeenPlugin;
+use RefactorCircus\Keen\Domains\Audit\Actions\ListAuditEntriesAction;
+use RefactorCircus\Keen\Domains\Audit\Actions\RecordAuditEventAction;
+use RefactorCircus\Keen\Domains\Audit\Actions\ShowAuditEntryAction;
+use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
 
 /**
  * The dashboard's audit log: browse every package's entries, inspect one,

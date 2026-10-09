@@ -6,7 +6,7 @@ Adapted from the `mono` standard of the same name, minus its Pennant feature-gat
 
 ## Base class — `execute()` is the entry point, `handle()` does the work
 
-- Actions extend `JayI\Atrium\Actions\Action` and live in their domain's `Actions/` (`JayI\Atrium\Domains\Dashboard\Actions\CreateDashboardAction`); see [[domain-modules]].
+- Actions extend `RefactorCircus\Atrium\Actions\Action` and live in their domain's `Actions/` (`RefactorCircus\Atrium\Domains\Dashboard\Actions\CreateDashboardAction`); see [[domain-modules]].
 - `Action::execute(mixed ...$args)` delegates to your **`protected handle(...)`**. You implement `handle()`, callers call `execute()`.
 - Never make `handle()` public — one entry point keeps a place to add cross-cutting behavior later.
 - No static constructors (`::run()`/`::make()`). Resolve and invoke via `app(XAction::class)->execute(...)`.

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JayI\Keen\Domains\Audit\Policies;
+namespace RefactorCircus\Keen\Domains\Audit\Policies;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
-use JayI\Foundation\Audit\History;
-use JayI\Foundation\Policies\Policy;
-use JayI\Keen\Domains\Audit\Models\AuditEntryModel;
+use RefactorCircus\Foundation\Audit\History;
+use RefactorCircus\Foundation\Policies\Policy;
+use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
 
 /**
  * The bundled audit log policy.
