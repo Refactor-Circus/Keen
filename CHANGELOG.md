@@ -12,3 +12,7 @@
 - `Keen::record()` for the application's own events.
 - A JSON API, an MCP server and an Atrium section for reading and recording entries, and the `AuditTrail` every package's history endpoint, tool and screens read through.
 - `keen:verify`, `keen:prune` and `keen:import-roster`.
+
+### Changed
+
+- Requires PHP 8.5 or later.
