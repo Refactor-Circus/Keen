@@ -1,3 +1,7 @@
+<p align="center">
+    <img src="art/icon.png" width="160" alt="Keen icon">
+</p>
+
 # Keen
 
 A tamper-evident audit log for every package of the Refactor Circus suite, and for your application's own events.
