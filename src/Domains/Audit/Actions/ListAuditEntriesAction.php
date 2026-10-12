@@ -8,62 +8,38 @@ use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use RefactorCircus\Keen\Domains\Audit\Data\ListAuditEntriesData;
 use RefactorCircus\Keen\Domains\Audit\Events\AuditEntriesListedActionEvent;
 use RefactorCircus\Keen\Domains\Audit\Events\AuditEntriesListingActionEvent;
 use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
 use RefactorCircus\Keystone\Actions\Action;
 
 /**
- * The audit log, newest first, cursor paginated.
- *
- * Filters: `source` (a package key or `app`), `action` (exact, or a prefix
- * ending in `.`, such as `product.`), `subject_type` + `subject_id`,
- * `actor_type` + `actor_id`, `scope_type` + `scope_id`, `since`, `until`.
+ * The audit log, newest first, cursor paginated, filtered by
+ * ListAuditEntriesData: source (a package key or `app`), action (exact, or a
+ * prefix ending in `.`, such as `product.`), subject, actor, scope and time.
  */
 final class ListAuditEntriesAction extends Action
 {
     /**
-     * @return array<string, array<int, mixed>>
-     */
-    public static function rules(): array
-    {
-        return [
-            'source' => ['sometimes', 'nullable', 'string', 'max:32'],
-            'action' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'subject_type' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'subject_id' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'actor_type' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'actor_id' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'scope_type' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'scope_id' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'since' => ['sometimes', 'nullable', 'date'],
-            'until' => ['sometimes', 'nullable', 'date'],
-            'cursor' => ['sometimes', 'nullable', 'string'],
-            'per_page' => ['sometimes', 'nullable', 'integer', 'min:1', 'max:100'],
-        ];
-    }
-
-    /**
-     * @param  array<string, mixed>  $filters
      * @param  Model|null  $about  Only entries made by or about this model, for people who may read only their own.
      * @return CursorPaginator<int, AuditEntryModel>
      */
-    protected function handle(array $filters = [], ?Model $about = null): CursorPaginator
+    protected function handle(ListAuditEntriesData $data = new ListAuditEntriesData, ?Model $about = null): CursorPaginator
     {
-        AuditEntriesListingActionEvent::dispatch($filters);
+        AuditEntriesListingActionEvent::dispatch($data);
 
-        $entries = $this->perform($filters, $about);
+        $entries = $this->perform($data, $about);
 
-        AuditEntriesListedActionEvent::dispatch($filters);
+        AuditEntriesListedActionEvent::dispatch($data);
 
         return $entries;
     }
 
     /**
-     * @param  array<string, mixed>  $filters
      * @return CursorPaginator<int, AuditEntryModel>
      */
-    private function perform(array $filters, ?Model $about): CursorPaginator
+    private function perform(ListAuditEntriesData $data, ?Model $about): CursorPaginator
     {
         $query = AuditEntryModel::query();
 
@@ -71,25 +47,31 @@ final class ListAuditEntriesAction extends Action
             $query->about($about);
         }
 
-        foreach (['source', 'subject_type', 'subject_id', 'actor_type', 'actor_id', 'scope_type', 'scope_id'] as $column) {
-            $value = $this->string($filters, $column);
+        $columns = [
+            'source' => $data->source,
+            'subject_type' => $data->subjectType,
+            'subject_id' => $data->subjectId,
+            'actor_type' => $data->actorType,
+            'actor_id' => $data->actorId,
+            'scope_type' => $data->scopeType,
+            'scope_id' => $data->scopeId,
+        ];
 
-            if ($value !== null) {
+        foreach ($columns as $column => $value) {
+            if ($this->filled($value)) {
                 $query->where($column, $value);
             }
         }
 
-        $action = $this->string($filters, 'action');
+        $action = $data->action;
 
-        if ($action !== null) {
+        if ($this->filled($action)) {
             str_ends_with($action, '.') ? $query->where('action', 'like', $action.'%') : $query->where('action', $action);
         }
 
-        $this->between($query, $this->string($filters, 'since'), $this->string($filters, 'until'));
+        $this->between($query, $this->filled($data->since) ? $data->since : null, $this->filled($data->until) ? $data->until : null);
 
-        $perPage = is_numeric($filters['per_page'] ?? null) ? (int) $filters['per_page'] : 25;
-
-        return $query->orderByDesc('id')->cursorPaginate($perPage, ['*'], 'cursor', $this->string($filters, 'cursor'));
+        return $query->orderByDesc('id')->cursorPaginate($data->perPage, ['*'], 'cursor', $this->filled($data->cursor) ? $data->cursor : null);
     }
 
     /**
@@ -107,12 +89,10 @@ final class ListAuditEntriesAction extends Action
     }
 
     /**
-     * @param  array<string, mixed>  $filters
+     * @phpstan-assert-if-true non-empty-string $value
      */
-    private function string(array $filters, string $key): ?string
+    private function filled(?string $value): bool
     {
-        $value = $filters[$key] ?? null;
-
-        return is_scalar($value) && (string) $value !== '' ? (string) $value : null;
+        return $value !== null && $value !== '';
     }
 }

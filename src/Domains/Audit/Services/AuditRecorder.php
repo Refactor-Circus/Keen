@@ -12,6 +12,8 @@ use RefactorCircus\Keystone\Audit\AuditHooks;
 use RefactorCircus\Keystone\Audit\Contracts\Auditable;
 use RefactorCircus\Keystone\Contracts\ActionFinishedEvent;
 use RefactorCircus\Keystone\Contracts\ActionStartingEvent;
+use RefactorCircus\Keystone\Contracts\ReadActionEvent;
+use RefactorCircus\Keystone\Contracts\UnauditedActionEvent;
 use RefactorCircus\Keystone\Packages\PackageRegistry;
 use RefactorCircus\Keystone\Support\Surface;
 use ReflectionObject;
@@ -23,7 +25,8 @@ use stdClass;
  *
  * The starting event snapshots the model the action is about to touch; the
  * finished event diffs it against its new state and appends the entry. Reads
- * (`*Listed`, `*Shown`) are not recorded.
+ * (`*Listed`, `*Shown`) and per-row steps (`UnauditedActionEvent`) are not
+ * recorded.
  *
  * The entry's source is the package that owns the event class. Its subject is
  * the one the event names through `Auditable`, else the one a package's
@@ -35,6 +38,13 @@ final class AuditRecorder
 {
     /** @var array<int, string> */
     private const array READ_VERBS = ['Listed', 'Shown', 'Listing', 'Showing'];
+
+    /**
+     * The most snapshots kept at once. An action that fails never finishes,
+     * so its snapshot is never taken back; in a long-running command the
+     * oldest go first rather than piling up.
+     */
+    public const int MAX_SNAPSHOTS = 1000;
 
     /** @var array<string, array<string, mixed>> */
     private array $snapshots = [];
@@ -59,9 +69,15 @@ final class AuditRecorder
 
         // Read back from the database, as the finished side is, so columns
         // filled by database defaults never show as changes.
-        if ($subject !== null && $subject->exists) {
-            $this->snapshots[$this->key($subject)] ??= $this->snapshotter->of($subject->fresh() ?? $subject);
+        if ($subject === null || ! $subject->exists || isset($this->snapshots[$this->key($subject)])) {
+            return;
         }
+
+        if (count($this->snapshots) >= self::MAX_SNAPSHOTS) {
+            unset($this->snapshots[array_key_first($this->snapshots)]);
+        }
+
+        $this->snapshots[$this->key($subject)] = $this->snapshotter->of($subject->fresh() ?? $subject);
     }
 
     public function finished(ActionFinishedEvent $event): void
@@ -167,10 +183,19 @@ final class AuditRecorder
             return true;
         }
 
+        // A package that turned its auditing off (`{key}.audit.enabled`).
+        if ($package !== null && ! $package->audits()) {
+            return true;
+        }
+
         /** @var array<int, string> $ignored */
         $ignored = (array) $this->config->get('keen.ignore', []);
 
         if (in_array($event::class, $ignored, true) || ($package !== null && in_array($package->key, $ignored, true))) {
+            return true;
+        }
+
+        if ($event instanceof ReadActionEvent || $event instanceof UnauditedActionEvent) {
             return true;
         }
 

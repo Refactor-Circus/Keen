@@ -105,11 +105,15 @@ final class PendingAuditEntry
         return $this;
     }
 
+    /**
+     * Inside a database transaction the entry is appended once it commits:
+     * until then the returned entry is unsaved (`exists` false, no id or
+     * hash), and a rollback means it is never written.
+     */
     public function save(): AuditEntryModel
     {
-        $data = ['action' => $this->action, 'context' => $this->context, 'changes' => $this->changes];
-
-        validator($data, RecordAuditEventAction::rules())->validate();
+        // The action name is the caller's, so it is validated like API input.
+        $data = RecordAuditEventData::from(['action' => $this->action, 'context' => $this->context, 'changes' => $this->changes]);
 
         return app(RecordAuditEventAction::class)->execute($data, $this->actor, $this->subject, $this->scope, $this->source);
     }

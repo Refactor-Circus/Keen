@@ -9,6 +9,7 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 use RefactorCircus\Keen\Domains\Audit\Mcp\Requests\RecordAuditEventMcpRequest;
+use RefactorCircus\Keen\Domains\Audit\Resources\AuditEntryResource;
 use RefactorCircus\Keystone\Mcp\Tool;
 
 #[Description('Record one of the application\'s own events in the audit log, such as invoice.paid. Always recorded with source app.')]
@@ -29,5 +30,10 @@ final class RecordAuditEventTool extends Tool
             'changes' => $schema->object()->description('Field changes, as field => [old, new].'),
             'context' => $schema->object()->description('Extra details to keep with the entry.'),
         ];
+    }
+
+    public function outputSchema(JsonSchema $schema): array
+    {
+        return AuditEntryResource::structuredSchema($schema);
     }
 }

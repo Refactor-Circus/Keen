@@ -11,7 +11,6 @@ use RefactorCircus\Keen\Domains\Audit\Mcp\Tools\RecordAuditEventTool;
 use RefactorCircus\Keen\Domains\Audit\Mcp\Tools\ShowAuditEntryTool;
 use RefactorCircus\Keen\Domains\Audit\Services\KeenAuditTrail;
 use RefactorCircus\Keen\Facades\Keen;
-use RefactorCircus\Keen\Mcp\KeenServer;
 use RefactorCircus\Keen\Tests\Fixtures\Shop\Domains\Product\Events\ProductCreatedActionEvent;
 use RefactorCircus\Keen\Tests\Fixtures\Shop\Domains\Product\Models\ProductModel;
 use RefactorCircus\Keystone\Audit\Contracts\AuditTrail;
@@ -35,14 +34,30 @@ it('lists, shows and records entries over the json api', function (): void {
         ->assertJsonPath('data.subject.label', 'INV-1');
 
     $this->postJson('/api/keen/entries', ['action' => 'Not Dotted'])->assertUnprocessable();
+
+    $this->getJson('/api/keen/entries/999')->assertNotFound()->assertExactJson(['message' => 'Not found.']);
+});
+
+it('pages the mcp listing by cursor', function (): void {
+    Keen::record('invoice.paid')->save();
+    Keen::record('invoice.sent')->save();
+
+    $first = mcpTool(ListAuditEntriesTool::class, ['per_page' => 1])->assertOk()->assertSee('invoice.sent');
+    /** @var array{result: array{structuredContent: array{meta: array{next_cursor: string}}}} $payload */
+    $payload = (fn (): array => $this->response->toArray())->call($first);
+
+    mcpTool(ListAuditEntriesTool::class, ['per_page' => 1, 'cursor' => $payload['result']['structuredContent']['meta']['next_cursor']])
+        ->assertOk()
+        ->assertSee('invoice.paid')
+        ->assertDontSee('invoice.sent');
 });
 
 it('offers the same over mcp', function (): void {
     $entry = Keen::record('invoice.paid')->save();
 
-    KeenServer::tool(ListAuditEntriesTool::class, ['action' => 'invoice.'])->assertOk()->assertSee('invoice.paid');
-    KeenServer::tool(ShowAuditEntryTool::class, ['id' => $entry->id])->assertOk()->assertSee($entry->hash);
-    KeenServer::tool(RecordAuditEventTool::class, ['action' => 'invoice.void'])->assertOk()->assertSee('invoice.void');
+    mcpTool(ListAuditEntriesTool::class, ['action' => 'invoice.'])->assertOk()->assertSee('invoice.paid');
+    mcpTool(ShowAuditEntryTool::class, ['id' => $entry->id])->assertOk()->assertSee($entry->hash);
+    mcpTool(RecordAuditEventTool::class, ['action' => 'invoice.void', 'changes' => ['status' => ['open', 'void']]])->assertOk()->assertSee('invoice.void');
 });
 
 it('lets people who may not read the whole log read their own entries', function (): void {
@@ -61,6 +76,12 @@ it('lets people who may not read the whole log read their own entries', function
         ->assertJsonMissingPath('data.0.ip');
 
     $this->actingAs($ada)->getJson("/api/keen/entries/{$theirs->id}")->assertForbidden();
+});
+
+it('answers guests 401 once authorization is on', function (): void {
+    config()->set('keen.authorization', true);
+
+    $this->getJson('/api/keen/entries')->assertUnauthorized();
 });
 
 it('serves every package\'s history once installed', function (): void {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace RefactorCircus\Keen\Domains\Audit\Services;
 
 use RefactorCircus\Keen\Domains\Audit\Actions\ListAuditEntriesAction;
+use RefactorCircus\Keen\Domains\Audit\Data\ListAuditEntriesData;
 use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
 use RefactorCircus\Keystone\Audit\Contracts\AuditTrail;
 use RefactorCircus\Keystone\Audit\Data\AuditFilter;
@@ -25,17 +26,17 @@ final readonly class KeenAuditTrail implements AuditTrail
 
     public function entries(AuditFilter $filter): AuditPage
     {
-        $page = $this->entries->execute(array_filter([
-            'source' => $filter->source,
-            'subject_type' => $filter->subjectType,
-            'subject_id' => $filter->subjectId,
-            'scope_type' => $filter->scopeType,
-            'scope_id' => $filter->scopeId,
-            'action' => $filter->action,
-            'actor_id' => $filter->actorId,
-            'cursor' => $filter->cursor,
-            'per_page' => $filter->limit,
-        ], fn (mixed $value): bool => $value !== null));
+        $page = $this->entries->execute(new ListAuditEntriesData(
+            source: $filter->source,
+            action: $filter->action,
+            subjectType: $filter->subjectType,
+            subjectId: $filter->subjectId,
+            actorId: $filter->actorId,
+            scopeType: $filter->scopeType,
+            scopeId: $filter->scopeId,
+            perPage: $filter->limit,
+            cursor: $filter->cursor,
+        ));
 
         return new AuditPage(
             array_values(array_map(fn (AuditEntryModel $entry) => $entry->toAuditEntry(), $page->items())),

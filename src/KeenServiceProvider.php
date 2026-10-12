@@ -31,6 +31,7 @@ class KeenServiceProvider extends PackageServiceProvider
     public function boot(): void
     {
         $this->registerPolicies();
+        $this->registerNotFoundResponses();
         $this->registerMcpServer();
         $this->registerCortex();
         $this->registerAtriumPlugin(KeenPlugin::class);

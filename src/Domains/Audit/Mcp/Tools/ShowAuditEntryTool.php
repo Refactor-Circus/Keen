@@ -9,6 +9,7 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 use RefactorCircus\Keen\Domains\Audit\Mcp\Requests\ShowAuditEntryMcpRequest;
+use RefactorCircus\Keen\Domains\Audit\Resources\AuditEntryResource;
 use RefactorCircus\Keystone\Mcp\Tool;
 
 #[Description('Show one audit entry by id, with its field changes, context and hash.')]
@@ -24,5 +25,10 @@ final class ShowAuditEntryTool extends Tool
         return [
             'id' => $schema->integer()->description('The entry id.')->required(),
         ];
+    }
+
+    public function outputSchema(JsonSchema $schema): array
+    {
+        return AuditEntryResource::structuredSchema($schema);
     }
 }

@@ -7,6 +7,7 @@ use RefactorCircus\Keen\Domains\Audit\Exceptions\AuditLogIsAppendOnlyException;
 use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
 use RefactorCircus\Keen\Domains\Audit\Services\AuditLog;
 use RefactorCircus\Keen\Facades\Keen;
+use RefactorCircus\Keen\Support\Tables;
 use RefactorCircus\Keen\Tests\Fixtures\Shop\Domains\Product\Models\ProductModel;
 
 it('chains every entry to the one before it', function (): void {
@@ -24,7 +25,7 @@ it('finds an entry altered after it was written', function (): void {
     Keen::record('invoice.paid')->save();
     $tampered = Keen::record('invoice.refunded')->with(['amount' => 10])->save();
 
-    DB::table('keen_entries')->where('id', $tampered->id)->update(['context' => json_encode(['amount' => 1])]);
+    DB::table(Tables::name('entries'))->where('id', $tampered->id)->update(['context' => json_encode(['amount' => 1])]);
 
     expect(app(AuditLog::class)->verify())->toBe($tampered->id);
 

@@ -6,6 +6,7 @@ namespace RefactorCircus\Keen\Domains\Audit\Http\Requests;
 
 use Illuminate\Http\JsonResponse;
 use RefactorCircus\Keen\Domains\Audit\Actions\ListAuditEntriesAction;
+use RefactorCircus\Keen\Domains\Audit\Data\ListAuditEntriesData;
 use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
 use RefactorCircus\Keen\Domains\Audit\Resources\AuditEntryResource;
 use RefactorCircus\Keystone\Http\Requests\Request;
@@ -18,14 +19,14 @@ final class IndexAuditRequest extends Request
 {
     public function rules(): array
     {
-        return ListAuditEntriesAction::rules();
+        return ListAuditEntriesData::rules();
     }
 
     public function persist(): JsonResponse
     {
         $about = $this->allows('viewAny', AuditEntryModel::class) ? null : $this->actor();
 
-        $entries = app(ListAuditEntriesAction::class)->execute($this->validated(), $about);
+        $entries = app(ListAuditEntriesAction::class)->execute(ListAuditEntriesData::fromValidated($this->validated()), $about);
 
         return AuditEntryResource::collection($entries)->response();
     }

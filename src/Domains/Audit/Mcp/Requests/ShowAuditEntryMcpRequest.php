@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Keen\Domains\Audit\Mcp\Requests;
 
-use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use RefactorCircus\Keen\Domains\Audit\Actions\ShowAuditEntryAction;
 use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
@@ -25,7 +24,7 @@ final class ShowAuditEntryMcpRequest extends Request
 
     protected function handle(array $validated): ResponseFactory
     {
-        return Response::structured((new AuditEntryResource(app(ShowAuditEntryAction::class)->execute($this->entry())))->resolve());
+        return (new AuditEntryResource(app(ShowAuditEntryAction::class)->execute($this->entry())))->toStructuredResponse();
     }
 
     private function entry(): AuditEntryModel

@@ -6,6 +6,7 @@ namespace RefactorCircus\Keen\Domains\Audit\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use RefactorCircus\Keen\Domains\Audit\Data\RecordAuditEventData;
 use RefactorCircus\Keystone\Contracts\ActionStartingEvent;
 
 /**
@@ -16,10 +17,7 @@ final class AuditEventRecordingActionEvent implements ActionStartingEvent
     use Dispatchable;
     use SerializesModels;
 
-    /**
-     * @param  array<string, mixed>  $data
-     */
     public function __construct(
-        public array $data,
+        public RecordAuditEventData $data,
     ) {}
 }

@@ -8,11 +8,12 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
 use RefactorCircus\Keystone\Contracts\ActionFinishedEvent;
+use RefactorCircus\Keystone\Contracts\ReadActionEvent;
 
 /**
  * An audit entry was shown.
  */
-final class AuditEntryShownActionEvent implements ActionFinishedEvent
+final class AuditEntryShownActionEvent implements ActionFinishedEvent, ReadActionEvent
 {
     use Dispatchable;
     use SerializesModels;

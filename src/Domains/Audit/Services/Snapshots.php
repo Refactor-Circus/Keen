@@ -19,7 +19,7 @@ use RefactorCircus\Keystone\Audit\AuditHooks;
  * Secrets never leave this class: a redacted field is kept only as a hash, so
  * a change is still detected, and written to the log as `[redacted]`.
  */
-final readonly class Snapshots
+final class Snapshots
 {
     public const string REDACTED = '[redacted]';
 
@@ -31,9 +31,17 @@ final readonly class Snapshots
     /** @var array<int, string> */
     private const array IGNORED = ['created_at', 'updated_at'];
 
+    /**
+     * The secret field names as a set, with the hook and config lists it was
+     * built from, so it is rebuilt only when either changes.
+     *
+     * @var array{0: list<string>, 1: mixed, 2: array<string, true>}|null
+     */
+    private ?array $secrets = null;
+
     public function __construct(
-        private Repository $config,
-        private AuditHooks $hooks,
+        private readonly Repository $config,
+        private readonly AuditHooks $hooks,
     ) {}
 
     /**
@@ -97,14 +105,25 @@ final readonly class Snapshots
     public function isSecret(string $key): bool
     {
         $field = str_contains($key, '.') ? substr($key, (int) strrpos($key, '.') + 1) : $key;
+        $secrets = $this->secrets();
 
-        $secrets = array_merge(
-            self::ALWAYS_REDACTED,
-            $this->hooks->redacted(),
-            array_map('strval', (array) $this->config->get('keen.redact', [])),
-        );
+        return isset($secrets[$field]) || isset($secrets[$key]);
+    }
 
-        return in_array($field, $secrets, true) || in_array($key, $secrets, true);
+    /**
+     * @return array<string, true>
+     */
+    private function secrets(): array
+    {
+        $hooked = $this->hooks->redacted();
+        $configured = $this->config->get('keen.redact', []);
+
+        if ($this->secrets === null || $this->secrets[0] !== $hooked || $this->secrets[1] !== $configured) {
+            $names = [...self::ALWAYS_REDACTED, ...$hooked, ...array_map(strval(...), (array) $configured)];
+            $this->secrets = [$hooked, $configured, array_fill_keys($names, true)];
+        }
+
+        return $this->secrets[2];
     }
 
     /**

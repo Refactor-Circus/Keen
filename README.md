@@ -26,6 +26,15 @@ Publish the config to change it:
 php artisan vendor:publish --tag=keen-config
 ```
 
+The log lives in `keen_entries`, with the head of its hash chain in `keen_chain`. To use other names, set them under `keen.tables` (`entries`, `chain`) before running the migrations; a published config that lists only some keeps the defaults for the rest:
+
+```php
+'tables' => [
+    'entries' => 'audit_entries',
+    'chain' => 'audit_chain',
+],
+```
+
 Schedule pruning if you keep a retention period (365 days by default):
 
 ```php
@@ -48,6 +57,8 @@ Keen::record('invoice.paid')
     ->save();
 ```
 
+Recorded inside a database transaction, the entry is appended to the chain once the transaction commits, so the chain is never locked for the rest of your transaction; until then `save()` returns the entry unsaved (`exists` is false, no id or hash yet) and fills it in on commit. If the transaction rolls back, the entry is never written. Package actions' entries already come after the commit.
+
 A package of the suite recording one of its own events adds `->source('polycart')` (a registered package key), so the entry shows in that package's history. The JSON API and MCP always record as `app`.
 
 ## Reading the log
@@ -58,7 +69,7 @@ A package of the suite recording one of its own events adds `->source('polycart'
 | MCP (`keen.mcp`) | `list-audit-entries-tool`, `show-audit-entry-tool` | `record-audit-event-tool` |
 | Atrium | **Audit log** in the sidebar | the **Record an event** form |
 
-Filters: `source` (a package key or `app`), `action` (exact, or a prefix ending in `.`), `subject_type` + `subject_id`, `actor_type` + `actor_id`, `scope_type` + `scope_id`, `since`, `until`. Listings are cursor paginated.
+Filters: `source` (a package key or `app`), `action` (exact, or a prefix ending in `.`), `subject_type` + `subject_id`, `actor_type` + `actor_id`, `scope_type` + `scope_id`, `since`, `until`. Listings are cursor paginated: pass `per_page` (up to 100) and the previous page's next cursor (`meta.next_cursor`) as `cursor`.
 
 Any package screen can show its own history with Atrium's component, which renders nothing until Keen is installed:
 
@@ -76,6 +87,14 @@ Gate::define('recordAuditEvent', fn (User $user) => $user->isAdmin());
 ```
 
 Without them anyone signed in may read and record. People may always read the entries they made or that are about them, and IP addresses and user agents are shown only to those who may read the whole log. The same `viewAuditLog` ability guards every package's history endpoint and tool.
+
+To change the rules outright, point the model at a policy of your own in `keen.policies` (extending the bundled one, or not):
+
+```php
+'policies' => [
+    AuditEntryModel::class => App\Policies\AuditPolicy::class,
+],
+```
 
 ## How packages shape their entries
 
@@ -101,6 +120,8 @@ Roster kept its own audit log before Keen. Copy it across once, in order, into K
 ```bash
 php artisan keen:import-roster
 ```
+
+Entries are appended in chunks of 500 (`AuditLog::appendMany()`: one chain lock and one bulk insert per chunk), so their model events do not fire.
 
 ## Commands
 

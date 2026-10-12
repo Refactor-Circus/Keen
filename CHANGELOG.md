@@ -5,14 +5,32 @@
 ### Breaking
 
 - Moved to the Refactor Circus organisation: the package is now `refactor-circus/keen` with the PHP namespace `RefactorCircus\Keen` (it was `jayi/keen` and `JayI\Keen`). Update `composer.json` requirements and `use` statements. Old class names are not kept as aliases, so stored values written under them - polymorphic `*_type` columns, audit subjects, Pennant feature names - need updating to the new names.
+- Actions take Data objects, not arrays: `ListAuditEntriesAction` takes a `ListAuditEntriesData` and `RecordAuditEventAction` a `RecordAuditEventData` (`Domains\Audit\Data`). Their validation moved from the Actions' `rules()` to the Data's, and the `AuditEntriesListing`/`AuditEntriesListed`/`AuditEventRecording` action events carry the Data. `Keen::record()` and the `AuditTrail` are unchanged.
+- `list-audit-entries-tool` answers with the next cursor under `meta.next_cursor` (beside `meta.per_page` and `meta.prev_cursor`), not a top-level `next_cursor`.
 
 ### Added
 
+- `keen.tables` names Keen's tables (`entries` => `keen_entries`, `chain` => `keen_chain`); rename them before migrating. `RefactorCircus\Keen\Support\Tables::name()` reads them, and a published config that lists only some keeps the defaults for the rest.
+- `AuditLog::appendMany()` appends many entries in order with one chain lock and one bulk insert.
+- `keen.policies` is documented as the place to swap `AuditEntryModel`'s policy; every model has one there.
+
+- Events implementing refactor-circus/keystone's `UnauditedActionEvent` (a per-row or per-page step of a larger job, such as one import row) are not recorded; the Actions the step runs still are.
+
+- Records nothing for a package that turns its auditing off with its `{key}.audit.enabled` config key (refactor-circus/keystone's `Package::audits()`).
 - The audit log for the Refactor Circus suite: every package's actions are recorded from refactor-circus/keystone's shared action events, with field changes, actor, subject, scope and surface, in an append-only hash chain.
 - `Keen::record()` for the application's own events.
 - A JSON API, an MCP server and an Atrium section for reading and recording entries, and the `AuditTrail` every package's history endpoint, tool and screens read through.
 - `keen:verify`, `keen:prune` and `keen:import-roster`.
+- `AuditEntryModel` fires a class-based event for every Eloquent hook (`AuditEntryCreatingEvent`, `AuditEntryCreatedEvent`, ... in `Domains\Audit\Events`, each a refactor-circus/keystone `ModelLifecycleEvent`). They are never recorded as audit entries themselves: recording one entry writes exactly one row.
 
 ### Changed
 
+- An entry recorded inside a database transaction (`Keen::record()->save()`, `RecordAuditEventAction`, `AuditLog::append()`) is appended once the transaction commits, rather than locking the chain head until the surrounding transaction ends; until then the returned `AuditEntryModel` is unsaved (`exists` false, no id or hash) and it is filled in on commit. A rolled-back transaction writes no entry, as before.
+- A person's own entries (`AuditEntryModel::about()`) are found as the ids of two indexed lookups (by actor, by subject) rather than one `actor OR subject` condition; a new migration replaces the `(subject_type, subject_id)` and `(actor_type, actor_id)` indexes with `(subject_type, subject_id, id)` and `(actor_type, actor_id, id)`, which serve the newest-first order and cursor too. Run `php artisan migrate`.
+- `AuditEntryResource` asks the policy's `viewPersonalData` once per user and source per request rather than once per entry; a custom policy that decides per entry should decide by source.
+- `keen:import-roster` appends in chunks with one chain lock and one bulk insert each (`AuditLog::appendMany()`), so imported entries fire no model events, and checks for an earlier import by Roster's first and last entries rather than scanning every entry's context.
+- `AuditLog::verify()` reads plain rows rather than models; `Snapshots` builds its set of secret field names once (rebuilt when the hooks or `keen.redact` change); `AuditRecorder` keeps at most `AuditRecorder::MAX_SNAPSHOTS` (1000) snapshots of actions that have not finished, dropping the oldest, so a long-running command does not pile them up.
 - Requires PHP 8.5 or later.
+- MCP tools answer through `AuditEntryResource::toStructuredResponse()` (refactor-circus/keystone's resources) and declare their output schema; `AuditEntryResource` describes its fields with `schema()`.
+- `RecordAuditEventAction` writes inside a database transaction, so `AuditEventRecordedActionEvent` fires only after the entry commits. The list and show action events implement refactor-circus/keystone's `ReadActionEvent`.
+- A missing entry over the JSON API answers `{"message": "Not found."}`, and guests get 401 rather than 403 (refactor-circus/keystone's request base).

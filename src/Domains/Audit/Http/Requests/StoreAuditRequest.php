@@ -7,6 +7,7 @@ namespace RefactorCircus\Keen\Domains\Audit\Http\Requests;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use RefactorCircus\Keen\Domains\Audit\Actions\RecordAuditEventAction;
+use RefactorCircus\Keen\Domains\Audit\Data\RecordAuditEventData;
 use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
 use RefactorCircus\Keen\Domains\Audit\Resources\AuditEntryResource;
 use RefactorCircus\Keystone\Http\Requests\Request;
@@ -20,13 +21,13 @@ final class StoreAuditRequest extends Request
 
     public function rules(): array
     {
-        return RecordAuditEventAction::rules();
+        return RecordAuditEventData::rules();
     }
 
     public function persist(): JsonResponse
     {
         $user = $this->user();
-        $entry = app(RecordAuditEventAction::class)->execute($this->validated(), $user instanceof Model ? $user : null);
+        $entry = app(RecordAuditEventAction::class)->execute(RecordAuditEventData::fromValidated($this->validated()), $user instanceof Model ? $user : null);
 
         return (new AuditEntryResource($entry))->response()->setStatusCode(201);
     }

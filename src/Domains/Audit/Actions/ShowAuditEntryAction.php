@@ -11,14 +11,6 @@ use RefactorCircus\Keystone\Actions\Action;
 
 final class ShowAuditEntryAction extends Action
 {
-    /**
-     * @return array<string, array<int, mixed>>
-     */
-    public static function rules(): array
-    {
-        return [];
-    }
-
     protected function handle(AuditEntryModel $entry): AuditEntryModel
     {
         AuditEntryShowingActionEvent::dispatch($entry);

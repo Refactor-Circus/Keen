@@ -19,7 +19,7 @@ use RefactorCircus\Keystone\Mcp\Server;
     'Read the tamper-evident audit log of every Refactor Circus package. Each entry records its source (the package, or app), '.
     'an action such as product.updated, who acted, the record it is about, the surface it came through (atrium, http, '.
     'mcp, cortex, cli, code), and the fields that changed as field => [old, new]. Secrets show as [redacted]. '.
-    'Record the application\'s own events with record-audit-event-tool. Listings are cursor paginated: pass next_cursor '.
+    'Record the application\'s own events with record-audit-event-tool. Listings are cursor paginated: pass meta.next_cursor '.
     'back as cursor for the next page.',
 )]
 final class KeenServer extends Server

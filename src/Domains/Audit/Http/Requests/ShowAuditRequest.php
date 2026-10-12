@@ -19,11 +19,6 @@ final class ShowAuditRequest extends Request
         return parent::authorize() && $this->allows('view', $this->entry());
     }
 
-    public function rules(): array
-    {
-        return ShowAuditEntryAction::rules();
-    }
-
     public function persist(): JsonResponse
     {
         return (new AuditEntryResource(app(ShowAuditEntryAction::class)->execute($this->entry())))->response();

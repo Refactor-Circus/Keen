@@ -40,6 +40,24 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Tables
+    |--------------------------------------------------------------------------
+    |
+    | The table each of Keen's records lives in: `entries` holds the log and
+    | `chain` the head of its hash chain. Rename them here before running the
+    | migrations; the model, the migration and the hash chain all read these
+    | names. A published config that lists only some tables keeps the
+    | defaults for the rest.
+    |
+    */
+
+    'tables' => [
+        'entries' => 'keen_entries',
+        'chain' => 'keen_chain',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Authorization
     |--------------------------------------------------------------------------
     |
@@ -48,6 +66,10 @@ return [
     | defers to a `viewAuditLog` or `recordAuditEvent` Gate ability when the
     | application defines one, and lets anyone signed in through otherwise.
     | People may always read entries they made or that are about them.
+    |
+    | `policies` is the policy the Gate uses for each Keen model. Point a model
+    | at a class of your own (extending the bundled one, or not) to change who
+    | may read or record entries.
     |
     */
 

@@ -11,6 +11,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use RefactorCircus\Keen\Domains\Audit\Services\AuditLog;
+use RefactorCircus\Keen\Support\Tables;
 use stdClass;
 
 /**
@@ -35,7 +36,7 @@ final class ImportRosterAuditCommand extends Command
             return self::SUCCESS;
         }
 
-        if (DB::table('keen_entries')->where('context->imported_from', 'roster')->exists()) {
+        if ($this->imported()) {
             $this->components->error('The Roster audit log was imported already.');
 
             return self::FAILURE;
@@ -48,13 +49,15 @@ final class ImportRosterAuditCommand extends Command
         $imported = 0;
 
         DB::table('roster_audit_entries')->orderBy('id')->chunkById(500, function (Collection $entries) use ($log, $actorType, $organizationType, &$imported): void {
+            $rows = [];
+
             /** @var stdClass $entry */
             foreach ($entries as $entry) {
                 $context = $this->json($entry->context);
                 $context['imported_from'] = 'roster';
                 $context['roster_entry_id'] = $entry->id;
 
-                $log->append([
+                $rows[] = [
                     'source' => $entry->source === 'app' ? 'app' : 'roster',
                     'action' => $entry->action,
                     'actor_type' => $entry->actor_id === null ? null : $actorType,
@@ -70,15 +73,44 @@ final class ImportRosterAuditCommand extends Command
                     'changes' => $this->json($entry->changes),
                     'context' => $context,
                     'created_at' => Carbon::parse($entry->created_at),
-                ]);
-
-                $imported++;
+                ];
             }
+
+            // One chain lock and one bulk insert per chunk.
+            $imported += $log->appendMany($rows);
         });
 
         $this->components->info("Imported {$imported} Roster audit entries.");
 
         return self::SUCCESS;
+    }
+
+    /**
+     * Whether an earlier run imported the log (or began to): Roster's first
+     * or last entry is in Keen's log. Each is looked up by its time and
+     * action, both indexed, so only a handful of entries' context is read.
+     */
+    private function imported(): bool
+    {
+        foreach (['asc', 'desc'] as $direction) {
+            $entry = DB::table('roster_audit_entries')->orderBy('id', $direction)->first();
+
+            if (! $entry instanceof stdClass) {
+                return false;
+            }
+
+            $found = DB::table(Tables::name('entries'))
+                ->where('created_at', Carbon::parse(is_string($entry->created_at) ? $entry->created_at : ''))
+                ->where('action', $entry->action)
+                ->where('context->imported_from', 'roster')
+                ->exists();
+
+            if ($found) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

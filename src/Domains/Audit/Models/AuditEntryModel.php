@@ -8,8 +8,10 @@ use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Carbon;
 use RefactorCircus\Keen\Domains\Audit\Exceptions\AuditLogIsAppendOnlyException;
+use RefactorCircus\Keen\Support\Tables;
 use RefactorCircus\Keystone\Audit\Data\AuditEntry;
 use RefactorCircus\Keystone\Models\Concerns\DispatchesModelEvents;
 
@@ -47,9 +49,12 @@ final class AuditEntryModel extends Model
 
     public const UPDATED_AT = null;
 
-    protected $table = 'keen_entries';
-
     protected $guarded = ['id'];
+
+    public function getTable(): string
+    {
+        return Tables::name('entries');
+    }
 
     protected static function booted(): void
     {
@@ -88,16 +93,22 @@ final class AuditEntryModel extends Model
     /**
      * Entries about a model or made by it.
      *
+     * As the ids of two indexed lookups - by actor, by subject - rather than
+     * one `actor OR subject` condition no index can serve, so the newest-first
+     * page reads only the model's own entries.
+     *
      * @param  Builder<self>  $query
      */
     public function scopeAbout(Builder $query, Model $model): void
     {
         $type = $model->getMorphClass();
         $id = (string) $model->getKey();
+        $table = $this->getTable();
 
-        $query->where(fn (Builder $about): Builder => $about
-            ->where(fn (Builder $actor): Builder => $actor->where('actor_type', $type)->where('actor_id', $id))
-            ->orWhere(fn (Builder $subject): Builder => $subject->where('subject_type', $type)->where('subject_id', $id)));
+        $query->whereIn($query->qualifyColumn('id'), fn (QueryBuilder $ids): QueryBuilder => $ids
+            ->from($table)->select('id')->where('actor_type', $type)->where('actor_id', $id)
+            ->union(fn (QueryBuilder $subject): QueryBuilder => $subject
+                ->from($table)->select('id')->where('subject_type', $type)->where('subject_id', $id)));
     }
 
     /**

@@ -6,12 +6,13 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use RefactorCircus\Keen\Support\Tables;
 
 return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('keen_entries', function (Blueprint $table): void {
+        Schema::create(Tables::name('entries'), function (Blueprint $table): void {
             // Auto-increment rather than ULID: the hash chain needs a strict,
             // gap-free order.
             $table->id();
@@ -51,17 +52,17 @@ return new class extends Migration
         // concurrent appends chain one after another on every database
         // (locking the newest entry instead forks the chain on Postgres, and
         // locks nothing while the log is empty).
-        Schema::create('keen_chain', function (Blueprint $table): void {
+        Schema::create(Tables::name('chain'), function (Blueprint $table): void {
             $table->unsignedTinyInteger('id')->primary();
             $table->string('head_hash', 64)->nullable();
         });
 
-        DB::table('keen_chain')->insert(['id' => 1, 'head_hash' => null]);
+        DB::table(Tables::name('chain'))->insert(['id' => 1, 'head_hash' => null]);
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('keen_chain');
-        Schema::dropIfExists('keen_entries');
+        Schema::dropIfExists(Tables::name('chain'));
+        Schema::dropIfExists(Tables::name('entries'));
     }
 };

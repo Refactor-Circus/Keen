@@ -12,6 +12,8 @@ use RefactorCircus\Keen\Atrium\KeenPlugin;
 use RefactorCircus\Keen\Domains\Audit\Actions\ListAuditEntriesAction;
 use RefactorCircus\Keen\Domains\Audit\Actions\RecordAuditEventAction;
 use RefactorCircus\Keen\Domains\Audit\Actions\ShowAuditEntryAction;
+use RefactorCircus\Keen\Domains\Audit\Data\ListAuditEntriesData;
+use RefactorCircus\Keen\Domains\Audit\Data\RecordAuditEventData;
 use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
 use RefactorCircus\Keystone\Packages\PackageRegistry;
 
@@ -23,7 +25,7 @@ final class AuditUiController
 {
     public function index(Request $request): View
     {
-        $filters = $request->validate(ListAuditEntriesAction::rules());
+        $filters = ListAuditEntriesData::from($request->all());
         $user = $request->user();
         $whole = KeenPlugin::authorizer()->can($user, 'viewAny', AuditEntryModel::class);
 
@@ -38,7 +40,7 @@ final class AuditUiController
 
         return view($view, [
             'entries' => $entries,
-            'filters' => $filters,
+            'filters' => $filters->toArray(),
             'sources' => $this->sources(),
             'mayRecord' => KeenPlugin::authorizer()->can($user, 'create', AuditEntryModel::class),
         ]);
@@ -67,7 +69,7 @@ final class AuditUiController
         $user = $request->user();
 
         app(RecordAuditEventAction::class)->execute(
-            $request->validate(RecordAuditEventAction::rules()),
+            RecordAuditEventData::from($request->all()),
             $user instanceof Model ? $user : null,
         );
 
