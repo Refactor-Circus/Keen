@@ -44,3 +44,11 @@ Keen screens: entries index and show, plus the history screen moving in from Atr
 ## Addendum (2026-10-29): history screen moves to Keen
 
 User decision (Atrium D-014): `history/{package}` (`HistoryController`, `history/show`) and `x-atrium::audit.entries` move from Atrium into Keen, together with the `audit-trail` component (D-004). Keen serves the history screen under its own Atrium plugin routes and declares it as `keen.history`. Links that pointed at `atrium.history.show` (the `audit-trail` "view all" link, and `Plugin::historyNavItem()` if that moves too, still open) point at Keen's route.
+
+## Addendum (2026-10-29): no package knows another (Atrium D-015 to D-019)
+
+User principle (Atrium D-017): no package has knowledge of another. Companion packages are suggested, never required. Integrations are done through simple config. Consequences for this spec:
+- Keen attaches History through a wildcard registration, not through any Atrium audit concept. `config/keen.php` `atrium.history` holds `screens` (default `['*']`, patterns allowed), `slot` (default `after`) and `exclude`. On each screen, the subject is the screen's record (package-wide on list screens), and the package comes from the screen key. It shows only when that package audits (`Package::audits()`) and the viewer passes `History::allows()`.
+- The organization activity tab comes from config: `atrium.history.tabs` defaults to `['roster.organization' => ['scope' => true]]`, which shows the history scoped to the record. Keen's code names no Roster class.
+- Keen adds a History nav item for every package that audits (D-016).
+- Keen already only suggests Atrium. Its Atrium code stays under `src/Atrium` and loads only when Atrium is present.
