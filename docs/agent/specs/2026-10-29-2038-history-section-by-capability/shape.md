@@ -19,6 +19,8 @@ In scope:
 - D-001: Keen attaches by capability and never names other packages' screens for the History section. (User, 2026-10-29.)
 - D-002: placement follows the screen's declared slot (each host declares where its audited section goes), so layouts stay with the host.
 - D-003: the `activity` tab on `roster.organization` is the one per-screen registration, which is allowed because it targets a string key with no Roster import.
+- D-004: the `audit-trail` component moves from Atrium into Keen, as the view behind Keen's History section. It is composed from `x-atrium::*` components, with no stylesheet. `x-atrium::audit.entries` stays in Atrium. (User, 2026-10-29.)
+- D-005: the organization activity tab registers as `keen.activity` (vendor-prefixed, Atrium D-008). Old `?tab=activity` links fall back to the default tab.
 
 ## Context
 
