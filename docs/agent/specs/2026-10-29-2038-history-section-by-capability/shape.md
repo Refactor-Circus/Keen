@@ -35,3 +35,12 @@ In scope:
 - atrium/components: no package CSS.
 - http/authorization: `History::allows()` plus the host's screen authorization first.
 - testing/test-layers: feature tests with a fake host screen declaring a subject, plus one per real host in that host's suite.
+
+## Addendum (2026-10-29): every screen declares slots and tab bar
+
+User decision (Atrium D-013): every Atrium screen in this package declares itself with `Screen::make("{package}.{screen}")`, renders the Atrium tab bar (only visible once at least 2 tabs are visible), and declares the standard slots: `header.actions`, `before` and `after` on all screens; `aside` and `history` (when audited) on detail screens; the `row.actions` row slot on list screens. Screens without built-in tabs get a default `overview` tab. With nothing registered, every existing feature and browser test passes unchanged. A feature test per screen registers a tab and a section in each standard slot and asserts that they render.
+Keen screens: entries index and show, plus the history screen moving in from Atrium.
+
+## Addendum (2026-10-29): history screen moves to Keen
+
+User decision (Atrium D-014): `history/{package}` (`HistoryController`, `history/show`) and `x-atrium::audit.entries` move from Atrium into Keen, together with the `audit-trail` component (D-004). Keen serves the history screen under its own Atrium plugin routes and declares it as `keen.history`. Links that pointed at `atrium.history.show` (the `audit-trail` "view all" link, and `Plugin::historyNavItem()` if that moves too, still open) point at Keen's route.
