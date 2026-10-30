@@ -193,3 +193,55 @@ Tests:
 - Checked only: Pint `--test` passes on `src/Atrium`, `config/keen.php`, `lang/en/keen.php` and `tests/Feature/Ui`.
 
 Deviations: none. `AGENTS.md` is still modified in the tree but is outside this group, so it was left uncommitted.
+
+## Group 4 (salvaged)
+
+History section, activity tab and registration guard (criteria 2, 9, 10, 11, 12, 16, 17, 19). The build agent ended without returning a result.
+
+Found:
+
+- No `index.lock`, and no merge or rebase in progress.
+- Every file in the group's list was written but nothing was committed. `tasks.md` was not ticked and `build.md` had no group 4 section. The files match tasks 4.1 to 4.5:
+  - `src/Atrium/HistoryExtensions.php` (new, `final`):
+    - `registerIfSupported(string $atrium = Atrium::class)` returns unless `method_exists($atrium, 'screens')`
+    - `register()` registers the `keen.history` section (label `keen::keen.history`, view `keen::ui.history-section`) on each normalised `screens` target in `slot`, and a `keen.activity` tab (label `keen::keen.activity`, icon `clipboard-document-list`, view `keen::ui.activity-tab`) per `tabs` entry
+    - normalisation: lone values are wrapped, non-strings dropped and duplicates removed; `*` wins over everything, and `{package}.*` covers that package's exact keys
+    - validation uses `*`, `/^[a-z0-9-]+\.\*$/D` and `Screen::KEY_PATTERN` for targets, and `Screen::NAME_PATTERN` for the slot
+    - a bad entry goes to a private `invalid()`. It throws `InvalidArgumentException` naming the config key and the value in `local`/`testing` (or outside an application). Elsewhere it calls `report()` once and skips the entry. A bad slot skips the section but not the tabs.
+    - the private `visible()` checks, in order: `exclude` (`Str::is`, read on every check, section only), unknown package, not auditing, `History::allows()` with `subject_type`/`subject_id` of the subject (or empty input), and on a detail screen a record without a stored key
+    - the resolvers: the section returns `source` plus `subject` (the record on a detail screen, otherwise null). A tab returns `source`, `scope` and `subject` by its bool-cast `scope`.
+  - `src/KeenServiceProvider.php`: a private `registerHistoryExtensions()` is called in `boot()` after the translations load. It returns unless `class_exists('RefactorCircus\\Atrium\\Atrium')` and `keen.ui.enabled === true`, then calls `HistoryExtensions::registerIfSupported()`. The `use` import does not load the class, so the WithoutAtrium suite's "not loaded" assertion holds.
+  - `config/keen.php`: `screens` `['*']`, `slot` `after`, `exclude` `['keen.*', 'atrium.*']` and `tabs` `['roster.organization' => ['scope' => true]]` beside `nav`. The "Atrium history" banner now documents each key, which keys are read at boot, and what a bad entry does in local/testing and elsewhere.
+  - `resources/views/ui/history-section.blade.php` and `ui/activity-tab.blade.php` render `x-keen::audit-trail` with the resolver's data
+  - `tests/Pest.php`: `ResetsScreenExtensions` on `Feature` and `Modes/RenamedTables` (criterion 17, for the PR list), plus a `RebootsWithConfig` trait for the boot-time tests. It sets config in `defineEnvironment()` and calls `refreshApplication()`, then hands the container and facades back if boot throws.
+  - `tests/ArchTest.php`: only the rule "only the Atrium layer uses Atrium" was added (criterion 17, for the PR list)
+  - tests:
+    - `HistoryExtensionsTest`: defaults, tab definition, `*` collapse, package-target collapse and dedupe, custom slot, throws in `testing` and `local` for a bad target, tab key or slot, production reports once and skips for each of the three, malformed shapes, `scope` cast, resolver subject, and the boot-time throw from `KeenServiceProvider->boot()`
+    - `HistorySectionTest`: on `HostScreensServiceProvider` fixture screens:
+      - the detail screen shows only its record's history, without the subject column, and the list screen shows the whole package's history
+      - a detail screen without a record shows the package's history
+      - nothing shows on an unregistered package or on an unsaved record
+      - the shipped config values
+      - with the default `exclude`, nothing shows on `atrium.dashboard` or `keen.history`, and the section shows on `shop.product`; with `exclude` `['keen.*']` it shows on `atrium.dashboard`
+      - a counting `AuditTrail` fake has zero calls on each refused screen and one on a shown screen
+      - audit-table queries are at most 1 on an audited detail screen and 0 on excluded and non-auditing screens
+    - `ActivityTabTest`: on a `roster` package registered in the test:
+      - the scoped tab lists only entries recorded in the organization
+      - with the history rule refusing, the tab is hidden and `?tab=keen.activity` answers 403
+      - host scope isolation
+      - `scope => false` lists the record's own history
+      - other screens get nothing and nothing is reported
+      - no tab is keyed `activity`
+    - `RegistrationGuardTest`: registers by default; with `keen.ui.enabled` false at boot there is no Keen registration and no `atrium.keen.history.show`; `PreRegistryAtrium` leaves the registry snapshot unchanged and `/atrium/keen/entries` answers 200; the guard registers on the real Atrium
+    - `ResetsScreenExtensionsTest`: D-031 direct hook calls; `test.probe` is gone and `keen.history` stays
+  - `tests/Fixtures/Screens/PreRegistryAtrium.php` and `HostScreensServiceProvider.php`: the fixtures named above
+
+Checked, by reading against criteria 2, 9 to 12, 16, 17 and 19 and Atrium's registry API (`DefinesExtension`, `Screen`, `ScreenExtensions`, `ResetsScreenExtensions`). Pint `--test` passes on every PHP file in the group, and PHPStan passes with 0 errors on `HistoryExtensions` and `KeenServiceProvider`. The suite was not run here; the gate runs it.
+
+Committed: the group's files as found, with no changes, plus 4.1 to 4.5 ticked in `tasks.md` and this section. `AGENTS.md` is modified in the tree but is outside this group, so it was left uncommitted.
+
+Deviations:
+
+- Criterion 10's last refusal, "the record isn't an Eloquent model", cannot occur as written: Atrium types every screen record as `?Model`. `visible()` reads it as "a detail screen whose record has no stored key", and the tests prove it with an unsaved `ProductModel`. A detail screen with no record still shows the package's history (criterion 11).
+
+Left: 4.6 (run `vendor/bin/pest`) is unticked until the gate runs the suite.

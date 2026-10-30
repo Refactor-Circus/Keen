@@ -43,11 +43,11 @@ depends on: 2, 3
 files: src/Atrium/HistoryExtensions.php, src/KeenServiceProvider.php, config/keen.php, resources/views/ui/history-section.blade.php, resources/views/ui/activity-tab.blade.php, tests/Pest.php, tests/ArchTest.php, tests/Feature/Ui/HistoryExtensionsTest.php, tests/Feature/Ui/HistorySectionTest.php, tests/Feature/Ui/ActivityTabTest.php, tests/Feature/Ui/RegistrationGuardTest.php, tests/Feature/Ui/ResetsScreenExtensionsTest.php, tests/Fixtures/Screens/PreRegistryAtrium.php, tests/Fixtures/Screens/HostScreensServiceProvider.php
 criteria: 2, 9, 10, 11, 12, 16, 17, 19
 
-- [ ] 4.1 Write tests: HistoryExtensionsTest (normalisation, custom slot, testing throws, production reports once and skips, malformed shapes, boot-time throw), HistorySectionTest (criteria 10 and 11 on fixture host screens, shipped exclude default, counting AuditTrail fake, query bounds), ActivityTabTest (criterion 12 including the 403 for a hidden ?tab=keen.activity), RegistrationGuardTest (criterion 2 with PreRegistryAtrium) and ResetsScreenExtensionsTest (D-031 direct hook calls), plus the Atrium-boundary arch rule in tests/ArchTest.php.
-- [ ] 4.2 Add the keen.atrium.history config (screens, slot, exclude ['keen.*', 'atrium.*'], tabs) with its banner, and the ui/history-section and ui/activity-tab views.
-- [ ] 4.3 Add final HistoryExtensions with registerIfSupported(), register() (validate, normalise, throw in local/testing or report once and skip elsewhere), the keen.history section, the keen.activity tabs and the shared visible() check.
-- [ ] 4.4 Call HistoryExtensions::registerIfSupported() from KeenServiceProvider::boot() behind the class_exists and keen.ui.enabled guard, by string class name.
-- [ ] 4.5 Apply ResetsScreenExtensions to Feature and Modes/RenamedTables in tests/Pest.php (criterion 17, noted for the PR list).
+- [x] 4.1 Write tests: HistoryExtensionsTest (normalisation, custom slot, testing throws, production reports once and skips, malformed shapes, boot-time throw), HistorySectionTest (criteria 10 and 11 on fixture host screens, shipped exclude default, counting AuditTrail fake, query bounds), ActivityTabTest (criterion 12 including the 403 for a hidden ?tab=keen.activity), RegistrationGuardTest (criterion 2 with PreRegistryAtrium) and ResetsScreenExtensionsTest (D-031 direct hook calls), plus the Atrium-boundary arch rule in tests/ArchTest.php.
+- [x] 4.2 Add the keen.atrium.history config (screens, slot, exclude ['keen.*', 'atrium.*'], tabs) with its banner, and the ui/history-section and ui/activity-tab views.
+- [x] 4.3 Add final HistoryExtensions with registerIfSupported(), register() (validate, normalise, throw in local/testing or report once and skip elsewhere), the keen.history section, the keen.activity tabs and the shared visible() check.
+- [x] 4.4 Call HistoryExtensions::registerIfSupported() from KeenServiceProvider::boot() behind the class_exists and keen.ui.enabled guard, by string class name.
+- [x] 4.5 Apply ResetsScreenExtensions to Feature and Modes/RenamedTables in tests/Pest.php (criterion 17, noted for the PR list).
 - [ ] 4.6 Run vendor/bin/pest; all green.
 
 ## Group 5: Docs and the full gate

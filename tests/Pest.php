@@ -2,17 +2,67 @@
 
 declare(strict_types=1);
 
+use Illuminate\Container\Container;
 use Illuminate\Foundation\Auth\User;
+use Illuminate\Support\Facades\Facade;
 use Laravel\Mcp\Server\Testing\TestResponse;
 use Laravel\Mcp\Server\Tool;
+use RefactorCircus\Atrium\Testing\ResetsScreenExtensions;
 use RefactorCircus\Keen\Mcp\KeenServer;
 use RefactorCircus\Keen\Tests\RenamedTablesTestCase;
 use RefactorCircus\Keen\Tests\TestCase;
 use RefactorCircus\Keystone\Testing\McpTools;
 use RefactorCircus\Keystone\Testing\Parity;
 
-uses(TestCase::class)->in('Feature');
-uses(RenamedTablesTestCase::class)->in('Modes/RenamedTables');
+// Whatever a test registers on Atrium's screens is gone after it; what the
+// providers registered at boot (Keen's History section and tabs) stays.
+uses(TestCase::class, ResetsScreenExtensions::class)->in('Feature');
+uses(RenamedTablesTestCase::class, ResetsScreenExtensions::class)->in('Modes/RenamedTables');
+
+/**
+ * Lets a test boot the application again with config set before the
+ * providers boot, for what Keen reads only at boot:
+ *
+ *     uses(RebootsWithConfig::class);
+ *
+ *     $this->rebootWith(['keen.ui.enabled' => false]);
+ *
+ * The new application has no migrated database.
+ */
+trait RebootsWithConfig
+{
+    /** @var array<string, mixed> */
+    private static array $bootConfig = [];
+
+    protected function defineEnvironment($app): void
+    {
+        parent::defineEnvironment($app);
+
+        foreach (self::$bootConfig as $key => $value) {
+            $app['config']->set($key, $value);
+        }
+    }
+
+    /**
+     * @param  array<string, mixed>  $config
+     */
+    protected function rebootWith(array $config): void
+    {
+        self::$bootConfig = $config;
+
+        try {
+            $this->refreshApplication();
+        } finally {
+            self::$bootConfig = [];
+
+            // An application that failed to boot leaves the container and the
+            // facades pointing at it; hand them back to the test's own.
+            Container::setInstance($this->app);
+            Facade::clearResolvedInstances();
+            Facade::setFacadeApplication($this->app);
+        }
+    }
+}
 
 function user(string $name = 'Ada Lovelace'): User
 {
