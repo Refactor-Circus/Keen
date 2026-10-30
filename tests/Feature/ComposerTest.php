@@ -35,7 +35,7 @@ it('keeps atrium a suggestion and a dev dependency', function (): void {
 
     expect($manifest['suggest'])->toHaveKey('refactor-circus/atrium')
         ->and($manifest['require-dev'])->toHaveKey('refactor-circus/atrium')
-        ->and(((array) $manifest['require-dev'])['refactor-circus/atrium'])->toBe('dev-main');
+        ->and(((array) $manifest['require-dev'])['refactor-circus/atrium'])->toBe('^0.1');
 });
 
 it('conflicts with atrium releases from before the screen registry', function (): void {
