@@ -303,3 +303,5 @@ Tests: not run here, per the build instructions; the gate runs `vendor/bin/pest`
 Deviations:
 
 - `CLAUDE.md` is a symlink to `AGENTS.md`, so `AGENTS.md` is the file committed. Its uncommitted Ring Master sync line ("Keep this checkout on `main`…"), which comes from outside this job, was left out of the commit and is still modified in the tree.
+
+Retry: tasks 5.1 to 5.4 were already in commit `60021c5` and were kept as they are. Checked again: no code, test or doc changed. Pint `--test` passes on `tests/Feature/DocsTest.php`, and `grep` finds neither `x-atrium::audit` nor `atrium.history.show` in the README or the skill. The suite was not run here; the gate runs it. `AGENTS.md`'s duplicated "The chain" bullet is already on `main`, so it was left alone.
