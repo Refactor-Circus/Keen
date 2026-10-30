@@ -23,7 +23,7 @@
             </form>
         </x-atrium::card>
 
-        <x-keen::audit.entries:entries="collect($entries->items())->map->toAuditEntry()->all()" />
+        <x-keen::audit.entries :entries="collect($entries->items())->map->toAuditEntry()->all()" />
 
         <x-atrium::pagination :paginator="$entries" />
 

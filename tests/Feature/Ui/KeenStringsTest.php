@@ -31,6 +31,14 @@ it('ships the audit components', function (): void {
     );
 });
 
+it('uses its own audit components, not atrium\'s removed ones', function (): void {
+    $offending = array_keys(array_filter(keenViews(), fn (string $contents): bool => str_contains($contents, 'x-atrium::audit')));
+
+    expect($offending)->toBe([])
+        ->and(keenViews()['ui/index.blade.php'])->toMatch('/<x-keen::audit\.entries\s/')
+        ->and(keenViews()['ui/show.blade.php'])->toMatch('/<x-keen::audit\.changes\s/');
+});
+
 it('uses no atrium translation key in its views', function (): void {
     $offending = array_keys(array_filter(keenViews(), fn (string $contents): bool => str_contains($contents, 'atrium::atrium.')));
 
