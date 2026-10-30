@@ -139,4 +139,66 @@ return [
         'enabled' => true,
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Atrium history
+    |--------------------------------------------------------------------------
+    |
+    | Every package that audits gets its own history page in the dashboard,
+    | at `atrium.keen.history.show` (/atrium/history/{package}), a "History"
+    | nav item linking to it, and a History section on its Atrium screens.
+    | Packages declare nothing for this.
+    |
+    | screens:     The screens the History section attaches to: `*` (every
+    |              screen), `{package}.*` (every screen of a package) or an
+    |              exact screen key such as `shop.product`. On a detail
+    |              screen it shows that record's history; on a list screen,
+    |              the package's.
+    | slot:        The slot it renders in, on every screen declaring it.
+    | exclude:     Screen-key patterns (Str::is) it never shows on. Keen's
+    |              own screens and Atrium's dashboard and settings screens
+    |              are workspace chrome, not records.
+    | tabs:        Screens that get an "Activity" tab: screen key =>
+    |              ['scope' => true] lists what was recorded in the screen's
+    |              record (an organization, say), ['scope' => false] the
+    |              record's own history. Only the host's own check on the
+    |              screen keeps one record's activity from another's viewers.
+    | nav.enabled: Add the "History" items at all.
+    | nav.sort:    Their position in the sidebar.
+    | nav.exclude: Package keys that get no item.
+    | nav.groups:  Package key => the nav group its item sits in, as a
+    |              translation key or a plain label; the package's label
+    |              otherwise.
+    |
+    | The section, a tab and an item show only while the package audits and
+    | its history rule lets the viewer read it. `screens`, `slot` and `tabs`
+    | are read once at boot; `exclude` and `nav` each time they are used.
+    |
+    | A bad target or slot throws an InvalidArgumentException at boot in the
+    | local and testing environments. Elsewhere it is reported once and
+    | skipped, and the rest registers: a bad slot skips the section on every
+    | screen, but not the tabs.
+    |
+    */
+
+    'atrium' => [
+        'history' => [
+            'screens' => ['*'],
+            'slot' => 'after',
+            'exclude' => ['keen.*', 'atrium.*'],
+            'tabs' => [
+                'roster.organization' => ['scope' => true],
+            ],
+            'nav' => [
+                'enabled' => true,
+                'sort' => 90,
+                'exclude' => [],
+                'groups' => [
+                    'showroom' => 'showroom::showroom.catalog',
+                    'pennantplus' => 'pennantplus::pennantplus.group',
+                ],
+            ],
+        ],
+    ],
+
 ];

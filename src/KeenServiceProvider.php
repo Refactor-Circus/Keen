@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Keen;
 
+use RefactorCircus\Keen\Atrium\HistoryExtensions;
 use RefactorCircus\Keen\Atrium\KeenPlugin;
 use RefactorCircus\Keen\Domains\DomainServiceProvider;
 use RefactorCircus\Keen\Mcp\KeenServer;
@@ -40,6 +41,9 @@ class KeenServiceProvider extends PackageServiceProvider
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'keen');
         $this->loadTranslationsFrom(__DIR__.'/../lang', 'keen');
 
+        // After the translations: the section and tab labels are Keen's strings.
+        $this->registerHistoryExtensions();
+
         if (! $this->app->runningInConsole()) {
             return;
         }
@@ -59,5 +63,20 @@ class KeenServiceProvider extends PackageServiceProvider
         $this->publishesMigrations([
             __DIR__.'/../database/migrations' => database_path('migrations'),
         ], ['keen', 'keen-migrations']);
+    }
+
+    /**
+     * Keen's History section and Activity tabs on other packages' Atrium
+     * screens, behind the same guard as the plugin: Atrium installed and
+     * `keen.ui.enabled` true. Atrium is checked by name, and HistoryExtensions
+     * is only loaded past the guard, so neither loads without Atrium.
+     */
+    private function registerHistoryExtensions(): void
+    {
+        if (! class_exists('RefactorCircus\\Atrium\\Atrium') || $this->config()->get($this->package()->configKey('ui.enabled')) !== true) {
+            return;
+        }
+
+        HistoryExtensions::registerIfSupported();
     }
 }

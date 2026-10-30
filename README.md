@@ -11,7 +11,7 @@ Install Keen and every action of every suite package (Atrium, Cortex, Impex, Pen
 - **Append-only and hash-chained.** Each entry's hash covers the one before it, so editing or removing any entry breaks the chain. `php artisan keen:verify` finds the first altered entry.
 - **Secrets never reach the log.** Passwords, tokens, client secrets and private keys are redacted, as is anything a package or your config names; a redacted field still shows that it changed.
 - **API, MCP and Atrium parity.** Read and record entries over the JSON API, the MCP server (and so from Cortex agents), or the Atrium dashboard.
-- **Every package keeps its own history.** Once Keen is installed, each package's `GET {prefix}/history` endpoint, `list-{package}-history-tool` MCP tool and Atrium screens show its own entries.
+- **Every package keeps its own history.** Once Keen is installed, each package's `GET {prefix}/history` endpoint and `list-{package}-history-tool` MCP tool show its own entries, and with Atrium installed Keen adds a History page, a History nav item and a History section to its screens. Packages declare nothing for this.
 
 ## Installation
 
@@ -71,11 +71,50 @@ A package of the suite recording one of its own events adds `->source('polycart'
 
 Filters: `source` (a package key or `app`), `action` (exact, or a prefix ending in `.`), `subject_type` + `subject_id`, `actor_type` + `actor_id`, `scope_type` + `scope_id`, `since`, `until`. Listings are cursor paginated: pass `per_page` (up to 100) and the previous page's next cursor (`meta.next_cursor`) as `cursor`.
 
-Any package screen can show its own history with Atrium's component, which renders nothing until Keen is installed:
+## History in Atrium
+
+Atrium is optional: Keen suggests it and never requires it. With Atrium installed and `keen.ui.enabled` on, Keen brings every package's history to the dashboard by itself. Packages add no component, route or nav item for it.
+
+- **History page.** `GET /atrium/history/{package}` (route `atrium.keen.history.show`) lists that package's entries, newest first, filtered by `action`, `subject_type` and `subject_id`, and cursor paginated (`per_page`, `cursor`). It answers 404 for an unknown package or one that doesn't audit, and 403 when the package's history rule refuses the viewer.
+- **History nav items.** Every registered package except Keen gets a "History" item linking to its page. It sits in the package's own nav group, and shows only while the package audits and its history rule lets the viewer read it.
+- **History section.** A "History" section attaches to every Atrium screen (`*`), in the `after` slot. On a detail screen it shows the record's history; on a list screen, or a detail screen without a record, the package's whole history. It is hidden on Keen's own screens and Atrium's dashboard and settings screens, on screens of packages that don't audit, and from viewers the package's history rule refuses.
+- **Activity tab.** Screens named in `keen.atrium.history.tabs` get an "Activity" tab (`?tab=keen.activity`). Scoped, it lists what was recorded in the screen's record, such as everything that happened in an organization (`->in($organization)`); unscoped, the record's own history. A viewer the history rule refuses doesn't see the tab, and gets a 403 for `?tab=keen.activity`.
+
+The History section and the "view all" link read the subject's type as its morph class, so a model with no morph map entry puts its full class name into the link. A record that isn't an audited subject of its screen's package shows an empty history.
+
+Configure all of it under `keen.atrium.history`:
+
+```php
+'atrium' => [
+    'history' => [
+        'screens' => ['*'],                    // '*', '{package}.*' or exact screen keys
+        'slot' => 'after',                     // the slot the section renders in
+        'exclude' => ['keen.*', 'atrium.*'],   // screen-key patterns it never shows on (Str::is)
+        'tabs' => ['roster.organization' => ['scope' => true]],
+        'nav' => [
+            'enabled' => true,
+            'sort' => 90,
+            'exclude' => [],                   // package keys that get no item
+            'groups' => [                      // package key => nav group; the package's label otherwise
+                'showroom' => 'showroom::showroom.catalog',
+                'pennantplus' => 'pennantplus::pennantplus.group',
+            ],
+        ],
+    ],
+],
+```
+
+`screens`, `slot` and `tabs` are read once at boot; `exclude` and `nav` each time they are used. A bad screen target (in `screens` or as a `tabs` key) or a bad `slot` throws an `InvalidArgumentException` naming the key and the value at boot in the `local` and `testing` environments. In any other environment it is reported once through your exception handler and skipped, the valid entries still register, and the application boots. A bad `slot` skips the section on every screen, but the tabs still register.
+
+Your application's own views can still place a trail where they like with Keen's component, which renders nothing while the package doesn't audit or its history rule refuses the viewer:
 
 ```blade
-<x-atrium::audit-trail source="showroom" :subject="$product" />
+<x-keen::audit-trail source="showroom" :subject="$product" />
 ```
+
+Keen's components are `x-keen::audit-trail` (`source`, `subject`, `scope`, `action`, `limit`, `title`), `x-keen::audit.entries` and `x-keen::audit.changes`.
+
+Keen needs an Atrium with the screen registry: `composer.json` conflicts with `refactor-circus/atrium` below `0.1.0`, and an older Atrium that is installed anyway boots without the History section and tabs.
 
 ## Authorization
 
@@ -136,6 +175,8 @@ Entries are appended in chunks of 500 (`AuditLog::appendMany()`: one chain lock 
 ```bash
 composer test
 ```
+
+`composer test` also runs `composer test:without-atrium`, a suite that boots Keen with Atrium's classes made unloadable in-process. That run can't see an Atrium class leaking in through a classmap or Composer `files` autoload. The authoritative proof that Keen runs without Atrium is the `without-atrium` CI job, which uninstalls Atrium (`composer remove --dev refactor-circus/atrium --no-update`) before running the same suite.
 
 ## License
 

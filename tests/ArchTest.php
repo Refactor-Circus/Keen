@@ -19,6 +19,11 @@ arch('the package source declares strict types')
     ->expect('RefactorCircus\Keen')
     ->toUseStrictTypes();
 
+arch('only the Atrium layer uses Atrium')
+    ->expect('RefactorCircus\Keen')
+    ->not->toUse('RefactorCircus\Atrium')
+    ->ignoring('RefactorCircus\Keen\Atrium');
+
 arch('actions are final classes')
     ->expect(Arch::domainNamespaces('RefactorCircus\Keen', KEEN_DOMAINS, 'Actions'))
     ->classes()

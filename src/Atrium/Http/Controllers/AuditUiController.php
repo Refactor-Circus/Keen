@@ -8,6 +8,8 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use RefactorCircus\Atrium\Domains\Screens\Data\Screen;
+use RefactorCircus\Atrium\Domains\Screens\Services\ScreenExtensions;
 use RefactorCircus\Keen\Atrium\KeenPlugin;
 use RefactorCircus\Keen\Domains\Audit\Actions\ListAuditEntriesAction;
 use RefactorCircus\Keen\Domains\Audit\Actions\RecordAuditEventAction;
@@ -18,8 +20,9 @@ use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
 use RefactorCircus\Keystone\Packages\PackageRegistry;
 
 /**
- * The dashboard's audit log: browse every package's entries, inspect one,
- * and record a note.
+ * The dashboard's audit log: browse every package's entries (the
+ * `keen.entries` screen), inspect one (`keen.entry`), and record a note.
+ * Each screen is resolved only once the request is authorized.
  */
 final class AuditUiController
 {
@@ -35,11 +38,15 @@ final class AuditUiController
         // are about them.
         $entries = app(ListAuditEntriesAction::class)->execute($filters, $whole ? null : $user)->withQueryString();
 
+        $resolved = app(ScreenExtensions::class)->resolve(KeenPlugin::screen('keen.entries', Screen::LIST), $request);
+
         /** @var view-string $view */
         $view = 'keen::ui.index';
 
         return view($view, [
+            'resolved' => $resolved,
             'entries' => $entries,
+            'rows' => $this->rows($entries->items()),
             'filters' => $filters->toArray(),
             'sources' => $this->sources(),
             'mayRecord' => KeenPlugin::authorizer()->can($user, 'create', AuditEntryModel::class),
@@ -52,10 +59,13 @@ final class AuditUiController
 
         abort_unless(KeenPlugin::authorizer()->can($request->user(), 'view', $model), 403);
 
+        $resolved = app(ScreenExtensions::class)->resolve(KeenPlugin::screen('keen.entry', Screen::DETAIL)->record($model), $request);
+
         /** @var view-string $view */
         $view = 'keen::ui.show';
 
         return view($view, [
+            'resolved' => $resolved,
             'entry' => app(ShowAuditEntryAction::class)->execute($model),
             'personal' => KeenPlugin::authorizer()->can($request->user(), 'viewPersonalData', $model),
             'sources' => $this->sources(),
@@ -76,6 +86,26 @@ final class AuditUiController
         return redirect()
             ->route('atrium.keen.entries.index')
             ->with('status', __('keen::keen.recorded'));
+    }
+
+    /**
+     * Each entry on the page by id, as the model its `row.actions` sections
+     * receive.
+     *
+     * @param  array<array-key, mixed>  $items
+     * @return array<int, AuditEntryModel>
+     */
+    private function rows(array $items): array
+    {
+        $rows = [];
+
+        foreach ($items as $entry) {
+            if ($entry instanceof AuditEntryModel) {
+                $rows[(int) $entry->getKey()] = $entry;
+            }
+        }
+
+        return $rows;
     }
 
     /**
