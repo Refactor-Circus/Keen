@@ -21,6 +21,12 @@ $prefix = 'RefactorCircus\\Atrium\\';
 foreach (ClassLoader::getRegisteredLoaders() as $loader) {
     $mapped = array_filter(array_keys($loader->getClassMap()), fn (string $class): bool => str_starts_with($class, $prefix));
 
+    // Loaders that know nothing of Atrium (a tool's phar, such as Herd's
+    // dump.phar prepended to every PHP run) can never load it: skip them.
+    if (! array_key_exists($prefix, $loader->getPrefixesPsr4()) && $mapped === []) {
+        continue;
+    }
+
     if ($loader->isClassMapAuthoritative() || $loader->getApcuPrefix() !== null || $mapped !== []) {
         throw new RuntimeException('The WithoutAtrium suite cannot run with an optimized, authoritative or APCu classmap: run `composer dump-autoload` first.');
     }
