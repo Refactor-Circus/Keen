@@ -7,12 +7,33 @@
 - Moved to the Refactor Circus organisation: the package is now `refactor-circus/keen` with the PHP namespace `RefactorCircus\Keen` (it was `jayi/keen` and `JayI\Keen`). Update `composer.json` requirements and `use` statements. Old class names are not kept as aliases, so stored values written under them - polymorphic `*_type` columns, audit subjects, Pennant feature names - need updating to the new names.
 - Actions take Data objects, not arrays: `ListAuditEntriesAction` takes a `ListAuditEntriesData` and `RecordAuditEventAction` a `RecordAuditEventData` (`Domains\Audit\Data`). Their validation moved from the Actions' `rules()` to the Data's, and the `AuditEntriesListing`/`AuditEntriesListed`/`AuditEventRecording` action events carry the Data. `Keen::record()` and the `AuditTrail` are unchanged.
 - `list-audit-entries-tool` answers with the next cursor under `meta.next_cursor` (beside `meta.per_page` and `meta.prev_cursor`), not a top-level `next_cursor`.
+- Keen now owns the history UI that refactor-circus/atrium removed with its screen registry. Each removed piece is replaced as follows; no aliases are kept:
+  - the `atrium.history.show` route: `atrium.keen.history.show`, at the same path `/atrium/history/{package}`, so bookmarked URLs keep working
+  - `<x-atrium::audit-trail>`: Keen's History section attaches itself to every package's Atrium screens, so hosts remove their inline trails. For an application's own views, use `<x-keen::audit-trail>` with the same props.
+  - `<x-atrium::audit.entries>` and `<x-atrium::audit.changes>`: `<x-keen::audit.entries>` and `<x-keen::audit.changes>`
+  - `Plugin::historyNavItem()`: Keen adds a "History" nav item for every package itself
+- `composer.json` conflicts with `refactor-circus/atrium` `<0.2.0`, Atrium releases without the screen registry. Atrium stays a suggestion; `dev-main` installs are not affected.
 
 ### Added
 
 - `keen.tables` names Keen's tables (`entries` => `keen_entries`, `chain` => `keen_chain`); rename them before migrating. `RefactorCircus\Keen\Support\Tables::name()` reads them, and a published config that lists only some keeps the defaults for the rest.
 - `AuditLog::appendMany()` appends many entries in order with one chain lock and one bulk insert.
 - `keen.policies` is documented as the place to swap `AuditEntryModel`'s policy; every model has one there.
+- History in Atrium, with no declaration from the packages:
+  - a history page per package: `GET /atrium/history/{package}`, route `atrium.keen.history.show`
+  - a "History" nav item per auditing package, in the package's nav group
+  - a `keen.history` History section on every Atrium screen. It shows the record's history on a detail screen and the package's on a list screen.
+  - a `keen.activity` "Activity" tab on configured screens (by default `roster.organization`, listing what was recorded in the organization)
+
+  All of them show only while the package audits and its history rule lets the viewer read it.
+- The components `x-keen::audit-trail` (`source`, `subject`, `scope`, `action`, `limit`, `title`), `x-keen::audit.entries` (`entries`, `withoutSubject`, plus `screen` and `rows` for row sections) and `x-keen::audit.changes` (`changes`).
+- Config `keen.atrium.history`:
+  - `screens` (default `['*']`), `slot` (`after`), `exclude` (`['keen.*', 'atrium.*']`) and `tabs` (`['roster.organization' => ['scope' => true]]`)
+  - `nav.enabled` (true), `nav.sort` (90), `nav.exclude` (`[]`) and `nav.groups` (Showroom's and PennantPlus's groups)
+
+  A bad screen target or slot throws an `InvalidArgumentException` at boot in `local` and `testing`. Elsewhere it is reported once and skipped, and the application boots.
+- Keen's Atrium pages declare the screens `keen.entries`, `keen.entry` and `keen.history`, so other packages can add tabs and sections to them.
+- `composer test` runs `test:without-atrium`, which boots Keen with Atrium unloadable. A `without-atrium` CI job uninstalls Atrium and runs it too.
 
 - Events implementing refactor-circus/keystone's `UnauditedActionEvent` (a per-row or per-page step of a larger job, such as one import row) are not recorded; the Actions the step runs still are.
 

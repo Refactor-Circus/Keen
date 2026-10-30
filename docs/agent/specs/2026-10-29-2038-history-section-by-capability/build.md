@@ -258,3 +258,48 @@ Tests:
 - Checked only: Pint `--test` passes on `src/Atrium`, `src/KeenServiceProvider.php`, `config/keen.php`, `tests/Pest.php`, `tests/ArchTest.php`, `tests/Feature/Ui` and `tests/Fixtures/Screens`.
 
 Deviations: none new; the criterion 10 reading in "Group 4 (salvaged)" stands. `AGENTS.md` is still modified in the tree but is outside this group, so it was left uncommitted.
+
+## Group 5
+
+Docs and the full gate (criteria 17, 18).
+
+Files:
+
+- `tests/Feature/DocsTest.php` (new): over a dataset of `README.md` and `resources/boost/skills/keen-development/SKILL.md`, each file is non-empty and contains neither `x-atrium::audit` nor `atrium.history.show`. It checks nothing else about the prose.
+- `README.md`:
+  - the "Every package keeps its own history" bullet names the History page, nav item and section
+  - the `<x-atrium::audit-trail>` example is replaced by a new "History in Atrium" section covering:
+    - Atrium is only suggested
+    - the history page and route `atrium.keen.history.show`, with its filters, 404 and 403
+    - the History nav items and the History section, including the morph-class subject note from criterion 11
+    - the Activity tab and its 403
+    - the full `keen.atrium.history` config, which keys are read at boot, and bad-entry behaviour in local/testing and elsewhere
+    - `x-keen::audit-trail` (and the two other components) for apps' own views
+    - the `<0.2.0` conflict
+  - "Testing" adds `test:without-atrium` and names the `without-atrium` CI job as the authoritative no-Atrium proof
+- `resources/boost/skills/keen-development/SKILL.md`: the Blade line now shows `x-keen::audit-trail`. A new "History in Atrium" section covers the same points as the README and tells agents never to add a trail, history route or nav item to a host's screens. The description and "Operate" mention the Atrium history and the CI lane.
+- `CLAUDE.md` is a symlink to `AGENTS.md`, so the edit is in `AGENTS.md`'s "Role in the suite":
+  - the first bullet no longer says Atrium reads history through `AuditTrail`
+  - one bullet covers the Atrium layer: the suggest and conflict, the `src/Atrium` boundary and boot guard, the history page and route, the nav items, `HistoryExtensions`' section and tab with their config, the `x-keen::` components replacing Atrium's, Keen's own screens, bad-entry behaviour and `ResetsScreenExtensions`
+  - one bullet covers the without-Atrium suite and the CI lane
+- `CHANGELOG.md`, under Unreleased:
+  - Breaking: the replacements for Atrium's removed `atrium.history.show`, `<x-atrium::audit-trail>`, `<x-atrium::audit.entries>` / `<x-atrium::audit.changes>` and `Plugin::historyNavItem()`, and the `refactor-circus/atrium <0.2.0` conflict
+  - Added: the route, nav items, section and tab, the three components with their props, every `keen.atrium.history` key with its default and the bad-entry behaviour, Keen's declared screens, and the without-atrium suite and CI job
+
+Changed existing tests, for the PR (criterion 17):
+
+- `tests/Feature/SurfacesTest.php`, "shows each package's history in its own atrium screens": renders `<x-keen::audit-trail>` instead of `<x-atrium::audit-trail>` (group 1).
+- `tests/Pest.php`: `uses(TestCase::class, ResetsScreenExtensions::class)->in('Feature')` and `uses(RenamedTablesTestCase::class, ResetsScreenExtensions::class)->in('Modes/RenamedTables')`, so each now also applies `ResetsScreenExtensions`. It also gains the `RebootsWithConfig` helper trait used by the boot-time tests (group 4). No test changed.
+- `tests/ArchTest.php`: gains only `arch('only the Atrium layer uses Atrium')`; the existing rules are unchanged (group 4).
+- No assertion that reads audit markup through Keen's index and show pages changed: the ported `x-keen::` markup is identical (group 1).
+
+Every other test file in the diff against `main` is new.
+
+Tests: not run here, per the build instructions; the gate runs `vendor/bin/pest` and `composer test`, and 5.4 is ticked on that basis. Checked only:
+
+- Pint `--test` passes on `tests/Feature/DocsTest.php`
+- `grep` finds neither removed name in the README or the skill
+
+Deviations:
+
+- `CLAUDE.md` is a symlink to `AGENTS.md`, so `AGENTS.md` is the file committed. Its uncommitted Ring Master sync line ("Keep this checkout on `main`…"), which comes from outside this job, was left out of the commit and is still modified in the tree.

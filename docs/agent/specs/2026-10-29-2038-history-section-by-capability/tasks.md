@@ -56,7 +56,7 @@ depends on: 4
 files: README.md, resources/boost/skills/keen-development/SKILL.md, CLAUDE.md, CHANGELOG.md, tests/Feature/DocsTest.php
 criteria: 17, 18
 
-- [ ] 5.1 Write tests: tests/Feature/DocsTest.php asserts README.md and the Boost skill contain neither x-atrium::audit nor atrium.history.show.
-- [ ] 5.2 Update README, the Boost skill and CLAUDE.md "Role in the suite" for the History section, activity tab, nav items, atrium.keen.history.show, the keen.atrium.history config and its bad-entry behaviour, the Atrium conflict and the without-atrium CI lane.
-- [ ] 5.3 Add the CHANGELOG.md entry naming the new route and components, the config keys, the replacements for Atrium's removed history UI and the refactor-circus/atrium <0.2.0 conflict, and list every changed existing test by file and test name for the PR (criterion 17).
-- [ ] 5.4 Run vendor/bin/pest and composer test; all green.
+- [x] 5.1 Write tests: tests/Feature/DocsTest.php asserts README.md and the Boost skill contain neither x-atrium::audit nor atrium.history.show.
+- [x] 5.2 Update README, the Boost skill and CLAUDE.md "Role in the suite" for the History section, activity tab, nav items, atrium.keen.history.show, the keen.atrium.history config and its bad-entry behaviour, the Atrium conflict and the without-atrium CI lane.
+- [x] 5.3 Add the CHANGELOG.md entry naming the new route and components, the config keys, the replacements for Atrium's removed history UI and the refactor-circus/atrium <0.2.0 conflict, and list every changed existing test by file and test name for the PR (criterion 17).
+- [x] 5.4 Run vendor/bin/pest and composer test; all green.
