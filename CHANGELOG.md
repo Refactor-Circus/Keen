@@ -1,6 +1,8 @@
 # Changelog
 
-## [Unreleased](https://github.com/Refactor-Circus/Keen/commits/main)
+## [Unreleased](https://github.com/Refactor-Circus/Keen/compare/v0.1.0...main)
+
+## [v0.1.0](https://github.com/Refactor-Circus/Keen/commits/v0.1.0) - 2026-10-30
 
 ### Breaking
 
