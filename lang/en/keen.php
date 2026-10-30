@@ -45,6 +45,7 @@ return [
     'view_all' => 'View all',
     'newest' => 'Newest',
     'older' => 'Older',
+    'pagination' => 'Pagination',
     'no_changes' => 'No fields changed.',
     'field' => 'Field',
     'before' => 'Before',

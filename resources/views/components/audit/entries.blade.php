@@ -3,6 +3,13 @@
     'entries' => [],
     // Hide the subject column, for a single record's history.
     'withoutSubject' => false,
+    // ?\RefactorCircus\Atrium\Domains\Screens\Data\ResolvedScreen: the screen
+    // whose `row.actions` sections render in each row's last cell. None
+    // render without it, and no column is added either way.
+    'screen' => null,
+    // array<int|string, \Illuminate\Database\Eloquent\Model>: each entry's
+    // row record, keyed by entry id, which its row sections receive.
+    'rows' => [],
 ])
 
 @php
@@ -46,7 +53,12 @@
                     <x-atrium::table.cell>{{ $entry->subjectLabel ?? __('keen::keen.none') }}</x-atrium::table.cell>
                 @endunless
                 <x-atrium::table.cell>{{ $entry->actorLabel ?? __('keen::keen.system') }}</x-atrium::table.cell>
-                <x-atrium::table.cell><x-atrium::badge>{{ $entry->surface }}</x-atrium::badge></x-atrium::table.cell>
+                <x-atrium::table.cell>
+                    <x-atrium::badge>{{ $entry->surface }}</x-atrium::badge>
+                    @if ($screen !== null && isset($rows[$entry->id]))
+                        <x-atrium::screen-sections :screen="$screen" slot="row.actions" :row="$rows[$entry->id]" />
+                    @endif
+                </x-atrium::table.cell>
             </x-atrium::table.row>
         @endforeach
     </x-atrium::table>

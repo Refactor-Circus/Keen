@@ -139,4 +139,39 @@ return [
         'enabled' => true,
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Atrium history
+    |--------------------------------------------------------------------------
+    |
+    | Every package that audits gets its own history page in the dashboard,
+    | at `atrium.keen.history.show` (/atrium/history/{package}), and a
+    | "History" nav item linking to it. Packages declare nothing for this.
+    |
+    | nav.enabled: Add the "History" items at all.
+    | nav.sort:    Their position in the sidebar.
+    | nav.exclude: Package keys that get no item.
+    | nav.groups:  Package key => the nav group its item sits in, as a
+    |              translation key or a plain label; the package's label
+    |              otherwise.
+    |
+    | An item shows only while its package audits and its history rule lets
+    | the viewer read it. These values are read each time the nav renders.
+    |
+    */
+
+    'atrium' => [
+        'history' => [
+            'nav' => [
+                'enabled' => true,
+                'sort' => 90,
+                'exclude' => [],
+                'groups' => [
+                    'showroom' => 'showroom::showroom.catalog',
+                    'pennantplus' => 'pennantplus::pennantplus.group',
+                ],
+            ],
+        ],
+    ],
+
 ];

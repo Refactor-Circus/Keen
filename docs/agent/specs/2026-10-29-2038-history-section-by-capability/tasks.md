@@ -6,11 +6,11 @@ depends on: none
 files: resources/views/components/audit-trail.blade.php, resources/views/components/audit/entries.blade.php, resources/views/components/audit/changes.blade.php, resources/views/ui/index.blade.php, resources/views/ui/show.blade.php, lang/en/keen.php, tests/Feature/Ui/AuditComponentsTest.php, tests/Feature/Ui/KeenStringsTest.php, tests/Feature/SurfacesTest.php
 criteria: 3, 4, 5, 17
 
-- [ ] 1.1 Write tests: port Atrium's AuditComponentsTest to tests/Feature/Ui/AuditComponentsTest.php rendering x-keen:: (criterion 3 cases, criterion 4 view-all href and entry-time link with and without the atrium.keen.entries.show route) and add tests/Feature/Ui/KeenStringsTest.php (no atrium::atrium. keys in Keen views; every keen::keen.* key used exists in lang/en/keen.php).
-- [ ] 1.2 Port audit-trail, audit/entries and audit/changes from Atrium into resources/views/components with the same props and markup, linking view-all to atrium.keen.history.show and the entry time to atrium.keen.entries.show only when that route exists, and using keen::keen.* strings only.
-- [ ] 1.3 Add history, activity, history_for, empty, when, app_badge, view_all, newest, older, no_changes, field, before and after to lang/en/keen.php.
-- [ ] 1.4 Switch ui/index and ui/show to x-keen::audit.entries and x-keen::audit.changes, and change SurfacesTest "shows each package's history in its own atrium screens" to render x-keen::audit-trail (criterion 17, noted for the PR list).
-- [ ] 1.5 Run vendor/bin/pest; all green, including tests/Feature/StylesTest.php over resources/views.
+- [x] 1.1 Write tests: port Atrium's AuditComponentsTest to tests/Feature/Ui/AuditComponentsTest.php rendering x-keen:: (criterion 3 cases, criterion 4 view-all href and entry-time link with and without the atrium.keen.entries.show route) and add tests/Feature/Ui/KeenStringsTest.php (no atrium::atrium. keys in Keen views; every keen::keen.* key used exists in lang/en/keen.php).
+- [x] 1.2 Port audit-trail, audit/entries and audit/changes from Atrium into resources/views/components with the same props and markup, linking view-all to atrium.keen.history.show and the entry time to atrium.keen.entries.show only when that route exists, and using keen::keen.* strings only.
+- [x] 1.3 Add history, activity, history_for, empty, when, app_badge, view_all, newest, older, no_changes, field, before and after to lang/en/keen.php.
+- [x] 1.4 Switch ui/index and ui/show to x-keen::audit.entries and x-keen::audit.changes, and change SurfacesTest "shows each package's history in its own atrium screens" to render x-keen::audit-trail (criterion 17, noted for the PR list).
+- [x] 1.5 Run vendor/bin/pest; all green, including tests/Feature/StylesTest.php over resources/views.
 
 ## Group 2: Composer conflict and the no-Atrium proof
 package: Keen
@@ -18,11 +18,11 @@ depends on: none
 files: composer.json, composer.local.json, phpunit.without-atrium.xml, tests/WithoutAtrium/bootstrap.php, tests/WithoutAtrium/WithoutAtriumTestCase.php, tests/WithoutAtrium/WithoutAtriumTest.php, .github/workflows/tests.yml, tests/Feature/ComposerTest.php
 criteria: 1, 20
 
-- [ ] 2.1 Write tests: tests/Feature/ComposerTest.php (require has only refactor-circus/keystone among suite packages, atrium in suggest and require-dev, conflict refactor-circus/atrium is exactly "<0.2.0", tests.yml has a without-atrium job running composer remove --dev refactor-circus/atrium --no-update and composer test:without-atrium) and tests/WithoutAtrium/WithoutAtriumTest.php (which applies WithoutAtriumTestCase itself) with criterion 20's assertions, the PSR-4 prefix removal first.
-- [ ] 2.2 Add phpunit.without-atrium.xml, tests/WithoutAtrium/bootstrap.php (load the autoloader, drop the RefactorCircus\Atrium\ PSR-4 prefix, throw if findFile still resolves Atrium) and WithoutAtriumTestCase registering McpServiceProvider, KeenServiceProvider and ShopServiceProvider only, outside phpunit.xml.dist's suites.
-- [ ] 2.3 Add the conflict block and the test:without-atrium script to composer.json, call it from test after @test:unit, and regenerate composer.local.json with bin/composer-local.php.
-- [ ] 2.4 Add the without-atrium job to .github/workflows/tests.yml.
-- [ ] 2.5 Run vendor/bin/pest and composer test:without-atrium; all green.
+- [x] 2.1 Write tests: tests/Feature/ComposerTest.php (require has only refactor-circus/keystone among suite packages, atrium in suggest and require-dev, conflict refactor-circus/atrium is exactly "<0.2.0", tests.yml has a without-atrium job running composer remove --dev refactor-circus/atrium --no-update and composer test:without-atrium) and tests/WithoutAtrium/WithoutAtriumTest.php (which applies WithoutAtriumTestCase itself) with criterion 20's assertions, the PSR-4 prefix removal first.
+- [x] 2.2 Add phpunit.without-atrium.xml, tests/WithoutAtrium/bootstrap.php (load the autoloader, drop the RefactorCircus\Atrium\ PSR-4 prefix, throw if findFile still resolves Atrium) and WithoutAtriumTestCase registering McpServiceProvider, KeenServiceProvider and ShopServiceProvider only, outside phpunit.xml.dist's suites.
+- [x] 2.3 Add the conflict block and the test:without-atrium script to composer.json, call it from test after @test:unit, and mirror the composer.json changes into composer.local.json by hand (never regenerate it: it points refactor-circus/atrium at the screen-registry worktree aliased dev-main).
+- [x] 2.4 Add the without-atrium job to .github/workflows/tests.yml.
+- [x] 2.5 Run vendor/bin/pest and composer test:without-atrium; all green.
 
 ## Group 3: History page, Keen screens and History nav items
 package: Keen
@@ -30,11 +30,11 @@ depends on: 1
 files: src/Atrium/KeenPlugin.php, src/Atrium/Http/Controllers/HistoryUiController.php, src/Atrium/Http/Controllers/AuditUiController.php, resources/views/ui/history.blade.php, resources/views/ui/index.blade.php, resources/views/ui/show.blade.php, resources/views/components/audit/entries.blade.php, config/keen.php, lang/en/keen.php, tests/Feature/Ui/HistoryPageTest.php, tests/Feature/Ui/HistoryNavigationTest.php, tests/Feature/Ui/KeenScreensTest.php, tests/Feature/Ui/NothingRegisteredTest.php, tests/Feature/Ui/ScreenAccessTest.php, tests/Fixtures/Screens/ProbeSection.blade.php
 criteria: 6, 7, 8, 13, 14, 15
 
-- [ ] 3.1 Write tests: HistoryPageTest (criteria 6, 7, 15 including the not-shadowed and ?source=other cases), HistoryNavigationTest (criterion 8 cases, groups defaults, query bound), KeenScreensTest (probes per slot, undeclared slots including history, tab open, row probes with $record), NothingRegisteredTest (D-032 structural checks with stated header-cell counts) and ScreenAccessTest (criterion 14).
-- [ ] 3.2 Add HistoryUiController::show ported from Atrium's HistoryController (404s, History::rules() validation, History::allows() 403, ListAuditEntriesAction read with ['source' => $package->key] + $validated) and the ui/history view.
-- [ ] 3.3 Add the history/{package} route named history.show in KeenPlugin::routes() and KeenPlugin::screen(string $key, string $kind): Screen with the access closure over KeenPlugin::authorizer().
-- [ ] 3.4 Declare and resolve keen.entries, keen.entry and keen.history in AuditUiController and HistoryUiController, render header.actions, screen-tabs, screen-tab-panel, before, after and aside per criterion 13, and add the optional screen and rows props to x-keen::audit.entries for row.actions.
-- [ ] 3.5 Add the keen.atrium.history.nav config (enabled, sort 90, exclude, groups with showroom and pennantplus defaults) and the lazily authorized "History" items in KeenPlugin::navigation().
+- [x] 3.1 Write tests: HistoryPageTest (criteria 6, 7, 15 including the not-shadowed and ?source=other cases), HistoryNavigationTest (criterion 8 cases, groups defaults, query bound), KeenScreensTest (probes per slot, undeclared slots including history, tab open, row probes with $record), NothingRegisteredTest (D-032 structural checks with stated header-cell counts) and ScreenAccessTest (criterion 14).
+- [x] 3.2 Add HistoryUiController::show ported from Atrium's HistoryController (404s, History::rules() validation, History::allows() 403, ListAuditEntriesAction read with ['source' => $package->key] + $validated) and the ui/history view.
+- [x] 3.3 Add the history/{package} route named history.show in KeenPlugin::routes() and KeenPlugin::screen(string $key, string $kind): Screen with the access closure over KeenPlugin::authorizer().
+- [x] 3.4 Declare and resolve keen.entries, keen.entry and keen.history in AuditUiController and HistoryUiController, render header.actions, screen-tabs, screen-tab-panel, before, after and aside per criterion 13, and add the optional screen and rows props to x-keen::audit.entries for row.actions.
+- [x] 3.5 Add the keen.atrium.history.nav config (enabled, sort 90, exclude, groups with showroom and pennantplus defaults) and the lazily authorized "History" items in KeenPlugin::navigation().
 - [ ] 3.6 Run vendor/bin/pest; all green.
 
 ## Group 4: History section, activity tab and registration guard
