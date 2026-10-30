@@ -27,7 +27,8 @@ uses(RenamedTablesTestCase::class, ResetsScreenExtensions::class)->in('Modes/Ren
  *
  *     $this->rebootWith(['keen.ui.enabled' => false]);
  *
- * The new application has no migrated database.
+ * The new application gets a fresh database, migrated again, which teardown
+ * rolls back. If boot throws, the test keeps its own application and database.
  */
 trait RebootsWithConfig
 {
@@ -61,6 +62,11 @@ trait RebootsWithConfig
             Facade::clearResolvedInstances();
             Facade::setFacadeApplication($this->app);
         }
+
+        // The old migrations ran on the old application's in-memory database,
+        // which is gone: migrate the new one, so teardown rolls back only that.
+        $this->cachedTestMigratorProcessors = [];
+        $this->defineDatabaseMigrations();
     }
 }
 

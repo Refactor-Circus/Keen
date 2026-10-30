@@ -305,3 +305,21 @@ Deviations:
 - `CLAUDE.md` is a symlink to `AGENTS.md`, so `AGENTS.md` is the file committed. Its uncommitted Ring Master sync line ("Keep this checkout on `main`…"), which comes from outside this job, was left out of the commit and is still modified in the tree.
 
 Retry: tasks 5.1 to 5.4 were already in commit `60021c5` and were kept as they are. Checked again: no code, test or doc changed. Pint `--test` passes on `tests/Feature/DocsTest.php`, and `grep` finds neither `x-atrium::audit` nor `atrium.history.show` in the README or the skill. The suite was not run here; the gate runs it. `AGENTS.md`'s duplicated "The chain" bullet is already on `main`, so it was left alone.
+
+## Rework round 1
+
+The gate found 4 Pest errors, so `test:without-atrium` never ran. All 4 came from Testbench's teardown, which rolls back each migration processor the test ran. No source code changed. Only two test helpers changed.
+
+- `RegistrationGuardTest`, "registers nothing on atrium's screens while the keen ui is off at boot", failed with `no such table: migrations`. `rebootWith()` built a new application with a fresh in-memory database, but teardown still rolled back the old application's migrations against it. In `tests/Pest.php`, `RebootsWithConfig::rebootWith()` now handles a successful reboot this way:
+  - it clears `cachedTestMigratorProcessors`
+  - it calls `defineDatabaseMigrations()` again, so the new database is migrated and teardown rolls back only those migrations
+  - if boot throws, it returns before this step, so the test keeps its own application and database (the boot-time throw test in `HistoryExtensionsTest` relies on that)
+- `HistoryExtensionsTest`'s three production tests failed with `Mockery OutputStyle::askQuestion()`. The test left the application in `production`, so teardown's `migrate:rollback` stopped to ask for production confirmation. `historyExtensionsInProduction()` is replaced by `historyExtensionsRegisterInProduction(array $config)`, which:
+  - sets `production`
+  - fakes exceptions
+  - registers
+  - puts `app.env` and the detected environment back in a `finally`
+
+  The assertions (reported once, what registers) are unchanged and still run against the faked handler.
+
+Tests: `composer test:unit` passes (198 tests). The full `composer test` passes too: PHPStan, Pint, type coverage 100%, Pest, and `test:without-atrium` (6 tests).

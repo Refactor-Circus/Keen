@@ -72,14 +72,29 @@ function historyExtensionsTabs(): array
 }
 
 /**
- * Production, with reported exceptions faked.
+ * Register as historyExtensionsRegister() does, but in production, with
+ * reported exceptions faked. The environment goes back to what it was
+ * afterwards, so teardown's migration rollback does not stop to ask for
+ * production confirmation.
+ *
+ * @param  array<string, mixed>  $config
  */
-function historyExtensionsInProduction(): void
+function historyExtensionsRegisterInProduction(array $config): void
 {
+    $env = app()->environment();
+    $configured = config('app.env');
+
     config()->set('app.env', 'production');
     app()->detectEnvironment(fn (): string => 'production');
 
     Exceptions::fake();
+
+    try {
+        historyExtensionsRegister($config);
+    } finally {
+        config()->set('app.env', $configured);
+        app()->detectEnvironment(fn (): string => $env);
+    }
 }
 
 it('registers one history section on every screen, after the page, by default', function (): void {
@@ -140,9 +155,7 @@ it('throws for a bad entry in testing and local, naming the key and the value', 
 ]);
 
 it('reports a bad screen target once in production, and registers the rest', function (): void {
-    historyExtensionsInProduction();
-
-    historyExtensionsRegister(['screens' => ['Bad Target', 'shop.*']]);
+    historyExtensionsRegisterInProduction(['screens' => ['Bad Target', 'shop.*']]);
 
     Exceptions::assertReportedCount(1);
     Exceptions::assertReported(fn (InvalidArgumentException $e): bool => str_contains($e->getMessage(), 'keen.atrium.history.screens')
@@ -153,9 +166,7 @@ it('reports a bad screen target once in production, and registers the rest', fun
 });
 
 it('reports a bad slot once in production, and registers no section but still the tabs', function (): void {
-    historyExtensionsInProduction();
-
-    historyExtensionsRegister(['slot' => 'Bad Slot']);
+    historyExtensionsRegisterInProduction(['slot' => 'Bad Slot']);
 
     Exceptions::assertReportedCount(1);
     Exceptions::assertReported(fn (InvalidArgumentException $e): bool => str_contains($e->getMessage(), 'keen.atrium.history.slot')
@@ -166,9 +177,7 @@ it('reports a bad slot once in production, and registers no section but still th
 });
 
 it('reports a bad tab target once in production, and registers the other tabs', function (): void {
-    historyExtensionsInProduction();
-
-    historyExtensionsRegister(['tabs' => ['Bad Tab' => ['scope' => true], 'shop.product' => ['scope' => false]]]);
+    historyExtensionsRegisterInProduction(['tabs' => ['Bad Tab' => ['scope' => true], 'shop.product' => ['scope' => false]]]);
 
     Exceptions::assertReportedCount(1);
     Exceptions::assertReported(fn (InvalidArgumentException $e): bool => str_contains($e->getMessage(), 'keen.atrium.history.tabs')
