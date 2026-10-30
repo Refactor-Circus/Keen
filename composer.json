@@ -37,6 +37,9 @@
         "refactor-circus/ringside": "dev-main",
         "refactor-circus/standards": "dev-main"
     },
+    "conflict": {
+        "refactor-circus/atrium": "<0.2.0"
+    },
     "autoload": {
         "psr-4": {
             "RefactorCircus\\Keen\\": "src/"
@@ -81,11 +84,15 @@
         "test:unit": [
             "vendor/bin/pest --parallel"
         ],
+        "test:without-atrium": [
+            "vendor/bin/pest --configuration=phpunit.without-atrium.xml"
+        ],
         "test": [
             "@analyse",
             "@lint:check",
             "@test:types",
-            "@test:unit"
+            "@test:unit",
+            "@test:without-atrium"
         ],
         "clear": [
             "@php vendor/bin/testbench package:purge-skeleton --ansi"
