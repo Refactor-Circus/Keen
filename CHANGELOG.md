@@ -12,7 +12,7 @@
   - `<x-atrium::audit-trail>`: Keen's History section attaches itself to every package's Atrium screens, so hosts remove their inline trails. For an application's own views, use `<x-keen::audit-trail>` with the same props.
   - `<x-atrium::audit.entries>` and `<x-atrium::audit.changes>`: `<x-keen::audit.entries>` and `<x-keen::audit.changes>`
   - `Plugin::historyNavItem()`: Keen adds a "History" nav item for every package itself
-- `composer.json` conflicts with `refactor-circus/atrium` `<0.2.0`, Atrium releases without the screen registry. Atrium stays a suggestion; `dev-main` installs are not affected.
+- `composer.json` conflicts with `refactor-circus/atrium` `<0.1.0`, Atrium releases without the screen registry. Atrium stays a suggestion; `dev-main` installs are not affected.
 
 ### Added
 

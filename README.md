@@ -114,7 +114,7 @@ Your application's own views can still place a trail where they like with Keen's
 
 Keen's components are `x-keen::audit-trail` (`source`, `subject`, `scope`, `action`, `limit`, `title`), `x-keen::audit.entries` and `x-keen::audit.changes`.
 
-Keen needs an Atrium with the screen registry: `composer.json` conflicts with `refactor-circus/atrium` below `0.2.0`, and an older Atrium that is installed anyway boots without the History section and tabs.
+Keen needs an Atrium with the screen registry: `composer.json` conflicts with `refactor-circus/atrium` below `0.1.0`, and an older Atrium that is installed anyway boots without the History section and tabs.
 
 ## Authorization
 

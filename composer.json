@@ -38,7 +38,7 @@
         "refactor-circus/standards": "dev-main"
     },
     "conflict": {
-        "refactor-circus/atrium": "<0.2.0"
+        "refactor-circus/atrium": "<0.1.0"
     },
     "autoload": {
         "psr-4": {

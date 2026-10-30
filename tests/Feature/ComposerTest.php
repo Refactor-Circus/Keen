@@ -39,7 +39,7 @@ it('keeps atrium a suggestion and a dev dependency', function (): void {
 });
 
 it('conflicts with atrium releases from before the screen registry', function (): void {
-    expect(composerManifest()['conflict'] ?? null)->toBe(['refactor-circus/atrium' => '<0.2.0']);
+    expect(composerManifest()['conflict'] ?? null)->toBe(['refactor-circus/atrium' => '<0.1.0']);
 });
 
 it('runs the without-atrium suite from composer test, after the unit tests', function (): void {

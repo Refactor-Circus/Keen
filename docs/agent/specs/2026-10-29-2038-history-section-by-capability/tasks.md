@@ -18,7 +18,7 @@ depends on: none
 files: composer.json, composer.local.json, phpunit.without-atrium.xml, tests/WithoutAtrium/bootstrap.php, tests/WithoutAtrium/WithoutAtriumTestCase.php, tests/WithoutAtrium/WithoutAtriumTest.php, .github/workflows/tests.yml, tests/Feature/ComposerTest.php
 criteria: 1, 20
 
-- [x] 2.1 Write tests: tests/Feature/ComposerTest.php (require has only refactor-circus/keystone among suite packages, atrium in suggest and require-dev, conflict refactor-circus/atrium is exactly "<0.2.0", tests.yml has a without-atrium job running composer remove --dev refactor-circus/atrium --no-update and composer test:without-atrium) and tests/WithoutAtrium/WithoutAtriumTest.php (which applies WithoutAtriumTestCase itself) with criterion 20's assertions, the PSR-4 prefix removal first.
+- [x] 2.1 Write tests: tests/Feature/ComposerTest.php (require has only refactor-circus/keystone among suite packages, atrium in suggest and require-dev, conflict refactor-circus/atrium is exactly "<0.1.0", tests.yml has a without-atrium job running composer remove --dev refactor-circus/atrium --no-update and composer test:without-atrium) and tests/WithoutAtrium/WithoutAtriumTest.php (which applies WithoutAtriumTestCase itself) with criterion 20's assertions, the PSR-4 prefix removal first.
 - [x] 2.2 Add phpunit.without-atrium.xml, tests/WithoutAtrium/bootstrap.php (load the autoloader, drop the RefactorCircus\Atrium\ PSR-4 prefix, throw if findFile still resolves Atrium) and WithoutAtriumTestCase registering McpServiceProvider, KeenServiceProvider and ShopServiceProvider only, outside phpunit.xml.dist's suites.
 - [x] 2.3 Add the conflict block and the test:without-atrium script to composer.json, call it from test after @test:unit, and mirror the composer.json changes into composer.local.json by hand (never regenerate it: it points refactor-circus/atrium at the screen-registry worktree aliased dev-main).
 - [x] 2.4 Add the without-atrium job to .github/workflows/tests.yml.
@@ -58,5 +58,5 @@ criteria: 17, 18
 
 - [x] 5.1 Write tests: tests/Feature/DocsTest.php asserts README.md and the Boost skill contain neither x-atrium::audit nor atrium.history.show.
 - [x] 5.2 Update README, the Boost skill and CLAUDE.md "Role in the suite" for the History section, activity tab, nav items, atrium.keen.history.show, the keen.atrium.history config and its bad-entry behaviour, the Atrium conflict and the without-atrium CI lane.
-- [x] 5.3 Add the CHANGELOG.md entry naming the new route and components, the config keys, the replacements for Atrium's removed history UI and the refactor-circus/atrium <0.2.0 conflict, and list every changed existing test by file and test name for the PR (criterion 17).
+- [x] 5.3 Add the CHANGELOG.md entry naming the new route and components, the config keys, the replacements for Atrium's removed history UI and the refactor-circus/atrium <0.1.0 conflict, and list every changed existing test by file and test name for the PR (criterion 17).
 - [x] 5.4 Run vendor/bin/pest and composer test; all green.

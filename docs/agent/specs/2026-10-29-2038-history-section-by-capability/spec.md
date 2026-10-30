@@ -15,7 +15,7 @@ The gate is `composer test` (static analysis, lint, type coverage, Pest, and the
 1. **Suggest only, and no pre-registry Atrium.** `composer.json`:
    - `require` lists no suite package except `refactor-circus/keystone`
    - `refactor-circus/atrium` stays in `suggest` and `require-dev` (`dev-main`)
-   - a new `conflict` block holds `"refactor-circus/atrium": "<0.2.0"` (D-029). Atrium has no tagged release yet (its CHANGELOG names only the `v0.1.0` placeholder), so the first tagged release can contain the registry only from `0.2.0` on. `dev-main` installs, which is what the suite uses today, are not matched by the constraint.
+   - a new `conflict` block holds `"refactor-circus/atrium": "<0.1.0"` (D-029). Atrium has no tagged release yet (its CHANGELOG names only the `v0.1.0` placeholder), so the first tagged release can contain the registry only from `0.2.0` on. `dev-main` installs, which is what the suite uses today, are not matched by the constraint.
 
    `composer.local.json` is regenerated with `bin/composer-local.php` so it carries the same `conflict`. A test reads `composer.json` and asserts all three points, including the exact `conflict` value.
 2. **Atrium code stays in `src/Atrium`.** `tests/ArchTest.php` gains one rule: `arch('only the Atrium layer uses Atrium')->expect('RefactorCircus\Keen')->not->toUse('RefactorCircus\Atrium')->ignoring('RefactorCircus\Keen\Atrium')`. `KeenServiceProvider` refers to Atrium only through `RefactorCircus\Keen\Atrium\*` class names, behind the existing `registerAtriumPlugin()` guard (`class_exists('RefactorCircus\Atrium\Atrium')` plus `keen.ui.enabled === true`). Keen registers its screen extensions (criteria 9 to 12) behind the same guard, through `HistoryExtensions::registerIfSupported(string $atrium = Atrium::class): void`. It returns without registering anything unless `method_exists($atrium, 'screens')`, so an Atrium release from before the registry boots cleanly and gets no screen extensions (the `conflict` in criterion 1 is the first line of defence; this guard is the second). Feature tests assert:
@@ -205,7 +205,7 @@ The gate is `composer test` (static analysis, lint, type coverage, Pest, and the
     - the new route and components
     - the config keys
     - the replacement for Atrium's removed `atrium.history.show`, `x-atrium::audit-trail`, `x-atrium::audit.*` and `Plugin::historyNavItem()`
-    - the `conflict` on `refactor-circus/atrium <0.2.0`
+    - the `conflict` on `refactor-circus/atrium <0.1.0`
 19. **Arch.** `tests/ArchTest.php` passes, with its existing rules unchanged and only the rule from criterion 2 added:
     - the new classes go in `src/Atrium` (`HistoryExtensions`, `Http/Controllers/HistoryUiController`), outside `Domains/`, so the domain Model, Data and Action rules don't apply to them
     - every file declares strict types
@@ -261,7 +261,7 @@ A bad target or slot throws in local and testing and is reported once and skippe
 
 `keen.ui.enabled` remains the master switch for everything Atrium. The `screens`, `slot` and `tabs` targets are read once at boot, because they are registry targets. `exclude` and `nav` are read each time they are evaluated. Tests that need other boot-time values flush the registry and call `HistoryExtensions::register()` again.
 
-**Composer** (`composer.json`, and `composer.local.json` regenerated): adds `"conflict": {"refactor-circus/atrium": "<0.2.0"}`; adds the `test:without-atrium` script and calls it from `test`. Nothing else in `require`, `require-dev` or `suggest` changes.
+**Composer** (`composer.json`, and `composer.local.json` regenerated): adds `"conflict": {"refactor-circus/atrium": "<0.1.0"}`; adds the `test:without-atrium` script and calls it from `test`. Nothing else in `require`, `require-dev` or `suggest` changes.
 
 **Classes** (all `final`, strict types, under `src/Atrium`):
 
@@ -325,7 +325,7 @@ Hosts never linked to the route by name except through `historyNavItem()`, which
 
 - **Double checks.** The section's `authorize` and then the trail component both run `History::allows()`, which loads the subject again through `find()`. That is two small queries per audited detail screen. It is accepted so that `x-keen::audit-trail` stays safe when apps place it themselves. `PerformanceTest` must still pass.
 - **Safelist.** Atrium PR #16 drops the `@source` lines for the audit components and `history/show`. Checked on 2026-10-29 against `public/atrium.css` in the Atrium PR worktree, and against a fresh `npm run build:css` of that branch (byte-identical output): `AtriumStyles::missingClasses()` over Atrium's removed `audit-trail`, `audit/entries`, `audit/changes` and `history/show` views returns `[]`. Every utility they use (`break-all`, `flex`, `flex-col`, `flex-wrap`, `gap-2`, `gap-3`, `gap-4`, `hover:underline`, `items-center`, `items-start`, `justify-end`, `mt-5`, `text-sm`, `underline-offset-2`, `w-40`, `w-48`, `w-56`) is covered by Atrium's `@source inline(...)` safelist, not by the removed sources, so it stays compiled. No Atrium follow-up is needed. If the builder adds a utility outside that safelist, `StylesTest` fails, and the builder switches to a safelisted one rather than shipping CSS.
-- **Conflict version.** `<0.2.0` assumes Atrium's first tagged release with the registry is `0.2.0` or later; Atrium has no tags yet. If Atrium tags the registry under another number, the release that tags it updates Keen's constraint. Until then, the `method_exists` guard (criterion 2) covers any pre-registry install.
+- **Conflict version.** `<0.1.0` assumes Atrium's first tagged release with the registry is `0.2.0` or later; Atrium has no tags yet. If Atrium tags the registry under another number, the release that tags it updates Keen's constraint. Until then, the `method_exists` guard (criterion 2) covers any pre-registry install.
 - **Open access.** With `keen.authorization` off, `KeenPlugin::authorizer()->can()` grants everything, so any `permission()` extension on Keen's screens shows to every viewer. This matches how Keen's own pages behave when authorization is off. Registrants that need their own check use `authorize()`.
 - **Wildcard cost.** The section's closure runs on every declared screen. It returns early on `exclude` and on unknown or non-auditing packages before `History::allows()`; criteria 8 and 10 carry the query-count assertions.
 - **Merge order.** This lands with Atrium PR #16 and the host specs. Criterion 6 asserts that `/atrium/history/shop` reaches `HistoryUiController` (not shadowed). Until a host removes its inline trail, a screen could show history twice (inline plus the section). Before Atrium PR #16 merges, Keen's `atrium/history/{package}` path would collide with Atrium's. Both are resolved by the grouped merge.
@@ -340,7 +340,7 @@ Hosts never linked to the route by name except through `historyNavItem()`, which
 - D-025: Keen's screens declare the standard slots only, with `aside` on `keen.entry`; no `history` slot (criterion 13, Out of scope).
 - D-027: route name `atrium.keen.history.show` confirmed (criterion 6, Design).
 - D-028: folded into D-021. Its production behaviour (warn, skip, keep booting) is what D-021 does outside local/testing; in local/testing the suite rule (throw) applies.
-- D-029: `conflict` on `refactor-circus/atrium <0.2.0` (criterion 1, Design, Risks).
+- D-029: `conflict` on `refactor-circus/atrium <0.1.0` (criterion 1, Design, Risks).
 - D-030: a hidden `keen.activity` tab requested with `?tab=` answers 403, Atrium's behaviour (criterion 12, Design).
 - D-031: criterion 16 calls the reset hooks directly in one test.
 - D-032: criterion 13 adds `NothingRegisteredTest`, a structural no-markup-change test independent of criterion 17.

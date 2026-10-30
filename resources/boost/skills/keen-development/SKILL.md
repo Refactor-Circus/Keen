@@ -46,7 +46,7 @@ Atrium is a `suggest`, never a requirement. With Atrium installed and `keen.ui.e
 - Tab: `keen.activity` ("Activity") on each `keen.atrium.history.tabs` target. `['scope' => true]` lists entries recorded in the screen's record (`->in($organization)`); `['scope' => false]` the record's own history. A refused viewer doesn't see it and gets 403 for `?tab=keen.activity`.
 - Config `keen.atrium.history`: `screens` (default `['*']`; `*`, `{package}.*` or screen keys), `slot` (`after`), `exclude` (`['keen.*', 'atrium.*']`, `Str::is` patterns), `tabs` (`['roster.organization' => ['scope' => true]]`), `nav.enabled`, `nav.sort` (90), `nav.exclude` (package keys), `nav.groups` (package key => group). `screens`, `slot` and `tabs` are read at boot.
 - A bad screen target or slot throws `InvalidArgumentException` at boot in `local` and `testing`; elsewhere it is reported once and skipped, and boot continues (a bad slot skips the section, not the tabs).
-- Keen conflicts with `refactor-circus/atrium` below `0.2.0` (no screen registry); an older Atrium installed anyway gets no section or tabs.
+- Keen conflicts with `refactor-circus/atrium` below `0.1.0` (no screen registry); an older Atrium installed anyway gets no section or tabs.
 
 ## Authorization
 
