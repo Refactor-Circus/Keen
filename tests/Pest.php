@@ -16,8 +16,11 @@ use RefactorCircus\Keystone\Testing\Parity;
 
 // Whatever a test registers on Atrium's screens is gone after it; what the
 // providers registered at boot (Keen's History section and tabs) stays.
-uses(TestCase::class, ResetsScreenExtensions::class)->in('Feature');
-uses(RenamedTablesTestCase::class, ResetsScreenExtensions::class)->in('Modes/RenamedTables');
+// Pest loads this file for the without-Atrium suite too, where the trait is gone.
+$resets = trait_exists(ResetsScreenExtensions::class) ? [ResetsScreenExtensions::class] : [];
+
+uses(TestCase::class, ...$resets)->in('Feature');
+uses(RenamedTablesTestCase::class, ...$resets)->in('Modes/RenamedTables');
 
 /**
  * Lets a test boot the application again with config set before the
