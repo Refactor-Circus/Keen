@@ -35,4 +35,19 @@ return [
     'none' => '—',
     'system' => 'System',
 
+    // History: the audit components, the history page and its nav items.
+    'history' => 'History',
+    'activity' => 'Activity',
+    'history_for' => ':package audit log',
+    'empty' => 'Nothing has been recorded yet.',
+    'when' => 'When',
+    'app_badge' => 'App',
+    'view_all' => 'View all',
+    'newest' => 'Newest',
+    'older' => 'Older',
+    'no_changes' => 'No fields changed.',
+    'field' => 'Field',
+    'before' => 'Before',
+    'after' => 'After',
+
 ];

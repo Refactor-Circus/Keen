@@ -29,7 +29,7 @@
         </x-atrium::card>
 
         <x-atrium::card :title="__('keen::keen.changes')">
-            <x-atrium::audit.changes :changes="$entry->changes ?? []" />
+            <x-keen::audit.changes :changes="$entry->changes ?? []" />
 
             @if (! empty($entry->context))
                 <pre class="mt-4 overflow-x-auto text-xs" data-testid="audit-context">{{ json_encode($entry->context, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) }}</pre>

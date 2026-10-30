@@ -127,7 +127,7 @@ it('shows each package\'s history in its own atrium screens', function (): void 
     $product = ProductModel::query()->create(['name' => 'Cog']);
     ProductCreatedActionEvent::dispatch($product);
 
-    $html = Blade::render('<x-atrium::audit-trail source="shop" :subject="$product" />', ['product' => $product]);
+    $html = Blade::render('<x-keen::audit-trail source="shop" :subject="$product" />', ['product' => $product]);
 
     expect($html)->toContain('product.created')->toContain('/atrium/keen/entries/');
 });
