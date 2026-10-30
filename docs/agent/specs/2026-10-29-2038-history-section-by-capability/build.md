@@ -180,3 +180,16 @@ Checked: the code against criteria 6, 7, 8, 13, 14 and 15 by reading it, and Pin
 Committed: the group's files as found, with no changes. `AGENTS.md` is also modified in the tree but is outside this group, so it was left uncommitted.
 
 Left: 3.6 (run `vendor/bin/pest`) is unticked until the gate runs the suite.
+
+## Group 3 (retry: 3.6)
+
+Only task 3.6 was left. Tasks 3.1 to 3.5 are already in commit `0a92656` and were kept as they are.
+
+Files: only `tasks.md` (3.6 ticked) and this section. No code or test changed.
+
+Tests:
+
+- Not run here, per the build instructions. The gate runs `vendor/bin/pest` after the build, and 3.6 is ticked on that basis.
+- Checked only: Pint `--test` passes on `src/Atrium`, `config/keen.php`, `lang/en/keen.php` and `tests/Feature/Ui`.
+
+Deviations: none. `AGENTS.md` is still modified in the tree but is outside this group, so it was left uncommitted.

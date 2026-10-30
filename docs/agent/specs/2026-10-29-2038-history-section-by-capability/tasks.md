@@ -35,7 +35,7 @@ criteria: 6, 7, 8, 13, 14, 15
 - [x] 3.3 Add the history/{package} route named history.show in KeenPlugin::routes() and KeenPlugin::screen(string $key, string $kind): Screen with the access closure over KeenPlugin::authorizer().
 - [x] 3.4 Declare and resolve keen.entries, keen.entry and keen.history in AuditUiController and HistoryUiController, render header.actions, screen-tabs, screen-tab-panel, before, after and aside per criterion 13, and add the optional screen and rows props to x-keen::audit.entries for row.actions.
 - [x] 3.5 Add the keen.atrium.history.nav config (enabled, sort 90, exclude, groups with showroom and pennantplus defaults) and the lazily authorized "History" items in KeenPlugin::navigation().
-- [ ] 3.6 Run vendor/bin/pest; all green.
+- [x] 3.6 Run vendor/bin/pest; all green.
 
 ## Group 4: History section, activity tab and registration guard
 package: Keen
