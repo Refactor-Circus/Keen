@@ -245,3 +245,16 @@ Deviations:
 - Criterion 10's last refusal, "the record isn't an Eloquent model", cannot occur as written: Atrium types every screen record as `?Model`. `visible()` reads it as "a detail screen whose record has no stored key", and the tests prove it with an unsaved `ProductModel`. A detail screen with no record still shows the package's history (criterion 11).
 
 Left: 4.6 (run `vendor/bin/pest`) is unticked until the gate runs the suite.
+
+## Group 4
+
+Retry for task 4.6 only. Tasks 4.1 to 4.5 are already in commit `69dfcf1` and were kept as they are.
+
+Files: only `tasks.md` (4.6 ticked) and this section. No code or test changed.
+
+Tests:
+
+- Not run here, per the build instructions. The gate runs `vendor/bin/pest` after the build, and 4.6 is ticked on that basis.
+- Checked only: Pint `--test` passes on `src/Atrium`, `src/KeenServiceProvider.php`, `config/keen.php`, `tests/Pest.php`, `tests/ArchTest.php`, `tests/Feature/Ui` and `tests/Fixtures/Screens`.
+
+Deviations: none new; the criterion 10 reading in "Group 4 (salvaged)" stands. `AGENTS.md` is still modified in the tree but is outside this group, so it was left uncommitted.

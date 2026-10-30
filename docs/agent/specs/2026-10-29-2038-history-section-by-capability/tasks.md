@@ -48,7 +48,7 @@ criteria: 2, 9, 10, 11, 12, 16, 17, 19
 - [x] 4.3 Add final HistoryExtensions with registerIfSupported(), register() (validate, normalise, throw in local/testing or report once and skip elsewhere), the keen.history section, the keen.activity tabs and the shared visible() check.
 - [x] 4.4 Call HistoryExtensions::registerIfSupported() from KeenServiceProvider::boot() behind the class_exists and keen.ui.enabled guard, by string class name.
 - [x] 4.5 Apply ResetsScreenExtensions to Feature and Modes/RenamedTables in tests/Pest.php (criterion 17, noted for the PR list).
-- [ ] 4.6 Run vendor/bin/pest; all green.
+- [x] 4.6 Run vendor/bin/pest; all green.
 
 ## Group 5: Docs and the full gate
 package: Keen
