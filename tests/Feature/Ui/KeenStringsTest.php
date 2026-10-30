@@ -15,7 +15,8 @@ function keenViews(): array
     $views = [];
 
     foreach (Finder::create()->files()->in(dirname(__DIR__, 3).'/resources/views')->name('*.blade.php') as $file) {
-        $views[$file->getRelativePathname()] = $file->getContents();
+        // Forward slashes on Windows too, so keys match the paths below.
+        $views[str_replace('\\', '/', $file->getRelativePathname())] = $file->getContents();
     }
 
     ksort($views);
