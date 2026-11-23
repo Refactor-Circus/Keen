@@ -29,12 +29,12 @@ depends on: 2
 files: composer.json, workbench/app/Providers/WorkbenchServiceProvider.php, testbench.yaml, src/Domains/Audit/Http/Controllers/AuditController.php, src/Domains/Audit/Http/Controllers/AuditedPackageController.php, openapi.json, tests/ArchTest.php, tests/Feature/OpenApiTest.php
 criteria: 13, 14, 15, 16
 
-- [ ] 3.1 Write tests. `OpenApiTest`: registers Scramble's provider and `WorkbenchServiceProvider`; runs `scramble:export` to a temp path; the result equals the committed `openapi.json` as decoded JSON (the failure message names `composer client:generate`); two exports are byte-identical; OpenAPI 3.1 with `info.version` `2.0.0`; `paths` exactly `/entries` (get, post), `/entries/{entry}` (get) and `/packages` (get), with a server ending in `/api/keen`; 2xx JSON responses reach the `AuditEntryResource` and `AuditedPackageResource` components (`key`, `label`); `GET /entries` has the `source`, `action`, `cursor` and `per_page` query parameters; `POST /entries` has a body with `action`. `ArchTest`: `RefactorCircus\Keen` does not use `Dedoc\Scramble`.
-- [ ] 3.2 Run `composer require --dev dedoc/scramble` (a release supporting PHP 8.5 and Laravel 13; stop and report if there is none).
-- [ ] 3.3 Configure Scramble in `WorkbenchServiceProvider` (`api_path` from `keen.routes.prefix`, fixed `app.url`, info version `2.0.0`, title and description) and enable the provider in `testbench.yaml`.
-- [ ] 3.4 Add `@response` PHPDoc types to the `AuditController` and `AuditedPackageController` methods. Add a workbench document transformer only if the components still come out wrong.
-- [ ] 3.5 Export with `vendor/bin/testbench scramble:export --path=openapi.json` and commit `openapi.json`.
-- [ ] 3.6 Run `vendor/bin/pest`; all green.
+- [x] 3.1 Write tests. `OpenApiTest`: registers Scramble's provider and `WorkbenchServiceProvider`; runs `scramble:export` to a temp path; the result equals the committed `openapi.json` as decoded JSON (the failure message names `composer client:generate`); two exports are byte-identical; OpenAPI 3.1 with `info.version` `2.0.0`; `paths` exactly `/entries` (get, post), `/entries/{entry}` (get) and `/packages` (get), with a server ending in `/api/keen`; 2xx JSON responses reach the `AuditEntryResource` and `AuditedPackageResource` components (`key`, `label`); `GET /entries` has the `source`, `action`, `cursor` and `per_page` query parameters; `POST /entries` has a body with `action`. `ArchTest`: `RefactorCircus\Keen` does not use `Dedoc\Scramble`.
+- [x] 3.2 Run `composer require --dev dedoc/scramble` (a release supporting PHP 8.5 and Laravel 13; stop and report if there is none).
+- [x] 3.3 Configure Scramble in `WorkbenchServiceProvider` (`api_path` from `keen.routes.prefix`, fixed `app.url`, info version `2.0.0`, title and description) and enable the provider in `testbench.yaml`.
+- [x] 3.4 Add `@response` PHPDoc types to the `AuditController` and `AuditedPackageController` methods. Add a workbench document transformer only if the components still come out wrong.
+- [x] 3.5 Export with `vendor/bin/testbench scramble:export --path=openapi.json` and commit `openapi.json`.
+- [x] 3.6 Run `vendor/bin/pest`; all green.
 
 ## Group 4: Generated TypeScript client and staleness check
 depends on: 3

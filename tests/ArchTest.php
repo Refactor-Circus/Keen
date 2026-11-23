@@ -23,6 +23,10 @@ arch('nothing uses Atrium')
     ->expect('RefactorCircus\Keen')
     ->not->toUse('RefactorCircus\Atrium');
 
+arch('nothing uses Scramble, which only the workbench configures')
+    ->expect('RefactorCircus\Keen')
+    ->not->toUse('Dedoc\Scramble');
+
 arch('actions are final classes')
     ->expect(Arch::domainNamespaces('RefactorCircus\Keen', KEEN_DOMAINS, 'Actions'))
     ->classes()

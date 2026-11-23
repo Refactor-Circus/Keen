@@ -76,3 +76,41 @@ Removed the Atrium plugin, views, config and the Atrium-only tests (criteria 7 t
 
 - `tests/Feature/SurfacesTest.php` is not in the group's file list. Two of its cases tested the Atrium UI: "gives the audit log its own section in atrium" (`/atrium/keen/entries`) and "shows each package's history in its own atrium screens" (`x-keen::audit-trail`). The routes and components they test are removed here, so those cases are deleted, along with their unused imports. The API, MCP, policy and trail cases are unchanged, which matches criterion 6's "API cases pass unchanged".
 - `composer update` resolved `refactor-circus/keystone` to the `v0.1.1` tag instead of the `dev-main 3b48908` the worktree had before, because `require` is `^0.1` (D-007) and `prefer-stable` is set. `composer analyse` passes against it.
+
+## Group 3
+
+OpenAPI export with Scramble (criteria 13 to 16).
+
+### Files
+
+- `composer.json`: `dedoc/scramble` `^0.13.55` in `require-dev` only (v0.13.55 supports PHP `^8.1` and `illuminate/contracts` `^13.0`). `composer.lock` is not committed, so the install only changed the local `vendor/`.
+- `workbench/app/Providers/WorkbenchServiceProvider.php`: the one Scramble configuration. `register()` fixes `app.url` to `http://localhost` and, in a `booting()` callback (so Keen's merged config is there whatever the provider order), sets `scramble.api_path` from `keen.routes.prefix`, `scramble.cache.store` to null (never serve a stale cached document), `scramble.ui.title` `Keen`, `scramble.info.version` `2.0.0` and a description. `boot()` adds a document transformer (see Deviations).
+- `testbench.yaml`: enables `Workbench\App\Providers\WorkbenchServiceProvider`. Scramble's provider is auto-discovered as a dev package.
+- `src/Domains/Audit/Http/Controllers/AuditController.php`: `@response AnonymousResourceCollection<CursorPaginator<AuditEntryResource>>` on `index` (adds the cursor `links` and `meta` that inference missed), `@response JsonResponse<ResourceResponse<AuditEntryResource>, 201>` on `store` (keeps the 201 and the `data` wrapper), `@response AuditEntryResource` on `show`, and a one-line summary for each.
+- `src/Domains/Audit/Http/Controllers/AuditedPackageController.php`: `@response AnonymousResourceCollection<AuditedPackageResource>` on `index`, with a summary and a description.
+- `openapi.json` (new): exported with `vendor/bin/testbench scramble:export --path=openapi.json`. It is OpenAPI 3.1.2, `info.version` `2.0.0`, with the server `http://localhost/api/keen` and the paths `/entries` (get, post), `/entries/{entry}` (get) and `/packages` (get).
+- `tests/ArchTest.php`: "nothing uses Scramble, which only the workbench configures" (`RefactorCircus\Keen` does not use `Dedoc\Scramble`).
+- `tests/Feature/OpenApiTest.php` (new).
+
+### Tests
+
+- `OpenApiTest` uses a file-local `ExportsOpenApi` trait that adds `ScrambleServiceProvider` and `WorkbenchServiceProvider` to the Feature `TestCase`'s providers. It checks that:
+  - a fresh `scramble:export` to a temporary path equals the committed `openapi.json` as decoded JSON (the failure message names `composer client:generate`)
+  - two exports in a row are byte-identical
+  - the document is OpenAPI `3.1.x`, `info.version` is `2.0.0` and the title names Keen
+  - every server URL ends in `/api/keen`
+  - the operations are exactly `GET /entries`, `POST /entries`, `GET /entries/{entry}` and `GET /packages`
+  - the 2xx `application/json` responses of the three entries operations reach `#/components/schemas/AuditEntryResource`, and `GET /packages` reaches `AuditedPackageResource`, whose properties and required fields are exactly `key` and `label` (`$ref`s are followed transitively)
+  - `AuditEntryResource` has `id`, `source`, `action`, `hash` and `created_at`
+  - `GET /entries` has the `source`, `action`, `cursor` and `per_page` query parameters
+  - `POST /entries` has a JSON request body with an `action` property
+  - `dedoc/scramble` is in `require-dev` and not in `require`
+  - the document holds no machine-specific path, key or `file://` URL
+- `tests/Feature/OpenApiTest.php` and `tests/ArchTest.php` pass (30 tests), and so do `composer analyse`, `composer lint:check` and `composer test:types` (100%). Per the job instructions, the full Pest suite is left to the gate.
+
+### Deviations
+
+- Task 3.4 allows a workbench document transformer "only if the components still come out wrong", and they did. Scramble infers resource fields through the model, and its result depended on whether the `keen_entries` table existed in the database it reads. In the CLI export (no table), `changes` came out as `string`. In the test (migrated database), it came out as `array|string`. The staleness test therefore failed on a fresh export. Even without that, the inferred `AuditEntryResource` was wrong in places: `changes` is an object, `actor.id` and `scope.type` are never null, and `context` came out as object-or-string. The transformer in `WorkbenchServiceProvider` replaces the `AuditEntryResource` and `AuditedPackageResource` components with each resource's own `schema()` (the JSON Schema their MCP tools already declare as output), serialized by `Illuminate\JsonSchema`. The document is now the same on every machine and matches the MCP output schemas. Nothing in `src/` changed for this.
+- `scramble:export` still prints Scramble's `MD001` warning ("table `keen_entries` does not exist") when no workbench database is built. The warning is harmless because the transformer makes the components independent of the database. The export exits 0.
+- For Group 4: the components declare `changes` and `context` as a bare `{"type": "object"}`. Depending on its options, `openapi-typescript` may render that as `Record<string, never>`. The generator flags in `client/package.json` should be chosen to give `Record<string, unknown>` (for example `--empty-objects-unknown`).
+- `tests/Feature/OpenApiTest.php` also asserts criterion 13's "require-dev only", because `ComposerTest` belongs to Group 4's file list here.
