@@ -3,8 +3,6 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Auth\User;
-use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
-use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
 use RefactorCircus\Keen\Domains\Audit\Mcp\Tools\ListAuditEntriesTool;
 use RefactorCircus\Keen\Domains\Audit\Mcp\Tools\RecordAuditEventTool;
@@ -96,40 +94,6 @@ it('serves every package\'s history once installed', function (): void {
         ->assertJsonCount(1, 'data')
         ->assertJsonPath('data.0.action', 'product.created')
         ->assertJsonPath('data.0.source', 'shop');
-});
-
-it('gives the audit log its own section in atrium', function (): void {
-    ValidateCsrfToken::except(['*']);
-    app()->detectEnvironment(fn (): string => 'local');
-    $this->actingAs(user());
-
-    $entry = Keen::record('invoice.paid')->with(['amount' => 7])->changes(['status' => ['open', 'paid']])->save();
-
-    $this->get('/atrium/keen/entries')
-        ->assertOk()
-        ->assertSee('Audit log')
-        ->assertSee('invoice.paid')
-        ->assertSee('data-testid="record-note-card"', false);
-
-    $this->get("/atrium/keen/entries/{$entry->id}")
-        ->assertOk()
-        ->assertSee($entry->hash)
-        ->assertSee('data-testid="audit-changes"', false)
-        ->assertSee('&quot;amount&quot;: 7', false);
-
-    $this->post('/atrium/keen/entries', ['action' => 'note.added', 'context' => ['note' => 'Checked']])
-        ->assertRedirect('/atrium/keen/entries');
-
-    $this->get('/atrium/keen/entries')->assertSee('note.added');
-});
-
-it('shows each package\'s history in its own atrium screens', function (): void {
-    $product = ProductModel::query()->create(['name' => 'Cog']);
-    ProductCreatedActionEvent::dispatch($product);
-
-    $html = Blade::render('<x-keen::audit-trail source="shop" :subject="$product" />', ['product' => $product]);
-
-    expect($html)->toContain('product.created')->toContain('/atrium/keen/entries/');
 });
 
 it('reads the trail by scope', function (): void {

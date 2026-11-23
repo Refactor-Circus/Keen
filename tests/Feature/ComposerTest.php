@@ -13,16 +13,6 @@ function composerManifest(): array
     return $manifest;
 }
 
-/**
- * The `without-atrium` job of the tests workflow, or '' when it is missing.
- */
-function withoutAtriumJob(): string
-{
-    $workflow = (string) file_get_contents(dirname(__DIR__, 2).'/.github/workflows/tests.yml');
-
-    return preg_match('/^  without-atrium:\n(?:(?:    .*)?\n)*/m', $workflow, $match) === 1 ? $match[0] : '';
-}
-
 it('requires no suite package but keystone', function (): void {
     $require = array_keys((array) composerManifest()['require']);
 
@@ -30,34 +20,29 @@ it('requires no suite package but keystone', function (): void {
         ->toBe(['refactor-circus/keystone']);
 });
 
-it('keeps atrium a suggestion and a dev dependency', function (): void {
+it('names atrium in no require, require-dev, suggest or conflict', function (string $section): void {
+    expect((array) (composerManifest()[$section] ?? []))->not->toHaveKey('refactor-circus/atrium');
+})->with(['require', 'require-dev', 'suggest', 'conflict']);
+
+it('has no atrium repository and no atrium extra', function (): void {
     $manifest = composerManifest();
+    $urls = array_map(fn (mixed $repository): string => (string) ((array) $repository)['url'], (array) ($manifest['repositories'] ?? []));
 
-    expect($manifest['suggest'])->toHaveKey('refactor-circus/atrium')
-        ->and($manifest['require-dev'])->toHaveKey('refactor-circus/atrium')
-        ->and(((array) $manifest['require-dev'])['refactor-circus/atrium'])->toBe('^0.1');
+    expect(array_values(array_filter($urls, fn (string $url): bool => stripos($url, 'atrium') !== false)))->toBe([])
+        ->and((array) ($manifest['extra'] ?? []))->not->toHaveKey('atrium');
 });
 
-it('conflicts with atrium releases from before the screen registry', function (): void {
-    expect(composerManifest()['conflict'] ?? null)->toBe(['refactor-circus/atrium' => '<0.1.0']);
-});
-
-it('runs the without-atrium suite from composer test, after the unit tests', function (): void {
+it('has no without-atrium suite', function (): void {
     $scripts = (array) composerManifest()['scripts'];
-    $test = array_values((array) $scripts['test']);
 
-    expect($scripts['test:without-atrium'] ?? null)->toBe(['vendor/bin/pest --configuration=phpunit.without-atrium.xml'])
-        ->and($test)->toContain('@test:without-atrium')
-        ->and(array_search('@test:without-atrium', $test, true))->toBeGreaterThan(array_search('@test:unit', $test, true));
+    expect($scripts)->not->toHaveKey('test:without-atrium')
+        ->and(array_values((array) $scripts['test']))->not->toContain('@test:without-atrium')
+        ->and(dirname(__DIR__, 2).'/phpunit.without-atrium.xml')->not->toBeFile()
+        ->and((string) file_get_contents(dirname(__DIR__, 2).'/.github/workflows/tests.yml'))->not->toContain('without-atrium');
 });
 
-it('runs the without-atrium suite in ci with atrium uninstalled', function (): void {
-    $job = withoutAtriumJob();
-
-    expect($job)->not->toBe('')
-        ->toContain('composer remove --dev refactor-circus/atrium --no-update')
-        ->toContain('composer test:without-atrium');
-
-    expect(strpos($job, 'composer remove --dev refactor-circus/atrium --no-update'))
-        ->toBeLessThan(strpos($job, 'composer test:without-atrium'));
+it('describes keen as a json api and mcp, not atrium screens', function (): void {
+    expect((string) composerManifest()['description'])
+        ->toContain('JSON API and MCP')
+        ->not->toContain('Atrium');
 });

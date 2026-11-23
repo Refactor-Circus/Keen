@@ -7,20 +7,14 @@ use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Facade;
 use Laravel\Mcp\Server\Testing\TestResponse;
 use Laravel\Mcp\Server\Tool;
-use RefactorCircus\Atrium\Testing\ResetsScreenExtensions;
 use RefactorCircus\Keen\Mcp\KeenServer;
 use RefactorCircus\Keen\Tests\RenamedTablesTestCase;
 use RefactorCircus\Keen\Tests\TestCase;
 use RefactorCircus\Keystone\Testing\McpTools;
 use RefactorCircus\Keystone\Testing\Parity;
 
-// Whatever a test registers on Atrium's screens is gone after it; what the
-// providers registered at boot (Keen's History section and tabs) stays.
-// Pest loads this file for the without-Atrium suite too, where the trait is gone.
-$resets = trait_exists(ResetsScreenExtensions::class) ? [ResetsScreenExtensions::class] : [];
-
-uses(TestCase::class, ...$resets)->in('Feature');
-uses(RenamedTablesTestCase::class, ...$resets)->in('Modes/RenamedTables');
+uses(TestCase::class)->in('Feature');
+uses(RenamedTablesTestCase::class)->in('Modes/RenamedTables');
 
 /**
  * Lets a test boot the application again with config set before the
@@ -28,7 +22,7 @@ uses(RenamedTablesTestCase::class, ...$resets)->in('Modes/RenamedTables');
  *
  *     uses(RebootsWithConfig::class);
  *
- *     $this->rebootWith(['keen.ui.enabled' => false]);
+ *     $this->rebootWith(['keen.mcp.web.enabled' => true]);
  *
  * The new application gets a fresh database, migrated again, which teardown
  * rolls back. If boot throws, the test keeps its own application and database.
@@ -90,8 +84,7 @@ function mcpTool(string $tool, array $arguments = []): TestResponse
 }
 
 /**
- * Actions missing from the JSON API, MCP or the Atrium section. The audited
- * packages list feeds a front end's navigation and has no Atrium page.
+ * Actions missing from the JSON API or MCP.
  *
  * @return array<string, array<int, string>>
  */
@@ -102,8 +95,5 @@ function parityGaps(): array
     return Parity::gaps($root.'/Domains/*/Actions/*.php', [
         'http' => $root.'/Domains/*/Http/Requests/*.php',
         'mcp' => $root.'/Domains/*/Mcp/Requests/*.php',
-        'ui' => $root.'/Atrium/Http/Controllers/*.php',
-    ], [
-        'ListAuditedPackagesAction' => ['ui'],
     ]);
 }
