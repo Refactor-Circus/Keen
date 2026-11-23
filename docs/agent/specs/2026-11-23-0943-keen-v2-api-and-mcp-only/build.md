@@ -70,6 +70,7 @@ Removed the Atrium plugin, views, config and the Atrium-only tests (criteria 7 t
   - there is no `test:without-atrium` script or entry, no `phpunit.without-atrium.xml`, and no `without-atrium` in the workflow
   - the description contains "JSON API and MCP" and not "Atrium"
 - `composer analyse` and `pint --test` pass. Per the job instructions, the Pest suite is left to the gate.
+- Retry check: no code changed. `src/`, `config/`, `composer.json`, the workflow and `tests/` hold no Atrium wiring (only the recorded `atrium` surface value stays, per D-014). `vendor/refactor-circus` holds only keystone, ringside and standards. `RemovedSurfacesTest`, `ComposerTest`, `ArchTest` and `SurfacesTest` pass, and so do `composer analyse` and `composer lint:check`.
 
 ### Deviations
 
