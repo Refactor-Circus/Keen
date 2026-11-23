@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
 use RefactorCircus\Keen\Domains\Audit\Http\Controllers\AuditController;
+use RefactorCircus\Keen\Domains\Audit\Http\Controllers\AuditedPackageController;
 
 Route::get('entries', [AuditController::class, 'index'])->name('entries.index');
 Route::post('entries', [AuditController::class, 'store'])->name('entries.store');
 Route::get('entries/{entry}', [AuditController::class, 'show'])->whereNumber('entry')->name('entries.show');
+Route::get('packages', [AuditedPackageController::class, 'index'])->name('packages.index');

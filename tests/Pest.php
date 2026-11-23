@@ -90,7 +90,8 @@ function mcpTool(string $tool, array $arguments = []): TestResponse
 }
 
 /**
- * Actions missing from the JSON API, MCP or the Atrium section.
+ * Actions missing from the JSON API, MCP or the Atrium section. The audited
+ * packages list feeds a front end's navigation and has no Atrium page.
  *
  * @return array<string, array<int, string>>
  */
@@ -102,5 +103,7 @@ function parityGaps(): array
         'http' => $root.'/Domains/*/Http/Requests/*.php',
         'mcp' => $root.'/Domains/*/Mcp/Requests/*.php',
         'ui' => $root.'/Atrium/Http/Controllers/*.php',
+    ], [
+        'ListAuditedPackagesAction' => ['ui'],
     ]);
 }
