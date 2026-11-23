@@ -20,7 +20,7 @@
     ],
     "require": {
         "php": "^8.5",
-        "refactor-circus/keystone": "^0.1",
+        "refactor-circus/keystone": "^2.0",
         "laravel/framework": "^13.35"
     },
     "require-dev": {
@@ -115,6 +115,9 @@
             "aliases": {
                 "Keen": "RefactorCircus\\Keen\\Facades\\Keen"
             }
+        },
+        "branch-alias": {
+            "dev-main": "2.0.x-dev"
         }
     },
     "config": {
