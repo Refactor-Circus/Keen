@@ -1,6 +1,9 @@
 laravel: '@testbench'
 
 providers:
+  # Listed explicitly: a Pest run rewrites Testbench's package manifest without
+  # the root package, and `scramble:export` would then find no Keen routes.
+  - RefactorCircus\Keen\KeenServiceProvider
   # Holds the Scramble configuration `scramble:export` writes openapi.json with.
   - Workbench\App\Providers\WorkbenchServiceProvider
 
