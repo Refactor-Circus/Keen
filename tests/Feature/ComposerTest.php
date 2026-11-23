@@ -41,6 +41,71 @@ it('has no without-atrium suite', function (): void {
         ->and((string) file_get_contents(dirname(__DIR__, 2).'/.github/workflows/tests.yml'))->not->toContain('without-atrium');
 });
 
+/**
+ * The steps of the `client` job in the tests workflow, as YAML text.
+ */
+function clientWorkflowJob(): string
+{
+    $workflow = str_replace("\r\n", "\n", (string) file_get_contents(dirname(__DIR__, 2).'/.github/workflows/tests.yml'));
+
+    if (preg_match('/^  client:\n(.*?)(?=^  \S|\z)/ms', $workflow, $match) !== 1) {
+        return '';
+    }
+
+    return $match[1];
+}
+
+it('regenerates the openapi document and the client in order', function (): void {
+    $scripts = (array) composerManifest()['scripts'];
+
+    expect(array_values((array) ($scripts['client:generate'] ?? [])))->toBe([
+        '@php vendor/bin/testbench scramble:export --path=openapi.json',
+        'npm --prefix client ci',
+        'npm --prefix client run generate',
+        '@php bin/client-stamp.php',
+    ])->and(dirname(__DIR__, 2).'/bin/client-stamp.php')->toBeFile();
+});
+
+it('keeps node out of composer test', function (): void {
+    $scripts = (array) composerManifest()['scripts'];
+
+    expect(array_values((array) $scripts['test']))->not->toContain('@client:generate')
+        ->and(array_values((array) $scripts['test:unit']))->not->toContain('@client:generate');
+});
+
+it('fails ci when the generated client is stale', function (): void {
+    $job = clientWorkflowJob();
+
+    expect($job)->not->toBe('', 'The tests workflow has no `client` job.')
+        ->toContain('shivammathur/setup-php')
+        ->toContain('php-version: 8.5')
+        ->toContain('actions/setup-node')
+        ->toContain('node-version: lts/*')
+        ->toContain('composer install');
+
+    $generate = strpos($job, 'composer client:generate');
+    $diff = strpos($job, 'git diff --exit-code -- openapi.json client');
+
+    expect($generate)->toBeInt()
+        ->and($diff)->toBeInt()
+        ->and($generate < $diff)->toBeTrue();
+});
+
+it('ships openapi.json and the client in git archives', function (): void {
+    $lines = array_map(trim(...), file(dirname(__DIR__, 2).'/.gitattributes') ?: []);
+    $ignored = [];
+
+    foreach ($lines as $line) {
+        if (str_contains($line, 'export-ignore')) {
+            $ignored[] = trim((string) strtok($line, " \t"), '/');
+        }
+    }
+
+    expect($ignored)->not->toContain('client')
+        ->not->toContain('openapi.json')
+        ->not->toContain('client/dist');
+});
+
 it('describes keen as a json api and mcp, not atrium screens', function (): void {
     expect((string) composerManifest()['description'])
         ->toContain('JSON API and MCP')

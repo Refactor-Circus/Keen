@@ -268,6 +268,96 @@ it('installs Scramble for development only', function (): void {
         ->and($composer['require'])->not->toHaveKey('dedoc/scramble');
 });
 
+/**
+ * A file of the generated client, as a string.
+ */
+function keenClientFile(string $path): string
+{
+    return (string) file_get_contents(dirname(__DIR__, 2).'/client/'.$path);
+}
+
+/**
+ * @return array<string, mixed>
+ */
+function keenClientManifest(): array
+{
+    /** @var array<string, mixed> $manifest */
+    $manifest = json_decode(keenClientFile('package.json'), true, flags: JSON_THROW_ON_ERROR);
+
+    return $manifest;
+}
+
+it('stamps the client with the committed openapi.json', function (): void {
+    $stamp = trim(keenClientFile('openapi.sha256'));
+    $expected = hash('sha256', str_replace("\r\n", "\n", keenCommittedOpenApi()));
+
+    expect($stamp)->toBe($expected, 'The TypeScript client is out of date: run `composer client:generate` and commit the result.');
+});
+
+it('commits the generated schema and the built client', function (string $path): void {
+    expect(dirname(__DIR__, 2).'/client/'.$path)->toBeFile();
+})->with([
+    'src/schema.d.ts',
+    'src/index.ts',
+    'dist/index.js',
+    'dist/index.d.ts',
+    'package-lock.json',
+    'tsconfig.json',
+]);
+
+it('publishes the client as an esm package built into dist', function (): void {
+    $manifest = keenClientManifest();
+
+    expect($manifest['name'])->toBe('@refactor-circus/keen-client')
+        ->and($manifest['version'])->toBe('2.0.0')
+        ->and($manifest['type'])->toBe('module')
+        ->and($manifest['types'])->toBe('./dist/index.d.ts')
+        ->and($manifest['exports'])->toBe([
+            '.' => [
+                'types' => './dist/index.d.ts',
+                'import' => './dist/index.js',
+            ],
+        ]);
+});
+
+it('depends on openapi-fetch only and pins its generators exactly', function (): void {
+    $manifest = keenClientManifest();
+    $devDependencies = (array) $manifest['devDependencies'];
+
+    expect(array_keys((array) $manifest['dependencies']))->toBe(['openapi-fetch'])
+        ->and($devDependencies)->toHaveKeys(['openapi-typescript', 'typescript']);
+
+    foreach (['openapi-typescript', 'typescript'] as $package) {
+        expect((string) $devDependencies[$package])->toMatch('/^\d+\.\d+\.\d+$/');
+    }
+});
+
+it('generates the schema from openapi.json and builds with tsc', function (): void {
+    expect((array) keenClientManifest()['scripts'])
+        ->toHaveKey('generate', 'openapi-typescript ../openapi.json -o src/schema.d.ts --empty-objects-unknown && tsc -p tsconfig.json');
+});
+
+it('types free-form objects as unknown values, not never', function (): void {
+    expect(keenClientFile('src/schema.d.ts'))->not->toMatch('/^\s+(changes|context): Record<string, never>;/m');
+});
+
+it('exports the typed client and the resource aliases', function (string $file): void {
+    $source = keenClientFile($file);
+
+    expect($source)->toMatch('/export (declare )?function createKeenClient\(/')
+        ->toMatch('/export type KeenClient\b/')
+        ->toMatch('/export type AuditEntry\b/')
+        ->toMatch('/export type AuditedPackage\b/')
+        ->toMatch('/export type \{[^}]*\bpaths\b[^}]*\}/')
+        ->toMatch('/export type \{[^}]*\bcomponents\b[^}]*\}/');
+})->with(['src/index.ts', 'dist/index.d.ts']);
+
+it('ignores the client node_modules', function (): void {
+    $ignored = array_map(trim(...), file(dirname(__DIR__, 2).'/.gitignore') ?: []);
+
+    expect($ignored)->toContain('/client/node_modules');
+});
+
 it('holds no machine-specific value', function (): void {
     $json = keenCommittedOpenApi();
     $root = dirname(__DIR__, 2);
