@@ -52,8 +52,8 @@ depends on: 4
 files: README.md, CHANGELOG.md, resources/boost/skills/keen-development/SKILL.md, CLAUDE.md, AGENTS.md, tests/Feature/DocsTest.php
 criteria: 22, 23, 24, 25, 26
 
-- [ ] 5.1 Write tests. `DocsTest`: the README, Boost skill, `CLAUDE.md` and `AGENTS.md` contain none of `keen.ui.enabled`, `keen.atrium`, `x-keen::`, `atrium.keen.history.show`, `registerAtriumPlugin` or `test:without-atrium`. The README mentions `keen.packages.index`, `openapi.json`, `@refactor-circus/keen-client` and `client:generate`. `CHANGELOG.md` has `### Upgrading to v2.0.0` under `## [Unreleased]`, naming Atrium v2 and `atrium.integrations.keen`.
-- [ ] 5.2 README: describe Keen as API + MCP and remove "History in Atrium". Document `GET {prefix}/packages` and the MCP tool, and add "OpenAPI and TypeScript client" (git-dependency install on the tag, a `createKeenClient({ baseUrl })` example, `composer client:generate`). Name Atrium v2 as the optional UI and keep the security note.
-- [ ] 5.3 CHANGELOG `[Unreleased]`: `### Breaking` (every removed item from the spec's Public API change), `### Added` and `### Upgrading to v2.0.0`.
-- [ ] 5.4 Boost skill, `CLAUDE.md` and `AGENTS.md`: remove the Atrium and without-Atrium bullets, and add the packages endpoint, the OpenAPI/client workflow and the staleness test. Leave the Ring Master block alone.
-- [ ] 5.5 Run `composer test`; all green.
+- [x] 5.1 Write tests. `DocsTest`: the README, Boost skill, `CLAUDE.md` and `AGENTS.md` contain none of `keen.ui.enabled`, `keen.atrium`, `x-keen::`, `atrium.keen.history.show`, `registerAtriumPlugin` or `test:without-atrium`. The README mentions `keen.packages.index`, `openapi.json`, `@refactor-circus/keen-client` and `client:generate`. `CHANGELOG.md` has `### Upgrading to v2.0.0` under `## [Unreleased]`, naming Atrium v2 and `atrium.integrations.keen`.
+- [x] 5.2 README: describe Keen as API + MCP and remove "History in Atrium". Document `GET {prefix}/packages` and the MCP tool, and add "OpenAPI and TypeScript client" (git-dependency install on the tag, a `createKeenClient({ baseUrl })` example, `composer client:generate`). Name Atrium v2 as the optional UI and keep the security note.
+- [x] 5.3 CHANGELOG `[Unreleased]`: `### Breaking` (every removed item from the spec's Public API change), `### Added` and `### Upgrading to v2.0.0`.
+- [x] 5.4 Boost skill, `CLAUDE.md` and `AGENTS.md`: remove the Atrium and without-Atrium bullets, and add the packages endpoint, the OpenAPI/client workflow and the staleness test. Leave the Ring Master block alone.
+- [x] 5.5 Run `composer test`; all green.

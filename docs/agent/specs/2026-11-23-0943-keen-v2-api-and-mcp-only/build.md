@@ -164,3 +164,32 @@ Generated TypeScript client and staleness check (criteria 17 to 21).
 ### Retry
 
 - No code changed. I reviewed the committed work against tasks 4.1 to 4.4 and criteria 17 to 21, and every file in the group's list is tracked. `client/openapi.sha256` (`33a598be…`) equals `shasum -a 256 openapi.json`. `dist/index.d.ts` and `dist/index.js` match `src/index.ts`. `client:generate` has the four steps in order and `test` does not run it. The `client` CI job runs `composer client:generate` before `git diff --exit-code -- openapi.json client`. `.gitignore` lists `/client/node_modules`, and `.gitattributes` export-ignores neither `client/` nor `openapi.json`. Per the job instructions, the Pest suite is left to the gate.
+
+## Group 5
+
+Docs, CHANGELOG and Boost skill (criteria 22 to 26).
+
+### Files
+
+- `README.md`: the intro describes Keen as a JSON API plus MCP tools and names Atrium v2 as the optional UI (`atrium.integrations.keen`). The surfaces table drops the Atrium row and adds `GET api/keen/packages` and `list-audited-packages-tool`, and the four route names are listed. "History in Atrium" is gone. New sections: "Audited packages: `GET {prefix}/packages`" (payload, filtering, sort, 401 under authorization, the MCP tool) and "OpenAPI and TypeScript client" (`openapi.json`, a pnpm git-dependency install on `#v2.0.0&path:/client`, a `createKeenClient({ baseUrl })` example, the exported types, and `composer client:generate` with what it runs and what fails when it is stale). "Authorization" starts with a security note on the defaults. "Testing" drops the without-Atrium suite and describes the staleness test.
+- `CHANGELOG.md`: `[Unreleased]` gains `### Breaking` (the routes, screens, section, tab, nav items, components, view namespace, classes, `registerAtriumPlugin()` call, config keys, publish tags, translations and composer entries), `### Added` (`keen.packages.index`, `list-audited-packages-tool`, `openapi.json`, `@refactor-circus/keen-client`, `composer client:generate`) and `### Upgrading to v2.0.0` (Atrium v2 and its `atrium.integrations.keen.*` config, keeping the API on, replacing the `x-keen::` components, deleting published views and translations, old Atrium URLs).
+- `resources/boost/skills/keen-development/SKILL.md`: the description and intro say API + MCP with Atrium v2 as the optional UI. "Read history" adds `POST`, the packages endpoint and `list-audited-packages-tool`, and drops the Blade components. "History in Atrium" is replaced by "OpenAPI and TypeScript client" (document, client install and use, `composer client:generate`, the staleness test and the `client` CI job). "Authorization" adds the security default. The without-Atrium bullet in "Operate" is removed.
+- `AGENTS.md` (`CLAUDE.md` is a symlink to it, so both change together): "Role in the suite" says API + MCP only. The `StylesTest`, "Keen owns everything audit-related in Atrium" (with its sub-bullets) and without-Atrium bullets are replaced by bullets on the four API routes, the audited packages endpoint and tool, "Keen knows nothing of Atrium" (arch rule, source grep, composer test, Atrium v2 owns the UI), OpenAPI and the client, and the `client:generate` workflow with the staleness test. "Untrusted input" no longer names Atrium controllers. Quick Commands adds `composer client:generate`. The Ring Master block is untouched.
+- `tests/Feature/DocsTest.php`.
+
+### Tests
+
+- `DocsTest` keeps its earlier case (no `x-atrium::audit` or `atrium.history.show`), now over the README, the Boost skill, `CLAUDE.md` and `AGENTS.md`, and checks that:
+  - none of the four contains `keen.ui.enabled`, `keen.atrium`, `x-keen::`, `atrium.keen.history.show`, `registerAtriumPlugin`, `test:without-atrium`, `without-atrium`, `KeenPlugin`, `HistoryExtensions` or "History in Atrium"
+  - the README says JSON API, MCP and Atrium v2; documents `GET {prefix}/packages`, `keen.packages.index` and `list-audited-packages-tool`; has "## OpenAPI and TypeScript client" with `openapi.json`, `@refactor-circus/keen-client`, `#v2.0.0`, `createKeenClient({ baseUrl` and `client:generate`; and keeps the security note (`keen.authorization` off, `keen.routes.enabled` on)
+  - the Boost skill, `CLAUDE.md` and `AGENTS.md` mention `/packages`, `openapi.json`, `client:generate` and `openapi.sha256`
+  - `CLAUDE.md` and `AGENTS.md` keep the Ring Master markers
+  - `## [Unreleased]` (cut at the next release heading) has `### Breaking`, `### Added` and `### Upgrading to v2.0.0`; Breaking names every item of the spec's Public API change plus `lang/en/keen.php`, `refactor-circus/atrium` and `test:without-atrium`; Added names the endpoint, the tool, `openapi.json` and the client; the upgrade note names Atrium v2 and `atrium.integrations.keen`
+- `vendor/bin/pest tests/Feature/DocsTest.php` passes (21 tests) and `pint --test` passes on it. `phpstan` does not analyse `tests/Feature`. Per the job instructions, the full `composer test` is left to the gate.
+
+### Deviations
+
+- `CLAUDE.md` is a symlink to `AGENTS.md`, so there is one file to edit; the test still reads both paths.
+- `AGENTS.md` had the "The chain" bullet twice; the duplicate is removed.
+- The README had no explicit security note before (only "Without them anyone signed in may read and record"). The spec's Risks ask the README to keep saying that a fresh install serves the log to anyone reaching the API middleware, so "Authorization" now opens with that note, and the Boost skill says it too.
+- The install example uses pnpm's `github:Refactor-Circus/Keen#v2.0.0&path:/client`, as the spec's Risks suggest, because npm cannot install a git subfolder.

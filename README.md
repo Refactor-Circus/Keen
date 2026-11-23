@@ -4,14 +4,15 @@
 
 # Keen
 
-A tamper-evident audit log for every package of the Refactor Circus suite, and for your application's own events.
+A tamper-evident audit log for every package of the Refactor Circus suite, and for your application's own events, served as a JSON API and MCP tools.
 
 Install Keen and every action of every suite package (Atrium, Cortex, Impex, PennantPlus, Polycart, Roster, Showroom) is recorded: who did it, to which record, through which surface (`atrium`, `http`, `mcp`, `cortex`, `cli`, `code`), and which fields changed. No package depends on Keen; each announces its actions through the shared events of [refactor-circus/keystone](https://github.com/Refactor-Circus/Keystone), and Keen listens.
 
 - **Append-only and hash-chained.** Each entry's hash covers the one before it, so editing or removing any entry breaks the chain. `php artisan keen:verify` finds the first altered entry.
 - **Secrets never reach the log.** Passwords, tokens, client secrets and private keys are redacted, as is anything a package or your config names; a redacted field still shows that it changed.
-- **API, MCP and Atrium parity.** Read and record entries over the JSON API, the MCP server (and so from Cortex agents), or the Atrium dashboard.
-- **Every package keeps its own history.** Once Keen is installed, each package's `GET {prefix}/history` endpoint and `list-{package}-history-tool` MCP tool show its own entries, and with Atrium installed Keen adds a History page, a History nav item and a History section to its screens. Packages declare nothing for this.
+- **A JSON API and MCP, nothing else.** Read and record entries over the JSON API or the MCP server (and so from Cortex agents). Keen ships no screens: a front end reads the log through the committed OpenAPI document and the generated TypeScript client `@refactor-circus/keen-client`.
+- **Every package keeps its own history.** Once Keen is installed, each package's `GET {prefix}/history` endpoint and `list-{package}-history-tool` MCP tool show its own entries, and `GET {prefix}/packages` lists the packages whose history the caller may read. Packages declare nothing for this.
+- **Atrium v2 is the optional UI.** [Atrium](https://github.com/Refactor-Circus/Atrium) v2 shows the audit log and every package's history from this API, configured under its own `atrium.integrations.keen` keys. Keen neither requires nor knows about it.
 
 ## Installation
 
@@ -65,58 +66,66 @@ A package of the suite recording one of its own events adds `->source('polycart'
 
 | Surface | Read | Record |
 |---|---|---|
-| JSON API (`keen.routes`) | `GET api/keen/entries`, `GET api/keen/entries/{id}` | `POST api/keen/entries` |
-| MCP (`keen.mcp`) | `list-audit-entries-tool`, `show-audit-entry-tool` | `record-audit-event-tool` |
-| Atrium | **Audit log** in the sidebar | the **Record an event** form |
+| JSON API (`keen.routes`) | `GET api/keen/entries`, `GET api/keen/entries/{id}`, `GET api/keen/packages` | `POST api/keen/entries` |
+| MCP (`keen.mcp`) | `list-audit-entries-tool`, `show-audit-entry-tool`, `list-audited-packages-tool` | `record-audit-event-tool` |
+
+The JSON API's routes are `keen.entries.index`, `keen.entries.show`, `keen.entries.store` and `keen.packages.index`, under `keen.routes.prefix` (`api/keen` by default) with the `keen.routes.middleware` (`['api']`).
 
 Filters: `source` (a package key or `app`), `action` (exact, or a prefix ending in `.`), `subject_type` + `subject_id`, `actor_type` + `actor_id`, `scope_type` + `scope_id`, `since`, `until`. Listings are cursor paginated: pass `per_page` (up to 100) and the previous page's next cursor (`meta.next_cursor`) as `cursor`.
 
-## History in Atrium
+## Audited packages: `GET {prefix}/packages`
 
-Atrium is optional: Keen suggests it and never requires it. With Atrium installed and `keen.ui.enabled` on, Keen brings every package's history to the dashboard by itself. Packages add no component, route or nav item for it.
+`GET {prefix}/packages` (route `keen.packages.index`, default `GET /api/keen/packages`) lists the packages whose history the caller may read, so a front end can build a per-package History nav without knowing the suite:
 
-- **History page.** `GET /atrium/history/{package}` (route `atrium.keen.history.show`) lists that package's entries, newest first, filtered by `action`, `subject_type` and `subject_id`, and cursor paginated (`per_page`, `cursor`). It answers 404 for an unknown package or one that doesn't audit, and 403 when the package's history rule refuses the viewer.
-- **History nav items.** Every registered package except Keen gets a "History" item linking to its page. It sits in the package's own nav group, and shows only while the package audits and its history rule lets the viewer read it.
-- **History section.** A "History" section attaches to every Atrium screen (`*`), in the `after` slot. On a detail screen it shows the record's history; on a list screen, or a detail screen without a record, the package's whole history. It is hidden on Keen's own screens and Atrium's dashboard and settings screens, on screens of packages that don't audit, and from viewers the package's history rule refuses.
-- **Activity tab.** Screens named in `keen.atrium.history.tabs` get an "Activity" tab (`?tab=keen.activity`). Scoped, it lists what was recorded in the screen's record, such as everything that happened in an organization (`->in($organization)`); unscoped, the record's own history. A viewer the history rule refuses doesn't see the tab, and gets a 403 for `?tab=keen.activity`.
-
-The History section and the "view all" link read the subject's type as its morph class, so a model with no morph map entry puts its full class name into the link. A record that isn't an audited subject of its screen's package shows an empty history.
-
-Configure all of it under `keen.atrium.history`:
-
-```php
-'atrium' => [
-    'history' => [
-        'screens' => ['*'],                    // '*', '{package}.*' or exact screen keys
-        'slot' => 'after',                     // the slot the section renders in
-        'exclude' => ['keen.*', 'atrium.*'],   // screen-key patterns it never shows on (Str::is)
-        'tabs' => ['roster.organization' => ['scope' => true]],
-        'nav' => [
-            'enabled' => true,
-            'sort' => 90,
-            'exclude' => [],                   // package keys that get no item
-            'groups' => [                      // package key => nav group; the package's label otherwise
-                'showroom' => 'showroom::showroom.catalog',
-                'pennantplus' => 'pennantplus::pennantplus.group',
-            ],
-        ],
-    ],
-],
+```json
+{
+    "data": [
+        {"key": "polycart", "label": "Polycart"},
+        {"key": "roster", "label": "Roster"}
+    ]
+}
 ```
 
-`screens`, `slot` and `tabs` are read once at boot; `exclude` and `nav` each time they are used. A bad screen target (in `screens` or as a `tabs` key) or a bad `slot` throws an `InvalidArgumentException` naming the key and the value at boot in the `local` and `testing` environments. In any other environment it is reported once through your exception handler and skipped, the valid entries still register, and the application boots. A bad `slot` skips the section on every screen, but the tabs still register.
+A package is listed while it is registered with refactor-circus/keystone, its auditing is on (`{key}.audit.enabled`) and its history rule lets the caller read it. Keen itself and the application's `app` source are never listed. The list is sorted by label, then key, and is not paginated. With `keen.authorization` on, a guest gets 401.
 
-Your application's own views can still place a trail where they like with Keen's component, which renders nothing while the package doesn't audit or its history rule refuses the viewer:
+The MCP tool `list-audited-packages-tool` answers the same items as structured content. Each package's own entries come from its `GET {package prefix}/history` endpoint and `list-{package}-history-tool` tool, or from `GET {prefix}/entries?source={key}`.
 
-```blade
-<x-keen::audit-trail source="showroom" :subject="$product" />
+## OpenAPI and TypeScript client
+
+`openapi.json`, at the root of the repository, describes the JSON API as an OpenAPI 3.1 document (`info.version` `2.0.0`). Its paths (`/entries`, `/entries/{entry}`, `/packages`) are relative to a server ending in `/api/keen`, so point your tools at your own `keen.routes.prefix` URL.
+
+`client/` holds `@refactor-circus/keen-client`, a typed [openapi-fetch](https://openapi-ts.dev/openapi-fetch/) client generated from that document. It is not published to a registry: install it as a git dependency on the release tag. npm can't install a subfolder of a git repository, so use pnpm with its `path:` option:
+
+```bash
+pnpm add "@refactor-circus/keen-client@github:Refactor-Circus/Keen#v2.0.0&path:/client"
 ```
 
-Keen's components are `x-keen::audit-trail` (`source`, `subject`, `scope`, `action`, `limit`, `title`), `x-keen::audit.entries` and `x-keen::audit.changes`.
+The package ships its built `dist/`, so it needs no build step. Create a client with the URL of your `keen.routes.prefix`; it assumes no prefix of its own:
 
-Keen needs an Atrium with the screen registry: `composer.json` conflicts with `refactor-circus/atrium` below `0.1.0`, and an older Atrium that is installed anyway boots without the History section and tabs.
+```ts
+import { createKeenClient, type AuditEntry, type AuditedPackage } from '@refactor-circus/keen-client';
+
+const keen = createKeenClient({ baseUrl: 'https://app.test/api/keen' });
+
+const { data: packages } = await keen.GET('/packages');
+const { data: entries } = await keen.GET('/entries', {
+    params: { query: { source: 'roster', per_page: 25 } },
+});
+```
+
+It also exports `KeenClient`, `paths`, `components`, `AuditEntry` and `AuditedPackage`.
+
+When the API changes, regenerate the document and the client together (this needs Node and npm):
+
+```bash
+composer client:generate
+```
+
+It exports `openapi.json` with Scramble against the Testbench workbench, runs `npm --prefix client ci` and `npm --prefix client run generate` (`openapi-typescript` and `tsc`), and writes `client/openapi.sha256`. Commit all of it. `composer test` fails, naming `composer client:generate`, when a fresh export differs from `openapi.json` or the stamp does not match it, and the `client` CI job fails when the regenerated files differ from the committed ones.
 
 ## Authorization
+
+**Security note.** By default `keen.routes.enabled` is on and `keen.authorization` is off, so a fresh install serves the whole log, and records events, for anyone who reaches the `api` middleware. Turn `keen.authorization` on, put the routes behind your own authentication middleware (`keen.routes.middleware`), or turn the routes off before you deploy.
 
 With `keen.authorization` on, every surface acts as the signed-in user and asks the policy in `keen.policies`. The bundled policy defers to Gate abilities when your application defines them:
 
@@ -176,7 +185,7 @@ Entries are appended in chunks of 500 (`AuditLog::appendMany()`: one chain lock 
 composer test
 ```
 
-`composer test` also runs `composer test:without-atrium`, a suite that boots Keen with Atrium's classes made unloadable in-process. That run can't see an Atrium class leaking in through a classmap or Composer `files` autoload. The authoritative proof that Keen runs without Atrium is the `without-atrium` CI job, which uninstalls Atrium (`composer remove --dev refactor-circus/atrium --no-update`) before running the same suite.
+`composer test` runs static analysis, the formatting check, type coverage and the Pest suite. It needs no Node: its OpenAPI test compares a fresh Scramble export with the committed `openapi.json`, and `client/openapi.sha256` with that file. Run `composer client:generate` when it asks you to.
 
 ## License
 
