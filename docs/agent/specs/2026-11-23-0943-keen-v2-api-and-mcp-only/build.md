@@ -26,6 +26,7 @@ Audited packages endpoint and MCP tool (criteria 1 to 6).
 - `tests/Feature/Http/AuditedPackagesTest.php`, by route name: `keen.packages.index` answers 200 with exactly `{"data": [{key, label}, ...]}`, and 401 for a guest when `keen.authorization` is on.
 - `tests/Feature/Mcp/ListAuditedPackagesToolTest.php`: `mcpTool()` returns the same items as structured content and passes the output schema check, and the tool is in `KeenServer::TOOLS`.
 - `composer analyse` passes. Per the job instructions, the Pest suite is left to the gate.
+- Retry check: no code changed. The new action, HTTP and MCP test files, `tests/Feature/Mcp` and `tests/ArchTest.php` (parity included) pass, and so do `composer lint:check`, `composer analyse` and `composer test:types` (100%).
 
 ### Deviations
 
