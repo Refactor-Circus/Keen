@@ -193,3 +193,11 @@ Docs, CHANGELOG and Boost skill (criteria 22 to 26).
 - `AGENTS.md` had the "The chain" bullet twice; the duplicate is removed.
 - The README had no explicit security note before (only "Without them anyone signed in may read and record"). The spec's Risks ask the README to keep saying that a fresh install serves the log to anyone reaching the API middleware, so "Authorization" now opens with that note, and the Boost skill says it too.
 - The install example uses pnpm's `github:Refactor-Circus/Keen#v2.0.0&path:/client`, as the spec's Risks suggest, because npm cannot install a git subfolder.
+
+### Retry
+
+- No changes to the docs or tests. I checked the committed work against tasks 5.1 to 5.4 and criteria 22 to 25:
+  - The README covers API + MCP, `GET {prefix}/packages` with `keen.packages.index` and the MCP tool, "OpenAPI and TypeScript client" (the pnpm git dependency on `#v2.0.0`, `createKeenClient({ baseUrl })` and `composer client:generate`), Atrium v2 as the optional UI, and the security note. It has no "History in Atrium" section.
+  - CHANGELOG `[Unreleased]` has Breaking, Added and "Upgrading to v2.0.0" (Atrium v2, `atrium.integrations.keen.*`).
+  - The Boost skill and `AGENTS.md`/`CLAUDE.md` cover the packages endpoint, the client workflow and the staleness test.
+- `vendor/bin/pest tests/Feature/DocsTest.php` passes (21 tests, 120 assertions), and `pint --test` passes on it. Per the job instructions, the full `composer test` is left to the gate.
