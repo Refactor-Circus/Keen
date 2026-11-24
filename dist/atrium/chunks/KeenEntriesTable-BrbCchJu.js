@@ -26,8 +26,7 @@ var g = /* @__PURE__ */ o({
 		}))), x = e(() => [
 			{
 				id: "when",
-				header: _("keen.entries.when"),
-				meta: { class: { td: "whitespace-nowrap" } }
+				header: _("keen.entries.when")
 			},
 			{
 				id: "action",
@@ -65,8 +64,7 @@ var g = /* @__PURE__ */ o({
 			}, {
 				"when-cell": u(({ row: e }) => [a(g, {
 					to: `/keen/entries/${e.original.entry.id}`,
-					title: e.original.entry.created_at,
-					class: "hover:underline"
+					title: e.original.entry.created_at
 				}, {
 					default: u(() => [i(c(e.original.when), 1)]),
 					_: 2

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { integrationData, useAtriumIntegration } from '@refactor-circus/atrium'
+import { integrationData, useAtriumIntegration, type AtriumDetailsItem } from '@refactor-circus/atrium'
 import KeenChanges from '../../components/KeenChanges.vue'
 import { KEEN_APP_SOURCE, type KeenAuditEntry } from '../../components/entries'
 
@@ -45,35 +45,36 @@ const createdAt = computed(() => entry.value ? new Date(entry.value.created_at).
 const personal = computed(() => entry.value !== null && ('ip' in entry.value || 'user_agent' in entry.value))
 const context = computed(() => entry.value && Object.keys(entry.value.context ?? {}).length > 0 ? JSON.stringify(entry.value.context, null, 2) : null)
 
-const details = computed(() => {
+/** The entry's facts for <AtriumDetails>; each value keeps its `keen-entry-{key}` test id. */
+const details = computed<AtriumDetailsItem[]>(() => {
   const value = entry.value
 
   if (!value) {
     return []
   }
 
-  const rows = [
-    { key: 'source', term: t('keen.entry.source'), text: value.source === KEEN_APP_SOURCE ? t('keen.filters.source_app') : value.source },
-    { key: 'subject', term: t('keen.entry.subject'), text: [value.subject?.label ?? t('keen.entries.none'), value.subject?.type, value.subject?.id].filter(Boolean).join(' ') },
-    { key: 'actor', term: t('keen.entry.actor'), text: value.actor?.label ?? t('keen.entries.system') }
+  const items: AtriumDetailsItem[] = [
+    { key: 'source', label: t('keen.entry.source'), value: value.source === KEEN_APP_SOURCE ? t('keen.filters.source_app') : value.source },
+    { key: 'subject', label: t('keen.entry.subject'), value: [value.subject?.label ?? t('keen.entries.none'), value.subject?.type, value.subject?.id].filter(Boolean).join(' ') },
+    { key: 'actor', label: t('keen.entry.actor'), value: value.actor?.label ?? t('keen.entries.system') }
   ]
 
   if (value.scope) {
-    rows.push({ key: 'scope', term: t('keen.entry.scope'), text: [value.scope.type, value.scope.id].filter(Boolean).join(' ') })
+    items.push({ key: 'scope', label: t('keen.entry.scope'), value: [value.scope.type, value.scope.id].filter(Boolean).join(' ') })
   }
 
-  rows.push({ key: 'surface', term: t('keen.entry.surface'), text: value.surface })
+  items.push({ key: 'surface', label: t('keen.entry.surface'), value: value.surface })
 
   if (personal.value) {
-    rows.push(
-      { key: 'ip', term: t('keen.entry.ip'), text: value.ip ?? t('keen.entries.none') },
-      { key: 'user_agent', term: t('keen.entry.user_agent'), text: value.user_agent ?? t('keen.entries.none') }
+    items.push(
+      { key: 'ip', label: t('keen.entry.ip'), value: value.ip ?? t('keen.entries.none'), mono: true },
+      { key: 'user_agent', label: t('keen.entry.user_agent'), value: value.user_agent ?? t('keen.entries.none') }
     )
   }
 
-  rows.push({ key: 'hash', term: t('keen.entry.hash'), text: value.hash })
+  items.push({ key: 'hash', label: t('keen.entry.hash'), value: value.hash, mono: true })
 
-  return rows
+  return items.map(item => ({ ...item, testid: `keen-entry-${item.key}` }))
 })
 
 useHead({ title: () => title.value })
@@ -108,12 +109,7 @@ useHead({ title: () => title.value })
               <h2 class="font-medium">{{ t('keen.entry.details') }}</h2>
               <p v-if="createdAt" class="text-sm text-muted">{{ createdAt }}</p>
             </template>
-            <dl class="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-2 text-sm" data-testid="keen-entry-details">
-              <template v-for="row in details" :key="row.key">
-                <dt class="text-muted">{{ row.term }}</dt>
-                <dd class="break-all" :data-testid="`keen-entry-${row.key}`">{{ row.text }}</dd>
-              </template>
-            </dl>
+            <AtriumDetails :items="details" data-testid="keen-entry-details" />
           </UCard>
 
           <UCard>

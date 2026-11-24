@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { TableColumn } from '@nuxt/ui'
+import type { TableColumn } from '@refactor-circus/atrium/ui'
 import { changeRows, type KeenChangeRow } from './entries'
 
 /**

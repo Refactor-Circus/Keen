@@ -26,9 +26,6 @@ const router = useRouter()
 const { t } = useI18n()
 const { client } = useAtriumIntegration('keen')
 
-/** The source choice that means every source; Reka's select needs a non-empty value. */
-const ALL_SOURCES = '*'
-
 const LABELS: Record<KeenFilter, string> = {
   source: t('keen.filters.source'),
   action: t('keen.filters.action'),
@@ -61,17 +58,9 @@ watch(query, (value) => {
 }, { immediate: true })
 
 const sourceItems = computed(() => [
-  { value: ALL_SOURCES, label: t('keen.filters.all_sources') },
   ...(props.sources ?? []),
   { value: 'app', label: t('keen.filters.source_app') }
 ])
-
-const sourceChoice = computed({
-  get: () => form.source === '' ? ALL_SOURCES : form.source,
-  set: (value: string) => {
-    form.source = value === ALL_SOURCES ? '' : value
-  }
-})
 
 const entries = shallowRef<KeenAuditEntry[]>([])
 const meta = shallowRef<KeenEntriesPage['meta'] | null>(null)
@@ -150,7 +139,7 @@ defineExpose({ reload: load })
     <UCard>
       <UForm :state="form" class="flex flex-wrap items-start gap-3" data-testid="keen-filters" @submit="apply">
         <UFormField v-if="!source" :label="LABELS.source" name="source" :error="errors.source?.[0]" class="w-44">
-          <USelect v-model="sourceChoice" :items="sourceItems" class="w-full" data-testid="keen-filter-source" />
+          <AtriumSelect v-model="form.source" :items="sourceItems" :blank="t('keen.filters.all_sources')" class="w-full" data-testid="keen-filter-source" />
         </UFormField>
         <UFormField
           v-for="name in TEXT_FILTERS"

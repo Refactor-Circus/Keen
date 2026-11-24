@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import EntriesPage from '../src/pages/entries/index.vue'
-import { settle } from '@refactor-circus/atrium/testing'
+import { chooseOption, selectItems, selectValue, settle, tableRows } from '@refactor-circus/atrium/testing'
 import { mockPackageApi, mountIntegration, reply, resetPackageApis, type PackageCall } from '@refactor-circus/atrium/testing'
 import { keenEntry, keenPackages, keenPage, keenScreenFor } from './keen'
 import { clearAtriumData, mockAtriumApi, useRouter } from '@refactor-circus/atrium/testing'
@@ -44,7 +44,7 @@ describe('the keen.entries screen', () => {
     expect(lastEntryGet(calls)?.query).toEqual({})
     expect(calls.some(call => call.method === 'GET' && call.route === '/packages')).toBe(true)
 
-    const rows = wrapper.findAll('[data-testid="keen-entries"] tbody tr')
+    const rows = tableRows(wrapper, 'keen-entries')
 
     expect(rows).toHaveLength(2)
     expect(rows[0]!.text()).toContain('run.cancelled')
@@ -73,6 +73,35 @@ describe('the keen.entries screen', () => {
     expect(lastEntryGet(calls)?.query).toEqual({ source: 'impex', action: 'run.', since: '2026-11-01' })
     expect((wrapper.find('[data-testid="keen-filter-action"]').element as HTMLInputElement).value).toBe('run.')
     expect((wrapper.find('[data-testid="keen-filter-since"]').element as HTMLInputElement).value).toBe('2026-11-01')
+  })
+
+  it('offers every source, the application\'s own and a blank "all sources", and sends only a chosen one', async () => {
+    const calls = mockPackageApi('keen', { 'GET /entries': keenPage([keenEntry()]), 'GET /packages': { data: keenPackages } })
+
+    const wrapper = await mountIntegration(EntriesPage, 'keen', { route: '/keen/entries' })
+    await settle()
+
+    expect(selectItems(wrapper, 'keen-filter-source')).toEqual([
+      { value: '', label: 'All sources' },
+      { value: 'impex', label: 'Impex' },
+      { value: 'roster', label: 'Roster' },
+      { value: 'app', label: 'Application' }
+    ])
+    expect(selectValue(wrapper, 'keen-filter-source')).toBe('')
+
+    await chooseOption(wrapper, 'keen-filter-source', 'impex')
+    await wrapper.find('[data-testid="keen-filters"]').trigger('submit')
+    await settle()
+
+    expect(useRouter().currentRoute.value.query).toEqual({ source: 'impex' })
+    expect(lastEntryGet(calls)?.query).toEqual({ source: 'impex' })
+
+    await chooseOption(wrapper, 'keen-filter-source', '')
+    await wrapper.find('[data-testid="keen-filters"]').trigger('submit')
+    await settle()
+
+    expect(useRouter().currentRoute.value.query).toEqual({})
+    expect(lastEntryGet(calls)?.query).toEqual({})
   })
 
   it('applies the record, actor and date filters, and clears them', async () => {
@@ -123,7 +152,7 @@ describe('the keen.entries screen', () => {
     await settle()
 
     expect(lastEntryGet(calls)?.query).toEqual({ action: 'run.', cursor: 'older-1' })
-    expect(wrapper.find('[data-testid="keen-entries"] tbody tr').text()).toContain('run.started')
+    expect(tableRows(wrapper, 'keen-entries')[0]!.text()).toContain('run.started')
 
     await wrapper.find('[data-testid="keen-page-newer"]').trigger('click')
     await settle()

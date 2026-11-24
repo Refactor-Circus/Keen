@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import KeenChanges from '../src/components/KeenChanges.vue'
 import { changeRows, formatChange } from '../src/components/entries'
 import EntryPage from '../src/pages/entries/[entry].vue'
-import { settle } from '@refactor-circus/atrium/testing'
+import { settle, tableRows } from '@refactor-circus/atrium/testing'
 import { mockPackageApi, mountIntegration, reply, resetPackageApis } from '@refactor-circus/atrium/testing'
 import { keenEntry, keenScreenFor } from './keen'
 import { clearAtriumData, mockAtriumApi, mountSuspended, useRouter } from '@refactor-circus/atrium/testing'
@@ -54,7 +54,7 @@ describe('<KeenChanges>', () => {
       props: { changes: { status: ['draft', 'published'], meta: [null, { tags: ['new'] }], visible: [false, true] } }
     })
 
-    const rows = wrapper.findAll('[data-testid="keen-changes"] tbody tr')
+    const rows = tableRows(wrapper, 'keen-changes')
 
     expect(rows).toHaveLength(3)
     expect(rows[0]!.text()).toContain('status')
@@ -108,7 +108,7 @@ describe('the keen.entry screen', () => {
     expect(wrapper.find('[data-testid="keen-entry-hash"]').text()).toBe('f3b2c1')
     expect(wrapper.find('[data-testid="keen-entry-context"]').text()).toContain('"reason": "operator"')
 
-    const changes = wrapper.findAll('[data-testid="keen-changes"] tbody tr')
+    const changes = tableRows(wrapper, 'keen-changes')
 
     expect(changes).toHaveLength(2)
     expect(changes[0]!.find('[data-testid="keen-change-before"]').text()).toBe('\'running\'')

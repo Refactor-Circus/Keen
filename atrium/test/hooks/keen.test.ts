@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { enableAutoUnmount } from '@vue/test-utils'
 import KeenActivityTab from '../../src/components/hooks/KeenActivityTab.vue'
 import KeenHistorySection from '../../src/components/hooks/KeenHistorySection.vue'
-import { settle } from '@refactor-circus/atrium/testing'
+import { settle, tableRows } from '@refactor-circus/atrium/testing'
 import { mockPackageApi, mountIntegration, reply, resetPackageApis, type PackageCall } from '@refactor-circus/atrium/testing'
 import { keenEntry, keenPackages, keenPage } from '../keen'
 
@@ -38,7 +38,7 @@ describe('the keen.history section', () => {
 
     expect(entryGets(calls)).toHaveLength(1)
     expect(entryGets(calls)[0]?.query).toEqual({ source: 'roster', subject_type: 'roster.user', subject_id: '7', per_page: '20' })
-    expect(wrapper.findAll('[data-testid="keen-entries"] tbody tr')).toHaveLength(1)
+    expect(tableRows(wrapper, 'keen-entries')).toHaveLength(1)
     // One record's history leaves out the record column.
     expect(wrapper.find('[data-testid="keen-entries"] thead').text()).not.toContain('Record')
   })
@@ -116,7 +116,7 @@ describe('the keen.activity tab', () => {
     const wrapper = await mountHook(KeenActivityTab, { source: 'roster', subject_type: 'roster.organization', scope: true }, 'acme')
 
     expect(entryGets(calls)[0]?.query).toEqual({ source: 'roster', scope_type: 'roster.organization', scope_id: 'acme', per_page: '20' })
-    expect(wrapper.findAll('[data-testid="keen-entries"] tbody tr')).toHaveLength(1)
+    expect(tableRows(wrapper, 'keen-entries')).toHaveLength(1)
     // A scope's entries are about many records, so the record column stays.
     expect(wrapper.find('[data-testid="keen-entries"] thead').text()).toContain('Record')
   })

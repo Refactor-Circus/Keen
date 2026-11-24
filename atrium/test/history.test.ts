@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import HistoryPage from '../src/pages/history/[package].vue'
-import { settle } from '@refactor-circus/atrium/testing'
+import { settle, tableRows } from '@refactor-circus/atrium/testing'
 import { mockPackageApi, mountIntegration, reply, resetPackageApis, type PackageCall } from '@refactor-circus/atrium/testing'
 import { keenEntry, keenPackages, keenPage, keenScreenFor } from './keen'
 import { clearAtriumData, mockAtriumApi, useRouter } from '@refactor-circus/atrium/testing'
@@ -42,7 +42,7 @@ describe('the keen.history screen', () => {
 
     expect(calls.some(call => call.method === 'GET' && call.route === '/packages')).toBe(true)
     expect(entryGets(calls).at(-1)?.query).toEqual({ source: 'impex' })
-    expect(wrapper.findAll('[data-testid="keen-entries"] tbody tr')).toHaveLength(1)
+    expect(tableRows(wrapper, 'keen-entries')).toHaveLength(1)
     expect(wrapper.find('[data-testid="keen-filter-source"]').exists()).toBe(false)
   })
 

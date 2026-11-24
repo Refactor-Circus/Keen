@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { TableColumn } from '@nuxt/ui'
+import type { TableColumn } from '@refactor-circus/atrium/ui'
 import { KEEN_APP_SOURCE, type KeenAuditEntry } from './entries'
 
 /**
@@ -34,7 +34,7 @@ const rows = computed<KeenEntryRow[]>(() => props.entries.map(entry => ({
 })))
 
 const columns = computed<TableColumn<KeenEntryRow>[]>(() => [
-  { id: 'when', header: t('keen.entries.when'), meta: { class: { td: 'whitespace-nowrap' } } },
+  { id: 'when', header: t('keen.entries.when') },
   { id: 'action', header: t('keen.entries.action') },
   ...(props.withoutSubject ? [] : [{ accessorKey: 'subject', header: t('keen.entries.subject') } satisfies TableColumn<KeenEntryRow>]),
   { accessorKey: 'actor', header: t('keen.entries.actor') },
@@ -46,7 +46,7 @@ const columns = computed<TableColumn<KeenEntryRow>[]>(() => [
   <UEmpty v-if="rows.length === 0" icon="i-lucide-scroll-text" :title="t('keen.entries.empty')" size="xs" variant="naked" :ui="{ root: 'py-6' }" role="status" data-testid="keen-entries-empty" />
   <UTable v-else :data="rows" :columns="columns" data-testid="keen-entries">
     <template #when-cell="{ row }">
-      <ULink :to="`/keen/entries/${row.original.entry.id}`" :title="row.original.entry.created_at" class="hover:underline">
+      <ULink :to="`/keen/entries/${row.original.entry.id}`" :title="row.original.entry.created_at">
         {{ row.original.when }}
       </ULink>
     </template>
