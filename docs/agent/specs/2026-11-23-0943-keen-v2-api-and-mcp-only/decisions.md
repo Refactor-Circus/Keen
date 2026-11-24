@@ -113,3 +113,9 @@
 - Rationale: On a real host an organization's History section and Activity tab were empty: the hooks send the organization's slug, Keen filtered `scope_id`/`subject_id` on it as the stored key (a ULID). The stored-identifiers standard references records a package does not own by route key, resolved to the stored key in the action; the test records' identifier was their key, so the mismatch never showed. Same fix as Cortex D-018 and Guardian D-051.
 - Date: 2026-11-24
 - Raised by: user (bug found in a real host); choices made by the implementing agent without a user available
+
+## D-020: Does Keen's Atrium module render raw HTML?
+- Choice: No: it composes Nuxt UI, as Atrium's own components do (Atrium D-091). `KeenEntriesTable` and `KeenChanges` are `UTable`s (TanStack column defs; cell slots for the entry link, the action with its App badge, the surface badge and the before/after values, which keep their `data-testid`s; the record column dropped with `withoutSubject`), the filter bar (formerly `.atrium-querybar`) and the "Record an event" form are `UForm`s over their reactive state with the 422 errors still on each `UFormField`, and the empty audit log (formerly `.atrium-empty`) is a compact `UEmpty`. No `atrium-*` class is left in `atrium/src`. Tests find rows as `tbody tr` of the table's `data-testid` (`UTable` puts no attributes on rows); everything they assert is kept. `atrium/test/nuxt-ui-guard.test.ts` applies Atrium's guard rules to `atrium/src/**/*.vue`, with its self-test. The SDK pin moves to Atrium `f6d6f83`.
+- Rationale: The user wants every Atrium UI built on Nuxt UI 4 ("convert raw html"); Atrium's components already are, and the modules were the last raw tables and filter bars.
+- Date: 2026-11-24
+- Raised by: user; choices made by the implementing agent without a user available

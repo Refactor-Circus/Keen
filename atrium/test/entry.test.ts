@@ -54,7 +54,7 @@ describe('<KeenChanges>', () => {
       props: { changes: { status: ['draft', 'published'], meta: [null, { tags: ['new'] }], visible: [false, true] } }
     })
 
-    const rows = wrapper.findAll('[data-testid="keen-change"]')
+    const rows = wrapper.findAll('[data-testid="keen-changes"] tbody tr')
 
     expect(rows).toHaveLength(3)
     expect(rows[0]!.text()).toContain('status')
@@ -108,7 +108,7 @@ describe('the keen.entry screen', () => {
     expect(wrapper.find('[data-testid="keen-entry-hash"]').text()).toBe('f3b2c1')
     expect(wrapper.find('[data-testid="keen-entry-context"]').text()).toContain('"reason": "operator"')
 
-    const changes = wrapper.findAll('[data-testid="keen-change"]')
+    const changes = wrapper.findAll('[data-testid="keen-changes"] tbody tr')
 
     expect(changes).toHaveLength(2)
     expect(changes[0]!.find('[data-testid="keen-change-before"]').text()).toBe('\'running\'')

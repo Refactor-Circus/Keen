@@ -21,10 +21,13 @@ declare module 'vue' {
     UCard: typeof import('@refactor-circus/atrium/ui')['UCard']
     UDashboardNavbar: typeof import('@refactor-circus/atrium/ui')['UDashboardNavbar']
     UDashboardPanel: typeof import('@refactor-circus/atrium/ui')['UDashboardPanel']
+    UEmpty: typeof import('@refactor-circus/atrium/ui')['UEmpty']
+    UForm: typeof import('@refactor-circus/atrium/ui')['UForm']
     UFormField: typeof import('@refactor-circus/atrium/ui')['UFormField']
     UInput: typeof import('@refactor-circus/atrium/ui')['UInput']
     ULink: typeof import('@refactor-circus/atrium/ui')['ULink']
     USelect: typeof import('@refactor-circus/atrium/ui')['USelect']
     USkeleton: typeof import('@refactor-circus/atrium/ui')['USkeleton']
+    UTable: typeof import('@refactor-circus/atrium/ui')['UTable']
   }
 }

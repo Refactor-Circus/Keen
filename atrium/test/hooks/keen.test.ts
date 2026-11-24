@@ -38,7 +38,7 @@ describe('the keen.history section', () => {
 
     expect(entryGets(calls)).toHaveLength(1)
     expect(entryGets(calls)[0]?.query).toEqual({ source: 'roster', subject_type: 'roster.user', subject_id: '7', per_page: '20' })
-    expect(wrapper.findAll('[data-testid="keen-entry-row"]')).toHaveLength(1)
+    expect(wrapper.findAll('[data-testid="keen-entries"] tbody tr')).toHaveLength(1)
     // One record's history leaves out the record column.
     expect(wrapper.find('[data-testid="keen-entries"] thead').text()).not.toContain('Record')
   })
@@ -116,7 +116,7 @@ describe('the keen.activity tab', () => {
     const wrapper = await mountHook(KeenActivityTab, { source: 'roster', subject_type: 'roster.organization', scope: true }, 'acme')
 
     expect(entryGets(calls)[0]?.query).toEqual({ source: 'roster', scope_type: 'roster.organization', scope_id: 'acme', per_page: '20' })
-    expect(wrapper.findAll('[data-testid="keen-entry-row"]')).toHaveLength(1)
+    expect(wrapper.findAll('[data-testid="keen-entries"] tbody tr')).toHaveLength(1)
     // A scope's entries are about many records, so the record column stays.
     expect(wrapper.find('[data-testid="keen-entries"] thead').text()).toContain('Record')
   })

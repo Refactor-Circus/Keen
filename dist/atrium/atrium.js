@@ -1,4 +1,4 @@
-import { t as e } from "./chunks/KeenEntriesTable-7vgx2KoL.js";
+import { t as e } from "./chunks/KeenEntriesTable-DiAr2yww.js";
 import { atriumStatus as t, defineAtriumModule as n, integrationData as r, mergeAtriumMessages as i, useAtriumIntegration as a, useAtriumShellStore as o } from "@refactor-circus/atrium";
 import { computed as s, createBlock as c, createCommentVNode as l, createElementBlock as u, createElementVNode as d, createSlots as f, createTextVNode as p, createVNode as m, defineComponent as h, openBlock as g, ref as _, shallowRef as v, toDisplayString as y, unref as b, watch as x, withCtx as S } from "vue";
 import { UCard as C, ULink as w, USkeleton as T } from "@refactor-circus/atrium/ui";
@@ -282,17 +282,17 @@ var R = { class: "font-medium" }, z = {
 	{
 		path: "/keen/entries/:entry",
 		name: "keen-entries-entry",
-		component: () => import("./chunks/_entry_-C6jPC6jv.js")
+		component: () => import("./chunks/_entry_-CUO0c59z.js")
 	},
 	{
 		path: "/keen/entries",
 		name: "keen-entries",
-		component: () => import("./chunks/entries-B9TG9_Q5.js")
+		component: () => import("./chunks/entries-Dqq3ig9t.js")
 	},
 	{
 		path: "/keen/history/:package",
 		name: "keen-history-package",
-		component: () => import("./chunks/_package_-TR91xka7.js")
+		component: () => import("./chunks/_package_-1YaOIa0G.js")
 	}
 ], K = {
 	"keen.entries": "keen-entries",

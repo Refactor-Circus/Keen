@@ -148,7 +148,7 @@ defineExpose({ reload: load })
   <AtriumNoAccess v-if="forbidden" />
   <div v-else class="space-y-4">
     <UCard>
-      <form class="atrium-querybar" data-testid="keen-filters" @submit.prevent="apply">
+      <UForm :state="form" class="flex flex-wrap items-start gap-3" data-testid="keen-filters" @submit="apply">
         <UFormField v-if="!source" :label="LABELS.source" name="source" :error="errors.source?.[0]" class="w-44">
           <USelect v-model="sourceChoice" :items="sourceItems" class="w-full" data-testid="keen-filter-source" />
         </UFormField>
@@ -174,7 +174,7 @@ defineExpose({ reload: load })
             {{ t('keen.filters.clear') }}
           </UButton>
         </div>
-      </form>
+      </UForm>
     </UCard>
 
     <UAlert v-if="failed" color="error" :title="t('keen.entries.load_failed')" data-testid="keen-entries-failed" />

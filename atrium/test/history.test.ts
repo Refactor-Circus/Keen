@@ -42,7 +42,7 @@ describe('the keen.history screen', () => {
 
     expect(calls.some(call => call.method === 'GET' && call.route === '/packages')).toBe(true)
     expect(entryGets(calls).at(-1)?.query).toEqual({ source: 'impex' })
-    expect(wrapper.findAll('[data-testid="keen-entry-row"]')).toHaveLength(1)
+    expect(wrapper.findAll('[data-testid="keen-entries"] tbody tr')).toHaveLength(1)
     expect(wrapper.find('[data-testid="keen-filter-source"]').exists()).toBe(false)
   })
 

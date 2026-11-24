@@ -62,7 +62,7 @@ async function submit(): Promise<void> {
     <UAlert v-else-if="failed" color="error" :title="t('keen.record.failed')" class="mb-3" data-testid="keen-record-failed" />
     <UAlert v-else-if="done" color="success" variant="subtle" :title="t('keen.record.recorded')" class="mb-3" data-testid="keen-record-done" />
 
-    <form class="flex flex-wrap items-start gap-3" data-testid="keen-record-form" @submit.prevent="submit">
+    <UForm :state="form" class="flex flex-wrap items-start gap-3" data-testid="keen-record-form" @submit="submit">
       <UFormField :label="t('keen.record.action')" name="action" :hint="t('keen.record.action_hint')" :error="errors.action?.[0]" required class="w-56">
         <UInput v-model="form.action" required class="w-full" data-testid="keen-record-action" />
       </UFormField>
@@ -75,6 +75,6 @@ async function submit(): Promise<void> {
       <UButton type="submit" icon="i-lucide-square-pen" :loading="saving" class="self-end" data-testid="keen-record-submit">
         {{ t('keen.record.submit') }}
       </UButton>
-    </form>
+    </UForm>
   </UCard>
 </template>

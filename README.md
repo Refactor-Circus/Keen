@@ -199,6 +199,8 @@ pnpm typecheck && pnpm test && pnpm build
 
 `composer test` fails when `dist/atrium/build.json` no longer matches the sources, and the `ui` CI job rebuilds and fails when the result differs from the committed build.
 
+The module's components compose Nuxt UI, as Atrium's own do; a guard test (`atrium/test/nuxt-ui-guard.test.ts`) enforces it.
+
 What Keen adds to Atrium is declared in a static JSON manifest, `atrium/src/integration.json` (no PHP): its feature flag, the "Audit log" and live "History" nav items, the screens `keen.entries`, `keen.entry` and `keen.history`, the `keen.history` History section on every package's screens (config `history`) and the `keen.activity` Activity tab on detail screens (config `history.tabs`). Its `$config` values read Atrium's `atrium.integrations.keen.*` keys, with the manifest's defaults. To change it, edit `atrium/src/integration.json` and rebuild: `pnpm build` validates it against the SDK's schema and writes `dist/atrium/integration.json`, which `composer.json` declares as `extra.atrium.integration`. `pnpm test` checks that every screen, hook section and tab, and live resolver it declares is registered by the module.
 
 ## License

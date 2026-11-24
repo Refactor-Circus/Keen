@@ -67,11 +67,18 @@ export function formatChange(value: unknown): string {
   return JSON.stringify(value)
 }
 
+/** One changed field, with its value before and after. */
+export interface KeenChangeRow {
+  field: string
+  before: string
+  after: string
+}
+
 /**
  * An entry's field changes as rows: each field with its old and new value,
  * from Keen's `field => [old, new]`.
  */
-export function changeRows(changes: Record<string, unknown> | null | undefined): { field: string, before: string, after: string }[] {
+export function changeRows(changes: Record<string, unknown> | null | undefined): KeenChangeRow[] {
   return Object.entries(changes ?? {}).map(([field, change]) => {
     const [before, after] = Array.isArray(change) ? change : [null, change]
 

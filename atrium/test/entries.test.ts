@@ -44,7 +44,7 @@ describe('the keen.entries screen', () => {
     expect(lastEntryGet(calls)?.query).toEqual({})
     expect(calls.some(call => call.method === 'GET' && call.route === '/packages')).toBe(true)
 
-    const rows = wrapper.findAll('[data-testid="keen-entry-row"]')
+    const rows = wrapper.findAll('[data-testid="keen-entries"] tbody tr')
 
     expect(rows).toHaveLength(2)
     expect(rows[0]!.text()).toContain('run.cancelled')
@@ -123,7 +123,7 @@ describe('the keen.entries screen', () => {
     await settle()
 
     expect(lastEntryGet(calls)?.query).toEqual({ action: 'run.', cursor: 'older-1' })
-    expect(wrapper.find('[data-testid="keen-entry-row"]').text()).toContain('run.started')
+    expect(wrapper.find('[data-testid="keen-entries"] tbody tr').text()).toContain('run.started')
 
     await wrapper.find('[data-testid="keen-page-newer"]').trigger('click')
     await settle()
