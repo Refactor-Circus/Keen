@@ -27,11 +27,11 @@ final class ListAuditEntriesTool extends Tool
             'source' => $schema->string()->description('Only entries from this package (showroom, roster, ...) or app for the application\'s own.'),
             'action' => $schema->string()->description('Only this action (product.updated), or a prefix ending in a dot (product.).'),
             'subject_type' => $schema->string()->description('Morph type of the record, with subject_id.'),
-            'subject_id' => $schema->string()->description('Key of the record, with subject_type.'),
+            'subject_id' => $schema->string()->description('The record\'s route key (such as an organization\'s slug) or its key, with subject_type.'),
             'actor_type' => $schema->string()->description('Morph type of who acted, with actor_id.'),
             'actor_id' => $schema->string()->description('Key of who acted.'),
             'scope_type' => $schema->string()->description('Morph type of the scope (an organization), with scope_id.'),
-            'scope_id' => $schema->string()->description('Key of the scope.'),
+            'scope_id' => $schema->string()->description('The scope\'s route key (such as an organization\'s slug) or its key, with scope_type.'),
             'since' => $schema->string()->description('Only entries at or after this date and time.'),
             'until' => $schema->string()->description('Only entries at or before this date and time.'),
         ] + ListAuditEntriesData::pagination()->schema($schema);

@@ -23,6 +23,10 @@
 - Keen ships its Atrium v2 front-end module: the audit log pages, the per-package History pages and nav, the History section and the Activity tab, as Vue sources in `atrium/` built to the committed `dist/atrium/` (`atrium.js`, `atrium.css`) and declared in `composer.json` under `extra.atrium` (key `keen`). Atrium v2 loads it on its page; Keen still has no Atrium PHP and no Composer dependency on Atrium.
 - Keen declares its Atrium integration (feature, nav items, screens, the History section and Activity tab hooks) in a static JSON manifest, `atrium/src/integration.json`, built to `dist/atrium/integration.json` and declared as `extra.atrium.integration` in `composer.json`. Atrium v2 reads it instead of its own PHP declaration for Keen; its `atrium.integrations.keen.*` config keys still apply.
 
+### Fixed
+
+- `GET {prefix}/entries` and `list-audit-entries-tool` take a typed `subject_id` or `scope_id` as the record's route key (such as an organization's slug, which Atrium screens pass to the `keen.history` section and `keen.activity` tab) or its key, and match the key entries store. An organization's History and Activity were empty on a host whose organizations route by slug. An unknown type or record still matches as given.
+
 ### Upgrading to v2.0.0
 
 - The Atrium UI for the audit log is now Keen's own Atrium v2 module (`dist/atrium/`), which Atrium v2 loads and which reads Keen through this JSON API and `@refactor-circus/keen-client`. Install Atrium v2 for the audit log pages, the per-package History pages and nav items, the History section and the Activity tab, and configure them under its `atrium.integrations.keen.*` config. Move any `keen.atrium.history.*` settings there, and remove `keen.ui` and `keen.atrium` from a published `config/keen.php`.

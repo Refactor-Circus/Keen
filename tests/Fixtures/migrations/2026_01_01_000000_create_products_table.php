@@ -13,6 +13,7 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table): void {
             $table->id();
             $table->string('name');
+            $table->string('slug')->unique();
             $table->unsignedInteger('price')->default(0);
             $table->string('secret')->nullable();
             $table->timestamps();

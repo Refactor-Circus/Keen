@@ -12,15 +12,22 @@ use RefactorCircus\Keen\Domains\Audit\Data\ListAuditEntriesData;
 use RefactorCircus\Keen\Domains\Audit\Events\AuditEntriesListedActionEvent;
 use RefactorCircus\Keen\Domains\Audit\Events\AuditEntriesListingActionEvent;
 use RefactorCircus\Keen\Domains\Audit\Models\AuditEntryModel;
+use RefactorCircus\Keen\Domains\Audit\Services\StoredKeys;
 use RefactorCircus\Keystone\Actions\Action;
 
 /**
  * The audit log, newest first, cursor paginated, filtered by
  * ListAuditEntriesData: source (a package key or `app`), action (exact, or a
  * prefix ending in `.`, such as `product.`), subject, actor, scope and time.
+ *
+ * A typed `subject_id` or `scope_id` is the record's route key (what a screen
+ * passes, such as an organization's slug) or its key, matched against the key
+ * entries store (D-019).
  */
 final class ListAuditEntriesAction extends Action
 {
+    public function __construct(private readonly StoredKeys $keys) {}
+
     /**
      * @param  Model|null  $about  Only entries made by or about this model, for people who may read only their own.
      * @return CursorPaginator<int, AuditEntryModel>
@@ -50,11 +57,11 @@ final class ListAuditEntriesAction extends Action
         $columns = [
             'source' => $data->source,
             'subject_type' => $data->subjectType,
-            'subject_id' => $data->subjectId,
+            'subject_id' => $this->storedKey($data->subjectType, $data->subjectId),
             'actor_type' => $data->actorType,
             'actor_id' => $data->actorId,
             'scope_type' => $data->scopeType,
-            'scope_id' => $data->scopeId,
+            'scope_id' => $this->storedKey($data->scopeType, $data->scopeId),
         ];
 
         foreach ($columns as $column => $value) {
@@ -86,6 +93,15 @@ final class ListAuditEntriesAction extends Action
         if ($until !== null) {
             $query->where('created_at', '<=', Carbon::parse($until));
         }
+    }
+
+    /**
+     * The key entries store for a record a type and identifier name; an
+     * untyped identifier as given.
+     */
+    private function storedKey(?string $type, ?string $id): ?string
+    {
+        return $this->filled($type) && $this->filled($id) ? $this->keys->for($type, $id) : $id;
     }
 
     /**

@@ -71,7 +71,7 @@ A package of the suite recording one of its own events adds `->source('polycart'
 
 The JSON API's routes are `keen.entries.index`, `keen.entries.show`, `keen.entries.store` and `keen.packages.index`, under `keen.routes.prefix` (`api/keen` by default) with the `keen.routes.middleware` (`['api']`).
 
-Filters: `source` (a package key or `app`), `action` (exact, or a prefix ending in `.`), `subject_type` + `subject_id`, `actor_type` + `actor_id`, `scope_type` + `scope_id`, `since`, `until`. Listings are cursor paginated: pass `per_page` (up to 100) and the previous page's next cursor (`meta.next_cursor`) as `cursor`.
+Filters: `source` (a package key or `app`), `action` (exact, or a prefix ending in `.`), `subject_type` + `subject_id`, `actor_type` + `actor_id`, `scope_type` + `scope_id`, `since`, `until`. With its type, `subject_id` or `scope_id` may be the record's route key (such as an organization's slug, which Atrium screens pass) or its key: Keen looks the type's model up by route key, then matches the key entries store; an unknown type or record is matched as given. Listings are cursor paginated: pass `per_page` (up to 100) and the previous page's next cursor (`meta.next_cursor`) as `cursor`.
 
 ## Audited packages: `GET {prefix}/packages`
 
