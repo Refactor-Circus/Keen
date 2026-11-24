@@ -56,7 +56,7 @@
 
 ## D-010: What does `client/` ship, and how are its tools pinned?
 - Choice: `client/package.json` names `@refactor-circus/keen-client` at version `2.0.0`, `"type": "module"`, with `exports` pointing at a committed `dist/` (`index.js`, `index.d.ts`, built by `tsc`). The TypeScript sources (`src/index.ts`, the generated `src/schema.d.ts`) are committed too. `openapi-fetch` is the one runtime `dependency`, with a caret range, which on 0.x locks the minor. `openapi-typescript` and `typescript` are exact-pinned `devDependencies`. `package-lock.json` is committed and `client/node_modules` is ignored. Neither `client/` nor `openapi.json` is `export-ignore`d.
-- Rationale: Atrium's layer pins the client as a git dependency on the v2 tag. A committed `dist/` means consumers need no build step, and git tarballs honor `export-ignore`, so the folder must not be ignored. Exact generator pins keep regeneration byte-stable.
+- Rationale: consumers pin the client as a git dependency on the v2 tag (Keen's own Atrium module imports its types directly). A committed `dist/` means consumers need no build step, and git tarballs honor `export-ignore`, so the folder must not be ignored. Exact generator pins keep regeneration byte-stable.
 - Date: 2026-11-23
 - Raised by: write-spec; default chosen because the user asked to proceed without stopping
 
