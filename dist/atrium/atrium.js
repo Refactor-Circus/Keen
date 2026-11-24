@@ -287,12 +287,12 @@ var R = { class: "font-medium" }, z = {
 	{
 		path: "/keen/entries",
 		name: "keen-entries",
-		component: () => import("./chunks/entries-DLLo8nPu.js")
+		component: () => import("./chunks/entries-DhwaEHqB.js")
 	},
 	{
 		path: "/keen/history/:package",
 		name: "keen-history-package",
-		component: () => import("./chunks/_package_-DMc8I8oL.js")
+		component: () => import("./chunks/_package_-Co20X9p2.js")
 	}
 ], K = {
 	"keen.entries": "keen-entries",

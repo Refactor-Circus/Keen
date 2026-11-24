@@ -157,7 +157,7 @@ defineExpose({ reload: load })
             :data-testid="`keen-filter-${name}`"
           />
         </UFormField>
-        <div class="flex gap-2 self-end">
+        <div class="mt-field-label flex gap-2">
           <UButton type="submit" icon="i-lucide-funnel" data-testid="keen-filter-apply">{{ t('keen.filters.apply') }}</UButton>
           <UButton type="button" icon="i-lucide-x" color="neutral" variant="ghost" data-testid="keen-filter-clear" @click="clear">
             {{ t('keen.filters.clear') }}

@@ -72,7 +72,7 @@ async function submit(): Promise<void> {
       <UFormField :label="t('keen.record.note')" name="note" :error="errors['context.note']?.[0] ?? errors.context?.[0]" class="w-80">
         <UInput v-model="form.note" class="w-full" data-testid="keen-record-note" />
       </UFormField>
-      <UButton type="submit" icon="i-lucide-square-pen" :loading="saving" class="self-end" data-testid="keen-record-submit">
+      <UButton type="submit" icon="i-lucide-square-pen" :loading="saving" class="mt-field-label" data-testid="keen-record-submit">
         {{ t('keen.record.submit') }}
       </UButton>
     </UForm>

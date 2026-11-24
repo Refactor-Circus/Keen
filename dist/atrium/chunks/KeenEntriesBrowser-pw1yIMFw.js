@@ -9,7 +9,7 @@ import { useRoute as A, useRouter as j } from "vue-router";
 var M = {
 	key: 1,
 	class: "space-y-4"
-}, N = { class: "flex gap-2 self-end" }, P = ["aria-label"], F = /* @__PURE__ */ g({
+}, N = { class: "mt-field-label flex gap-2" }, P = ["aria-label"], F = /* @__PURE__ */ g({
 	__name: "KeenEntriesBrowser",
 	props: {
 		source: {},
