@@ -11,7 +11,7 @@ metadata:
 
 # Keen
 
-Use this skill when a Laravel application uses `refactor-circus/keen`, the audit log of the Refactor Circus package suite. Keen is a JSON API plus MCP tools and ships no screens; Atrium v2 is the optional UI, configured under its own `atrium.integrations.keen` keys.
+Use this skill when a Laravel application uses `refactor-circus/keen`, the audit log of the Refactor Circus package suite. Keen is a JSON API plus MCP tools with no Blade screens; Atrium v2 is the optional UI. Keen ships its own Atrium front-end module (JS only, prebuilt in `dist/atrium/`, declared in `composer.json` `extra.atrium`), which Atrium v2 loads; it is configured under Atrium's `atrium.integrations.keen` keys.
 
 ## What Keen records on its own
 
@@ -35,7 +35,7 @@ Action names are dotted and lower case. Application entries always have source `
 - MCP: `list-audit-entries-tool`, `show-audit-entry-tool`, `record-audit-event-tool`, `list-audited-packages-tool`. Each declares an output schema; entries come under `data`, and listings carry `meta.next_cursor` to pass back as `cursor`.
 - Actions take Data objects: `ListAuditEntriesAction` a `ListAuditEntriesData`, `RecordAuditEventAction` a `RecordAuditEventData` (`RefactorCircus\Keen\Domains\Audit\Data`). Build them with `XData::from($input)` for untrusted input (validates) or `new XData(...)`; prefer `Keen::record()` for the application's own events. `ListAuditedPackagesAction::execute($viewer)` takes no Data.
 - Per package: `GET {package prefix}/history` and `list-{package}-history-tool`.
-- Keen ships no Blade views or components. A UI reads the API; Atrium v2 is the optional one.
+- Keen ships no Blade views or components. A UI reads the API; Atrium v2 is the optional one, and Keen's Atrium module (sources in the repository's `atrium/`, rebuilt with `pnpm build`) is what it shows.
 
 ## OpenAPI and TypeScript client
 

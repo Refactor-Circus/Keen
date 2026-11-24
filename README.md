@@ -10,9 +10,9 @@ Install Keen and every action of every suite package (Atrium, Cortex, Impex, Pen
 
 - **Append-only and hash-chained.** Each entry's hash covers the one before it, so editing or removing any entry breaks the chain. `php artisan keen:verify` finds the first altered entry.
 - **Secrets never reach the log.** Passwords, tokens, client secrets and private keys are redacted, as is anything a package or your config names; a redacted field still shows that it changed.
-- **A JSON API and MCP, nothing else.** Read and record entries over the JSON API or the MCP server (and so from Cortex agents). Keen ships no screens: a front end reads the log through the committed OpenAPI document and the generated TypeScript client `@refactor-circus/keen-client`.
+- **A JSON API and MCP.** Read and record entries over the JSON API or the MCP server (and so from Cortex agents). Keen ships no Blade screens: a front end reads the log through the committed OpenAPI document and the generated TypeScript client `@refactor-circus/keen-client`.
 - **Every package keeps its own history.** Once Keen is installed, each package's `GET {prefix}/history` endpoint and `list-{package}-history-tool` MCP tool show its own entries, and `GET {prefix}/packages` lists the packages whose history the caller may read. Packages declare nothing for this.
-- **Atrium v2 is the optional UI.** [Atrium](https://github.com/Refactor-Circus/Atrium) v2 shows the audit log and every package's history from this API, configured under its own `atrium.integrations.keen` keys. Keen neither requires nor knows about it.
+- **Atrium v2 is the optional UI.** Keen ships its own [Atrium](https://github.com/Refactor-Circus/Atrium) v2 front-end module: the audit log pages, every package's History page, section and Activity tab, read from this API. It is JavaScript only, prebuilt in `dist/atrium/` and declared in `composer.json` under `extra.atrium`; Atrium v2 finds it and loads it once the keen integration is active (configured under Atrium's `atrium.integrations.keen` keys). Keen does not require Atrium, and has no Atrium PHP.
 
 ## Installation
 
@@ -186,6 +186,18 @@ composer test
 ```
 
 `composer test` runs static analysis, the formatting check, type coverage and the Pest suite. It needs no Node: its OpenAPI test compares a fresh Scramble export with the committed `openapi.json`, and `client/openapi.sha256` with that file. Run `composer client:generate` when it asks you to.
+
+## The Atrium module
+
+The module's Vue sources live in `atrium/` (not part of the Composer archive); the built `dist/atrium/` is committed, so hosts never run Node. After changing it, rebuild with pnpm and commit both:
+
+```bash
+cd atrium
+pnpm install
+pnpm typecheck && pnpm test && pnpm build
+```
+
+`composer test` fails when `dist/atrium/build.json` no longer matches the sources, and the `ui` CI job rebuilds and fails when the result differs from the committed build.
 
 ## License
 

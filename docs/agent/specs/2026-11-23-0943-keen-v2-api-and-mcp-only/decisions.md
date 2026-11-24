@@ -95,3 +95,9 @@
 - Rationale: The user said "i'd like everything release as v2 to match". This supersedes any earlier choice to keep `^0.1` constraints or release Keystone as v0.2.0.
 - Date: 2026-11-23
 - Raised by: user
+
+## D-017: Who owns Keen's Atrium front end?
+- Choice: Keen does. Its Atrium v2 module (pages, History section, Activity tab, History nav resolver), staged in Atrium's `ui/modules/keen` during Atrium's phase 1, moves into `atrium/` here, typed by Keen's own `client/src/schema.d.ts` (the vendored copy is dropped) and built with the SDK `@refactor-circus/atrium` pinned to Atrium commit `ad559e4c` as a dev dependency. The build `dist/atrium/` is committed and declared in `composer.json` `extra.atrium`; Atrium injects the script into its Blade page. Keen still has no Atrium PHP and no Composer dependency on Atrium: the "no Atrium" tests are narrowed to allow `extra.atrium`, `atrium/`, `dist/atrium/`, the `ui` CI job and the docs, and still forbid Atrium in `src/`, `config/`, the routes and the workbench PHP. This revises the "nothing else" of the spec's JSON-API-only scope.
+- Rationale: The user said "move the vue files for each module back into their respective modules. modules need to register their js. js should be injected into the blade file. modules are responsible for their own frontend and cjs clients from now on".
+- Date: 2026-11-24
+- Raised by: user
