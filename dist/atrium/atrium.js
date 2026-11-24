@@ -282,7 +282,7 @@ var R = { class: "font-medium" }, z = {
 	{
 		path: "/keen/entries/:entry",
 		name: "keen-entries-entry",
-		component: () => import("./chunks/_entry_-Cidh6UbS.js")
+		component: () => import("./chunks/_entry_-BSXKj7nL.js")
 	},
 	{
 		path: "/keen/entries",

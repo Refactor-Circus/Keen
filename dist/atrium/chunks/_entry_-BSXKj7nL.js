@@ -48,32 +48,36 @@ var j = {
 	key: 4,
 	class: "grid gap-4 lg:grid-cols-2",
 	"data-testid": "keen-entry"
-}, I = { class: "font-medium" }, L = {
+}, I = { class: "flex min-w-0 flex-1 flex-wrap items-baseline justify-between gap-x-4 gap-y-1" }, L = {
+	class: "font-medium",
+	"data-testid": "keen-entry-details-title"
+}, R = {
 	key: 0,
-	class: "text-sm text-muted"
-}, R = { class: "font-medium" }, z = {
+	class: "text-sm text-muted tabular-nums",
+	"data-testid": "keen-entry-created-at"
+}, z = { class: "font-medium" }, B = {
 	key: 0,
 	class: "mt-4 overflow-x-auto text-xs",
 	"data-testid": "keen-entry-context"
-}, B = /* @__PURE__ */ m({
+}, V = /* @__PURE__ */ m({
 	__name: "[entry]",
 	setup(e) {
-		let m = A(), { t: O, locale: j } = k(), { client: M } = o("keen"), N = c(() => String(m.params.entry)), B = _(null), V = _(null), H = g(!0), U = c(() => i(V.value));
-		async function W() {
+		let m = A(), { t: O, locale: j } = k(), { client: M } = o("keen"), N = c(() => String(m.params.entry)), V = _(null), H = _(null), U = g(!0), W = c(() => i(H.value));
+		async function G() {
 			if (M) {
-				H.value = !0, V.value = null;
+				U.value = !0, H.value = null;
 				try {
-					B.value = a(await M.GET("/entries/{entry}", { params: { path: { entry: N.value } } })).data;
+					V.value = a(await M.GET("/entries/{entry}", { params: { path: { entry: N.value } } })).data;
 				} catch (e) {
-					B.value = null, V.value = e;
+					V.value = null, H.value = e;
 				} finally {
-					H.value = !1;
+					U.value = !1;
 				}
 			}
 		}
-		b(N, () => void W(), { immediate: !0 });
-		let G = c(() => B.value?.action ?? O("keen.entry.title")), K = c(() => B.value ? new Date(B.value.created_at).toLocaleString(j.value) : null), q = c(() => B.value !== null && ("ip" in B.value || "user_agent" in B.value)), J = c(() => B.value && Object.keys(B.value.context ?? {}).length > 0 ? JSON.stringify(B.value.context, null, 2) : null), Y = c(() => {
-			let e = B.value;
+		b(N, () => void G(), { immediate: !0 });
+		let K = c(() => V.value?.action ?? O("keen.entry.title")), q = c(() => V.value ? new Date(V.value.created_at).toLocaleString(j.value) : null), J = c(() => V.value !== null && ("ip" in V.value || "user_agent" in V.value)), Y = c(() => V.value && Object.keys(V.value.context ?? {}).length > 0 ? JSON.stringify(V.value.context, null, 2) : null), X = c(() => {
+			let e = V.value;
 			if (!e) return [];
 			let t = [
 				{
@@ -104,7 +108,7 @@ var j = {
 				key: "surface",
 				label: O("keen.entry.surface"),
 				value: e.surface
-			}), q.value && t.push({
+			}), J.value && t.push({
 				key: "ip",
 				label: O("keen.entry.ip"),
 				value: e.ip ?? O("keen.entries.none"),
@@ -123,10 +127,10 @@ var j = {
 				testid: `keen-entry-${e.key}`
 			}));
 		});
-		return s({ title: () => G.value }), (e, i) => {
+		return s({ title: () => K.value }), (e, i) => {
 			let a = C, o = T, s = r, c = S, m = D, g = t, _ = w, b = n, k = E;
 			return h(), l(k, null, {
-				header: x(() => [p(o, { title: y(G) }, {
+				header: x(() => [p(o, { title: y(K) }, {
 					leading: x(() => [p(a, {
 						to: "/keen/entries",
 						icon: "i-lucide-arrow-left",
@@ -140,7 +144,7 @@ var j = {
 					"screen-key": "keen.entry",
 					record: y(N)
 				}, {
-					default: x(() => [y(U) === 403 ? (h(), l(s, { key: 0 })) : y(U) === 404 ? (h(), l(c, {
+					default: x(() => [y(W) === 403 ? (h(), l(s, { key: 0 })) : y(W) === 404 ? (h(), l(c, {
 						key: 1,
 						color: "neutral",
 						variant: "subtle",
@@ -148,24 +152,24 @@ var j = {
 						title: y(O)("keen.entry.not_found"),
 						description: y(O)("keen.entry.not_found_description"),
 						"data-testid": "keen-entry-not-found"
-					}, null, 8, ["title", "description"])) : y(V) ? (h(), l(c, {
+					}, null, 8, ["title", "description"])) : y(H) ? (h(), l(c, {
 						key: 2,
 						color: "error",
 						title: y(O)("keen.entry.load_failed"),
 						"data-testid": "keen-entry-failed"
-					}, null, 8, ["title"])) : y(H) && !y(B) ? (h(), l(m, {
+					}, null, 8, ["title"])) : y(U) && !y(V) ? (h(), l(m, {
 						key: 3,
 						class: "h-40"
-					})) : y(B) ? (h(), d("div", F, [p(_, null, {
-						header: x(() => [f("h2", I, v(y(O)("keen.entry.details")), 1), y(K) ? (h(), d("p", L, v(y(K)), 1)) : u("", !0)]),
+					})) : y(V) ? (h(), d("div", F, [p(_, null, {
+						header: x(() => [f("div", I, [f("h2", L, v(y(O)("keen.entry.details")), 1), y(q) ? (h(), d("p", R, v(y(q)), 1)) : u("", !0)])]),
 						default: x(() => [p(g, {
-							items: y(Y),
+							items: y(X),
 							"data-testid": "keen-entry-details"
 						}, null, 8, ["items"])]),
 						_: 1
 					}), p(_, null, {
-						header: x(() => [f("h2", R, v(y(O)("keen.entry.changes")), 1)]),
-						default: x(() => [p(P, { changes: y(B).changes }, null, 8, ["changes"]), y(J) ? (h(), d("pre", z, v(y(J)), 1)) : u("", !0)]),
+						header: x(() => [f("h2", z, v(y(O)("keen.entry.changes")), 1)]),
+						default: x(() => [p(P, { changes: y(V).changes }, null, 8, ["changes"]), y(Y) ? (h(), d("pre", B, v(y(Y)), 1)) : u("", !0)]),
 						_: 1
 					})])) : u("", !0)]),
 					_: 1
@@ -175,4 +179,4 @@ var j = {
 		};
 	}
 });
-export { B as default };
+export { V as default };

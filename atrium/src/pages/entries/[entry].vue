@@ -106,8 +106,10 @@ useHead({ title: () => title.value })
         <div v-else-if="entry" class="grid gap-4 lg:grid-cols-2" data-testid="keen-entry">
           <UCard>
             <template #header>
-              <h2 class="font-medium">{{ t('keen.entry.details') }}</h2>
-              <p v-if="createdAt" class="text-sm text-muted">{{ createdAt }}</p>
+              <div class="flex min-w-0 flex-1 flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                <h2 class="font-medium" data-testid="keen-entry-details-title">{{ t('keen.entry.details') }}</h2>
+                <p v-if="createdAt" class="text-sm text-muted tabular-nums" data-testid="keen-entry-created-at">{{ createdAt }}</p>
+              </div>
             </template>
             <AtriumDetails :items="details" data-testid="keen-entry-details" />
           </UCard>

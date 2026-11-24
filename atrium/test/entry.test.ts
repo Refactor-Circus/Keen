@@ -106,6 +106,16 @@ describe('the keen.entry screen', () => {
     expect(wrapper.find('[data-testid="keen-entry-scope"]').text()).toBe('roster.organization 3')
     expect(wrapper.find('[data-testid="keen-entry-surface"]').text()).toBe('http')
     expect(wrapper.find('[data-testid="keen-entry-hash"]').text()).toBe('f3b2c1')
+
+    // The details heading and the entry's date are separate elements, spaced apart.
+    const title = wrapper.find('[data-testid="keen-entry-details-title"]')
+    const createdAt = wrapper.find('[data-testid="keen-entry-created-at"]')
+
+    expect(title.text()).toBe('Details')
+    expect(createdAt.text()).not.toBe('')
+    expect(title.element.contains(createdAt.element)).toBe(false)
+    expect(title.element.parentElement).toBe(createdAt.element.parentElement)
+    expect(title.element.parentElement!.className).toMatch(/\bgap-x-\d/)
     expect(wrapper.find('[data-testid="keen-entry-context"]').text()).toContain('"reason": "operator"')
 
     const changes = tableRows(wrapper, 'keen-changes')
