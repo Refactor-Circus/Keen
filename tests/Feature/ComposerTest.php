@@ -24,12 +24,19 @@ it('names atrium in no require, require-dev, suggest or conflict', function (str
     expect((array) (composerManifest()[$section] ?? []))->not->toHaveKey('refactor-circus/atrium');
 })->with(['require', 'require-dev', 'suggest', 'conflict']);
 
-it('has no atrium repository and no atrium extra', function (): void {
+it('has no atrium repository', function (): void {
     $manifest = composerManifest();
     $urls = array_map(fn (mixed $repository): string => (string) ((array) $repository)['url'], (array) ($manifest['repositories'] ?? []));
 
-    expect(array_values(array_filter($urls, fn (string $url): bool => stripos($url, 'atrium') !== false)))->toBe([])
-        ->and((array) ($manifest['extra'] ?? []))->not->toHaveKey('atrium');
+    expect(array_values(array_filter($urls, fn (string $url): bool => stripos($url, 'atrium') !== false)))->toBe([]);
+});
+
+it('declares only its built front-end module in extra.atrium', function (): void {
+    expect((array) ((array) composerManifest()['extra'])['atrium'])->toBe([
+        'key' => 'keen',
+        'scripts' => ['dist/atrium/atrium.js'],
+        'styles' => ['dist/atrium/atrium.css'],
+    ]);
 });
 
 it('has no without-atrium suite', function (): void {
@@ -104,6 +111,21 @@ it('ships openapi.json and the client in git archives', function (): void {
     expect($ignored)->not->toContain('client')
         ->not->toContain('openapi.json')
         ->not->toContain('client/dist');
+});
+
+it('ships the built atrium module but not its sources in git archives', function (): void {
+    $lines = array_map(trim(...), file(dirname(__DIR__, 2).'/.gitattributes') ?: []);
+    $ignored = [];
+
+    foreach ($lines as $line) {
+        if (str_contains($line, 'export-ignore')) {
+            $ignored[] = trim((string) strtok($line, " \t"), '/');
+        }
+    }
+
+    expect($ignored)->toContain('atrium')
+        ->not->toContain('dist')
+        ->not->toContain('dist/atrium');
 });
 
 it('describes keen as a json api and mcp, not atrium screens', function (): void {

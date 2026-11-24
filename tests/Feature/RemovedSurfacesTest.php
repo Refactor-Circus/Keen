@@ -43,10 +43,23 @@ function routesAt(string $method, string $uri): array
     ));
 }
 
-it('names Atrium nowhere in the source or the config', function (): void {
+/*
+ * Keen ships its Atrium front-end module (`atrium/`, built to `dist/atrium/`
+ * and declared in composer.json's `extra.atrium`), but no Atrium PHP: the
+ * PHP source, routes, config and workbench never name it.
+ */
+it('names Atrium nowhere in the php source, routes, config or workbench', function (): void {
     $root = dirname(__DIR__, 2);
-    $files = iterator_to_array(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root.'/src', FilesystemIterator::SKIP_DOTS)));
-    $paths = [...array_map(fn (SplFileInfo $file): string => $file->getPathname(), array_values($files)), $root.'/config/keen.php'];
+    $paths = [$root.'/config/keen.php'];
+
+    foreach (['src', 'workbench'] as $folder) {
+        foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root.'/'.$folder, FilesystemIterator::SKIP_DOTS)) as $file) {
+            /** @var SplFileInfo $file */
+            if ($folder === 'src' || $file->getExtension() === 'php') {
+                $paths[] = $file->getPathname();
+            }
+        }
+    }
 
     $naming = array_values(array_filter($paths, fn (string $path): bool => str_contains((string) file_get_contents($path), 'Atrium')));
 
