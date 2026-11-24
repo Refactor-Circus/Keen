@@ -34,6 +34,7 @@ it('has no atrium repository', function (): void {
 it('declares only its built front-end module in extra.atrium', function (): void {
     expect((array) ((array) composerManifest()['extra'])['atrium'])->toBe([
         'key' => 'keen',
+        'integration' => 'dist/atrium/integration.json',
         'scripts' => ['dist/atrium/atrium.js'],
         'styles' => ['dist/atrium/atrium.css'],
     ]);

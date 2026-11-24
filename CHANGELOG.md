@@ -21,6 +21,7 @@
 - `@refactor-circus/keen-client` in `client/`: a TypeScript client generated from `openapi.json` with `openapi-typescript`, wrapping `openapi-fetch`. `createKeenClient({ baseUrl })` returns a typed client, and the package exports `KeenClient`, `paths`, `components`, `AuditEntry` and `AuditedPackage`. Install it as a git dependency on the release tag; `dist/` is committed.
 - `composer client:generate` regenerates `openapi.json`, the client and `client/openapi.sha256`. `composer test` fails when the committed document or stamp is stale, and a `client` CI job fails when the regenerated client differs from the committed one.
 - Keen ships its Atrium v2 front-end module: the audit log pages, the per-package History pages and nav, the History section and the Activity tab, as Vue sources in `atrium/` built to the committed `dist/atrium/` (`atrium.js`, `atrium.css`) and declared in `composer.json` under `extra.atrium` (key `keen`). Atrium v2 loads it on its page; Keen still has no Atrium PHP and no Composer dependency on Atrium.
+- Keen declares its Atrium integration (feature, nav items, screens, the History section and Activity tab hooks) in a static JSON manifest, `atrium/src/integration.json`, built to `dist/atrium/integration.json` and declared as `extra.atrium.integration` in `composer.json`. Atrium v2 reads it instead of its own PHP declaration for Keen; its `atrium.integrations.keen.*` config keys still apply.
 
 ### Upgrading to v2.0.0
 

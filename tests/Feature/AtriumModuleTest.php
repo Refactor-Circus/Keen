@@ -9,7 +9,10 @@ declare(strict_types=1);
  * current. `build.json` holds the SHA-256 of the sources it was built from;
  * this recomputes it as the preset does (`hashInputs()` in
  * `@refactor-circus/atrium/vite`), so a source changed without `pnpm build`
- * fails here without Node. The `ui` CI job also rebuilds and diffs.
+ * fails here without Node. The `ui` CI job also rebuilds and diffs. The
+ * integration manifest (`atrium/src/integration.json`, built to
+ * `dist/atrium/integration.json`) declares Keen's nav, screens and hooks to
+ * Atrium as JSON, with no Atrium PHP.
  */
 
 /**
@@ -67,6 +70,22 @@ it('ships the built module that composer.json declares', function (): void {
     foreach ($declared as $path) {
         expect($root.'/'.$path)->toBeFile();
     }
+});
+
+it('ships the integration manifest that composer.json declares', function (): void {
+    $root = dirname(__DIR__, 2);
+    /** @var array{extra: array{atrium: array{integration: string}}} $composer */
+    $composer = json_decode((string) file_get_contents($root.'/composer.json'), true, flags: JSON_THROW_ON_ERROR);
+    $path = $composer['extra']['atrium']['integration'];
+
+    expect($path)->toBe('dist/atrium/integration.json')
+        ->and($root.'/'.$path)->toBeFile();
+
+    /** @var array{key: string, version: int} $integration */
+    $integration = json_decode((string) file_get_contents($root.'/'.$path), true, flags: JSON_THROW_ON_ERROR);
+
+    expect($integration['key'])->toBe('keen')
+        ->and($integration['version'])->toBe(1);
 });
 
 it('was built from the module sources as they are now', function (): void {

@@ -101,3 +101,9 @@
 - Rationale: The user said "move the vue files for each module back into their respective modules. modules need to register their js. js should be injected into the blade file. modules are responsible for their own frontend and cjs clients from now on".
 - Date: 2026-11-24
 - Raised by: user
+
+## D-018: Where is Keen's Atrium integration declared?
+- Choice: In Keen, as the static JSON manifest `atrium/src/integration.json` (Atrium commit `009b5bc5`, MODULES.md §8): the `keen.atrium` feature, the Audit log and live History nav items, the screens `keen.entries`, `keen.entry` and `keen.history`, and the two hooks Keen owns, the `keen.history` section (`targets`, config `history`) and the `keen.activity` tab (`options`, config `history.tabs`). The SDK preset validates it on `pnpm build` and writes `dist/atrium/integration.json`, declared in `composer.json` `extra.atrium.integration`. The SDK pin moves to `009b5bc5`. `$config` expressions read Atrium's `atrium.integrations.keen.*` keys with the manifest's defaults (sort 90, groups showroom/pennantplus); Keen adds no config and no Atrium PHP. A non-array `history.nav` now falls back to the manifest defaults.
+- Rationale: The user asked to "move the php declarations": each package owns its Atrium integration declaration, and Atrium (PR #20) reads it as JSON, so Keen still needs no Atrium dependency.
+- Date: 2026-11-24
+- Raised by: user
