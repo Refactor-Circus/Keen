@@ -8,6 +8,7 @@ use Laravel\Mcp\Server\Attributes\Instructions;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Version;
 use Laravel\Mcp\Server\Tool;
+use RefactorCircus\Keen\Domains\Audit\Mcp\Tools\ListAuditedPackagesTool;
 use RefactorCircus\Keen\Domains\Audit\Mcp\Tools\ListAuditEntriesTool;
 use RefactorCircus\Keen\Domains\Audit\Mcp\Tools\RecordAuditEventTool;
 use RefactorCircus\Keen\Domains\Audit\Mcp\Tools\ShowAuditEntryTool;
@@ -31,6 +32,7 @@ final class KeenServer extends Server
         ListAuditEntriesTool::class,
         ShowAuditEntryTool::class,
         RecordAuditEventTool::class,
+        ListAuditedPackagesTool::class,
     ];
 
     /**

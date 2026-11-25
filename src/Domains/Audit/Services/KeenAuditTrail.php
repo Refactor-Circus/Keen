@@ -12,8 +12,8 @@ use RefactorCircus\Keystone\Audit\Data\AuditFilter;
 use RefactorCircus\Keystone\Audit\Data\AuditPage;
 
 /**
- * The audit trail every package and the Atrium dashboard read through, once
- * Keen is installed.
+ * The audit trail every package reads its history through, once Keen is
+ * installed.
  */
 final readonly class KeenAuditTrail implements AuditTrail
 {

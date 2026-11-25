@@ -2,6 +2,40 @@
 
 ## [Unreleased](https://github.com/Refactor-Circus/Keen/compare/v0.1.0...main)
 
+### Breaking
+
+- Keen is a JSON API plus MCP tools, and nothing else: its Atrium plugin, Blade views, translations and Atrium config are removed, with no aliases. The UI moves to Atrium v2 (see "Upgrading to v2.0.0").
+- Removed routes: `atrium.keen.entries.*` (the Atrium audit log pages under `/atrium/keen/entries`) and `atrium.keen.history.show` (`GET /atrium/history/{package}`).
+- Removed screens: `keen.entries`, `keen.entry` and `keen.history`. Removed the `keen.history` History section and the `keen.activity` Activity tab, so other packages' Atrium screens no longer get them, and the per-package "History" nav items.
+- Removed components: `x-keen::audit-trail`, `x-keen::audit.entries` and `x-keen::audit.changes`, and the `keen` view namespace (`resources/views`).
+- Removed classes: `RefactorCircus\Keen\Atrium\KeenPlugin`, `RefactorCircus\Keen\Atrium\HistoryExtensions` and the Atrium controllers `AuditUiController` and `HistoryUiController` (`src/Atrium`). `KeenServiceProvider` no longer calls `registerAtriumPlugin()`.
+- Removed config: `keen.ui.enabled` and all of `keen.atrium.*` (`keen.atrium.history.screens`, `slot`, `exclude`, `tabs` and `nav`). Nothing reads them any more; delete them from a published `config/keen.php`.
+- Removed publish tags: `keen-views` and `keen-lang`. Removed the translations (`lang/en/keen.php`, the `keen::` translation namespace).
+- `composer.json`: `refactor-circus/atrium` is no longer in `require-dev`, `suggest` or `conflict` (the `<0.1.0` conflict is gone), and its VCS repository is removed. The `test:without-atrium` script, its place in `composer test`, `phpunit.without-atrium.xml` and the `without-atrium` CI job are removed: no suite installs Atrium any more.
+
+### Added
+
+- `GET {prefix}/packages` (route `keen.packages.index`, default `/api/keen/packages`) answers `{"data": [{"key", "label"}]}`: the registered packages that audit and whose history rule lets the caller read them, sorted by label then key. Keen and the `app` source are never listed. `ListAuditedPackagesAction` dispatches `AuditedPackagesListingActionEvent` and `AuditedPackagesListedActionEvent` (both `ReadActionEvent`s), and `AuditedPackageResource` describes the items.
+- The MCP tool `list-audited-packages-tool` (`ListAuditedPackagesTool`) answers the same items as structured content, with its output schema declared.
+- `openapi.json`: an OpenAPI 3.1 document of the JSON API, exported with Scramble (`dedoc/scramble`, `require-dev` only) and committed at the repository root.
+- `@refactor-circus/keen-client` in `client/`: a TypeScript client generated from `openapi.json` with `openapi-typescript`, wrapping `openapi-fetch`. `createKeenClient({ baseUrl })` returns a typed client, and the package exports `KeenClient`, `paths`, `components`, `AuditEntry` and `AuditedPackage`. Install it as a git dependency on the release tag; `dist/` is committed.
+- `composer client:generate` regenerates `openapi.json`, the client and `client/openapi.sha256`. `composer test` fails when the committed document or stamp is stale, and a `client` CI job fails when the regenerated client differs from the committed one.
+- Keen ships its Atrium v2 front-end module: the audit log pages, the per-package History pages and nav, the History section and the Activity tab, as Vue sources in `atrium/` built to the committed `dist/atrium/` (`atrium.js`, `atrium.css`) and declared in `composer.json` under `extra.atrium` (key `keen`). Atrium v2 loads it on its page; Keen still has no Atrium PHP and no Composer dependency on Atrium.
+- Keen declares its Atrium integration (feature, nav items, screens, the History section and Activity tab hooks) in a static JSON manifest, `atrium/src/integration.json`, built to `dist/atrium/integration.json` and declared as `extra.atrium.integration` in `composer.json`. Atrium v2 reads it instead of its own PHP declaration for Keen; its `atrium.integrations.keen.*` config keys still apply.
+- Keen's Atrium module composes Nuxt UI throughout: the entries and changes tables are `UTable`s, the filter bar and "Record an event" form `UForm`s, the empty audit log a `UEmpty`. The source filter is an `AtriumSelect` with a blank "All sources" item and the entry's facts an `AtriumDetails`. A guard test (the SDK's `rawHtmlIn()`) fails on raw `<button>`, `<input>`, `<select>`, `<textarea>`, `<table>`, `<details>` or `<a href>` in `atrium/src`. The SDK pin moves to Atrium `b45aa2a`.
+
+### Fixed
+
+- `GET {prefix}/entries` and `list-audit-entries-tool` take a typed `subject_id` or `scope_id` as the record's route key (such as an organization's slug, which Atrium screens pass to the `keen.history` section and `keen.activity` tab) or its key, and match the key entries store. An organization's History and Activity were empty on a host whose organizations route by slug. An unknown type or record still matches as given.
+
+### Upgrading to v2.0.0
+
+- The Atrium UI for the audit log is now Keen's own Atrium v2 module (`dist/atrium/`), which Atrium v2 loads and which reads Keen through this JSON API and `@refactor-circus/keen-client`. Install Atrium v2 for the audit log pages, the per-package History pages and nav items, the History section and the Activity tab, and configure them under its `atrium.integrations.keen.*` config. Move any `keen.atrium.history.*` settings there, and remove `keen.ui` and `keen.atrium` from a published `config/keen.php`.
+- Keep the JSON API on (`keen.routes.enabled`, the default): Atrium v2 reads the log only through it, and builds its History nav from `GET {prefix}/packages`.
+- Remove `<x-keen::audit-trail>`, `<x-keen::audit.entries>` and `<x-keen::audit.changes>` from your own views. Render the entries from `GET {prefix}/entries` (or a package's `GET {package prefix}/history`) yourself, or link to Atrium v2's history pages.
+- Delete any published Keen views (`resources/views/vendor/keen`) and translations (`lang/vendor/keen`); nothing reads them now.
+- Keen no longer serves `/atrium/history/{package}` or `/atrium/keen/entries`; update links and bookmarks to Atrium v2's pages.
+
 ## [v0.1.0](https://github.com/Refactor-Circus/Keen/commits/v0.1.0) - 2026-10-30
 
 ### Breaking

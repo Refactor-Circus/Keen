@@ -19,10 +19,13 @@ arch('the package source declares strict types')
     ->expect('RefactorCircus\Keen')
     ->toUseStrictTypes();
 
-arch('only the Atrium layer uses Atrium')
+arch('nothing uses Atrium')
     ->expect('RefactorCircus\Keen')
-    ->not->toUse('RefactorCircus\Atrium')
-    ->ignoring('RefactorCircus\Keen\Atrium');
+    ->not->toUse('RefactorCircus\Atrium');
+
+arch('nothing uses Scramble, which only the workbench configures')
+    ->expect('RefactorCircus\Keen')
+    ->not->toUse('Dedoc\Scramble');
 
 arch('actions are final classes')
     ->expect(Arch::domainNamespaces('RefactorCircus\Keen', KEEN_DOMAINS, 'Actions'))
@@ -51,7 +54,7 @@ arch('action input validates itself')
     ->expect(fn (): array => Arch::dataWithoutRules(Arch::domainClasses('RefactorCircus\Keen', KEEN_DOMAINS, 'Data')))
     ->toBeEmpty();
 
-arch('every action is reachable from the HTTP API, MCP and a UI')
+arch('every action is reachable from the HTTP API and MCP')
     ->expect(fn (): array => parityGaps())
     ->toBeEmpty();
 

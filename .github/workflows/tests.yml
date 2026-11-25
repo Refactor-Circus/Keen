@@ -75,12 +75,13 @@ jobs:
         if: runner.os == 'Windows'
         run: vendor/bin/pest --exclude-testsuite=Browser
 
-  # The authoritative proof that Keen runs without Atrium: Atrium is
-  # uninstalled, so no classmap or Composer `files` entry can load it.
-  without-atrium:
+  # Regenerates openapi.json and the TypeScript client and fails when either
+  # differs from what is committed. This is the authoritative check of the
+  # generated TypeScript; OpenApiTest only compares the stamp.
+  client:
     runs-on: ubuntu-latest
 
-    name: P8.5 - L13.* - without Atrium
+    name: OpenAPI and TypeScript client
 
     steps:
       - name: Checkout code
@@ -95,11 +96,59 @@ jobs:
           tools: composer:v2
           coverage: none
 
-      - name: Install dependencies without Atrium
-        run: |
-          composer remove --dev refactor-circus/atrium --no-update
-          composer update --prefer-stable --prefer-dist --no-interaction --no-progress --no-scripts
-          composer run prepare
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: lts/*
 
-      - name: Test Suite without Atrium
-        run: composer test:without-atrium
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Generate the OpenAPI document and the client
+        run: composer client:generate
+
+      - name: Fail on a stale openapi.json or client
+        run: git diff --exit-code -- openapi.json client
+
+  # Type-checks, tests and rebuilds the Atrium module (atrium/) and fails when
+  # the build differs from the committed dist/atrium. AtriumModuleTest checks
+  # the build hash without Node; this is the authoritative check.
+  ui:
+    runs-on: ubuntu-latest
+
+    name: Atrium module
+
+    defaults:
+      run:
+        working-directory: atrium
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+        with:
+          package_json_file: atrium/package.json
+
+      - name: Setup Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: lts/*
+          cache: pnpm
+          cache-dependency-path: atrium/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type check
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+      - name: Fail on a stale build
+        run: git diff --exit-code -- ../dist/atrium

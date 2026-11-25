@@ -1,0 +1,13 @@
+{
+  "key": "keen",
+  "shared_api": "1.0",
+  "root": "../../atrium",
+  "inputs": [
+    "src",
+    "../client/src",
+    "package.json",
+    "vite.config.ts",
+    "pnpm-lock.yaml"
+  ],
+  "hash": "0773b0d88622acd20585f1d73c461b63baf24992a6bdf8f1539821ee36a9d26c"
+}

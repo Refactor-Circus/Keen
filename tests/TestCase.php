@@ -6,7 +6,6 @@ namespace RefactorCircus\Keen\Tests;
 
 use Laravel\Mcp\Server\McpServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
-use RefactorCircus\Atrium\AtriumServiceProvider;
 use RefactorCircus\Keen\KeenServiceProvider;
 use RefactorCircus\Keen\Tests\Fixtures\Shop\ShopServiceProvider;
 
@@ -19,7 +18,6 @@ abstract class TestCase extends Orchestra
     {
         return [
             McpServiceProvider::class,
-            AtriumServiceProvider::class,
             KeenServiceProvider::class,
             ShopServiceProvider::class,
         ];
@@ -36,7 +34,6 @@ abstract class TestCase extends Orchestra
     {
         $this->loadLaravelMigrations();
         $this->loadMigrationsFrom(dirname(__DIR__).'/database/migrations');
-        $this->loadMigrationsFrom(dirname(__DIR__).'/vendor/refactor-circus/atrium/database/migrations');
         $this->loadMigrationsFrom(__DIR__.'/Fixtures/migrations');
     }
 }

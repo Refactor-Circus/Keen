@@ -13,16 +13,6 @@ function composerManifest(): array
     return $manifest;
 }
 
-/**
- * The `without-atrium` job of the tests workflow, or '' when it is missing.
- */
-function withoutAtriumJob(): string
-{
-    $workflow = (string) file_get_contents(dirname(__DIR__, 2).'/.github/workflows/tests.yml');
-
-    return preg_match('/^  without-atrium:\n(?:(?:    .*)?\n)*/m', $workflow, $match) === 1 ? $match[0] : '';
-}
-
 it('requires no suite package but keystone', function (): void {
     $require = array_keys((array) composerManifest()['require']);
 
@@ -30,34 +20,117 @@ it('requires no suite package but keystone', function (): void {
         ->toBe(['refactor-circus/keystone']);
 });
 
-it('keeps atrium a suggestion and a dev dependency', function (): void {
+it('names atrium in no require, require-dev, suggest or conflict', function (string $section): void {
+    expect((array) (composerManifest()[$section] ?? []))->not->toHaveKey('refactor-circus/atrium');
+})->with(['require', 'require-dev', 'suggest', 'conflict']);
+
+it('has no atrium repository', function (): void {
     $manifest = composerManifest();
+    $urls = array_map(fn (mixed $repository): string => (string) ((array) $repository)['url'], (array) ($manifest['repositories'] ?? []));
 
-    expect($manifest['suggest'])->toHaveKey('refactor-circus/atrium')
-        ->and($manifest['require-dev'])->toHaveKey('refactor-circus/atrium')
-        ->and(((array) $manifest['require-dev'])['refactor-circus/atrium'])->toBe('^0.1');
+    expect(array_values(array_filter($urls, fn (string $url): bool => stripos($url, 'atrium') !== false)))->toBe([]);
 });
 
-it('conflicts with atrium releases from before the screen registry', function (): void {
-    expect(composerManifest()['conflict'] ?? null)->toBe(['refactor-circus/atrium' => '<0.1.0']);
+it('declares only its built front-end module in extra.atrium', function (): void {
+    expect((array) ((array) composerManifest()['extra'])['atrium'])->toBe([
+        'key' => 'keen',
+        'integration' => 'dist/atrium/integration.json',
+        'scripts' => ['dist/atrium/atrium.js'],
+        'styles' => ['dist/atrium/atrium.css'],
+    ]);
 });
 
-it('runs the without-atrium suite from composer test, after the unit tests', function (): void {
+it('has no without-atrium suite', function (): void {
     $scripts = (array) composerManifest()['scripts'];
-    $test = array_values((array) $scripts['test']);
 
-    expect($scripts['test:without-atrium'] ?? null)->toBe(['vendor/bin/pest --configuration=phpunit.without-atrium.xml'])
-        ->and($test)->toContain('@test:without-atrium')
-        ->and(array_search('@test:without-atrium', $test, true))->toBeGreaterThan(array_search('@test:unit', $test, true));
+    expect($scripts)->not->toHaveKey('test:without-atrium')
+        ->and(array_values((array) $scripts['test']))->not->toContain('@test:without-atrium')
+        ->and(dirname(__DIR__, 2).'/phpunit.without-atrium.xml')->not->toBeFile()
+        ->and((string) file_get_contents(dirname(__DIR__, 2).'/.github/workflows/tests.yml'))->not->toContain('without-atrium');
 });
 
-it('runs the without-atrium suite in ci with atrium uninstalled', function (): void {
-    $job = withoutAtriumJob();
+/**
+ * The steps of the `client` job in the tests workflow, as YAML text.
+ */
+function clientWorkflowJob(): string
+{
+    $workflow = str_replace("\r\n", "\n", (string) file_get_contents(dirname(__DIR__, 2).'/.github/workflows/tests.yml'));
 
-    expect($job)->not->toBe('')
-        ->toContain('composer remove --dev refactor-circus/atrium --no-update')
-        ->toContain('composer test:without-atrium');
+    if (preg_match('/^  client:\n(.*?)(?=^  \S|\z)/ms', $workflow, $match) !== 1) {
+        return '';
+    }
 
-    expect(strpos($job, 'composer remove --dev refactor-circus/atrium --no-update'))
-        ->toBeLessThan(strpos($job, 'composer test:without-atrium'));
+    return $match[1];
+}
+
+it('regenerates the openapi document and the client in order', function (): void {
+    $scripts = (array) composerManifest()['scripts'];
+
+    expect(array_values((array) ($scripts['client:generate'] ?? [])))->toBe([
+        '@php vendor/bin/testbench scramble:export --path=openapi.json',
+        'npm --prefix client ci',
+        'npm --prefix client run generate',
+        '@php bin/client-stamp.php',
+    ])->and(dirname(__DIR__, 2).'/bin/client-stamp.php')->toBeFile();
+});
+
+it('keeps node out of composer test', function (): void {
+    $scripts = (array) composerManifest()['scripts'];
+
+    expect(array_values((array) $scripts['test']))->not->toContain('@client:generate')
+        ->and(array_values((array) $scripts['test:unit']))->not->toContain('@client:generate');
+});
+
+it('fails ci when the generated client is stale', function (): void {
+    $job = clientWorkflowJob();
+
+    expect($job)->not->toBe('', 'The tests workflow has no `client` job.')
+        ->toContain('shivammathur/setup-php')
+        ->toContain('php-version: 8.5')
+        ->toContain('actions/setup-node')
+        ->toContain('node-version: lts/*')
+        ->toContain('composer install');
+
+    $generate = strpos($job, 'composer client:generate');
+    $diff = strpos($job, 'git diff --exit-code -- openapi.json client');
+
+    expect($generate)->toBeInt()
+        ->and($diff)->toBeInt()
+        ->and($generate < $diff)->toBeTrue();
+});
+
+it('ships openapi.json and the client in git archives', function (): void {
+    $lines = array_map(trim(...), file(dirname(__DIR__, 2).'/.gitattributes') ?: []);
+    $ignored = [];
+
+    foreach ($lines as $line) {
+        if (str_contains($line, 'export-ignore')) {
+            $ignored[] = trim((string) strtok($line, " \t"), '/');
+        }
+    }
+
+    expect($ignored)->not->toContain('client')
+        ->not->toContain('openapi.json')
+        ->not->toContain('client/dist');
+});
+
+it('ships the built atrium module but not its sources in git archives', function (): void {
+    $lines = array_map(trim(...), file(dirname(__DIR__, 2).'/.gitattributes') ?: []);
+    $ignored = [];
+
+    foreach ($lines as $line) {
+        if (str_contains($line, 'export-ignore')) {
+            $ignored[] = trim((string) strtok($line, " \t"), '/');
+        }
+    }
+
+    expect($ignored)->toContain('atrium')
+        ->not->toContain('dist')
+        ->not->toContain('dist/atrium');
+});
+
+it('describes keen as a json api and mcp, not atrium screens', function (): void {
+    expect((string) composerManifest()['description'])
+        ->toContain('JSON API and MCP')
+        ->not->toContain('Atrium');
 });

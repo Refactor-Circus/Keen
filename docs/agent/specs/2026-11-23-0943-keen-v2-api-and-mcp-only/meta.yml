@@ -1,0 +1,18 @@
+id: 2026-11-23-0943-keen-v2-api-and-mcp-only
+title: 'Keen v2: API and MCP only'
+status: in-review
+created: '2026-11-23 09:43'
+release: v2.0.0
+waits_for: [Keystone/2026-11-23-0943-drop-the-atrium-plugin-hook]
+blocks: [Atrium/2026-11-22-1823-atrium-v2-headless]
+standards:
+  refactor-circus/standards:
+    version: dev-main
+    reference: a5b675396232
+runs:
+  - workflow: ring-master-factory
+    run_id: wf_65931371-248
+    result: approved
+    round: 1
+    date: 2026-11-23
+pr: https://github.com/Refactor-Circus/Keen/pull/12

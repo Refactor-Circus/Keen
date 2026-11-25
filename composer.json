@@ -1,7 +1,7 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
     "name": "refactor-circus/keen",
-    "description": "Tamper-evident audit log for every Refactor Circus package, with API, MCP and Atrium screens.",
+    "description": "Tamper-evident audit log for every Refactor Circus package, served as a JSON API and MCP tools.",
     "keywords": [
         "laravel",
         "refactor-circus",
@@ -20,10 +20,11 @@
     ],
     "require": {
         "php": "^8.5",
-        "refactor-circus/keystone": "^0.1",
+        "refactor-circus/keystone": "^2.0",
         "laravel/framework": "^13.35"
     },
     "require-dev": {
+        "dedoc/scramble": "^0.13.55",
         "larastan/larastan": "^3.13",
         "laravel/mcp": "^1.0.1",
         "laravel/pao": "^1.1.5",
@@ -33,12 +34,8 @@
         "pestphp/pest-plugin-laravel": "^5.0.1",
         "pestphp/pest-plugin-type-coverage": "^5.0.3",
         "phpstan/extension-installer": "^1.4.3",
-        "refactor-circus/atrium": "^0.1",
         "refactor-circus/ringside": "dev-main",
         "refactor-circus/standards": "dev-main"
-    },
-    "conflict": {
-        "refactor-circus/atrium": "<0.1.0"
     },
     "autoload": {
         "psr-4": {
@@ -84,15 +81,17 @@
         "test:unit": [
             "vendor/bin/pest --parallel"
         ],
-        "test:without-atrium": [
-            "vendor/bin/pest --configuration=phpunit.without-atrium.xml"
-        ],
         "test": [
             "@analyse",
             "@lint:check",
             "@test:types",
-            "@test:unit",
-            "@test:without-atrium"
+            "@test:unit"
+        ],
+        "client:generate": [
+            "@php vendor/bin/testbench scramble:export --path=openapi.json",
+            "npm --prefix client ci",
+            "npm --prefix client run generate",
+            "@php bin/client-stamp.php"
         ],
         "clear": [
             "@php vendor/bin/testbench package:purge-skeleton --ansi"
@@ -116,6 +115,19 @@
             "aliases": {
                 "Keen": "RefactorCircus\\Keen\\Facades\\Keen"
             }
+        },
+        "atrium": {
+            "key": "keen",
+            "integration": "dist/atrium/integration.json",
+            "scripts": [
+                "dist/atrium/atrium.js"
+            ],
+            "styles": [
+                "dist/atrium/atrium.css"
+            ]
+        },
+        "branch-alias": {
+            "dev-main": "2.0.x-dev"
         }
     },
     "config": {
@@ -129,17 +141,12 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "suggest": {
-        "refactor-circus/atrium": "Browse the audit log, and each package's own history, from the Atrium dashboard (dev-main).",
         "laravel/mcp": "Read and record audit entries from MCP clients and Cortex agents (^1.0)."
     },
     "repositories": [
         {
             "type": "vcs",
             "url": "https://github.com/Refactor-Circus/Keystone.git"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/Refactor-Circus/Atrium.git"
         },
         {
             "type": "vcs",
